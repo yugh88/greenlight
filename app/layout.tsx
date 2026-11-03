@@ -6,7 +6,15 @@ import "./globals.css";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
-const base = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+function safeBase() {
+  const raw = (process.env.NEXT_PUBLIC_BASE_URL ?? "").trim();
+  try {
+    return new URL(raw).origin;
+  } catch {
+    return process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000";
+  }
+}
+const base = safeBase();
 
 export const metadata: Metadata = {
   metadataBase: new URL(base),
