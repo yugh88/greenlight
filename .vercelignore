@@ -1,0 +1,8 @@
+# Never upload local-only files with `vercel deploy` (git-based deploys already exclude them)
+scratch
+scratch-*.log
+.env*
+!.env.example
+evidence/**/raw-private
+playwright/.auth
+.claude
