@@ -128,8 +128,8 @@
   {
    "kind": "privacy-policy",
    "label": "Privacy Policy",
-   "required": "yes",
-   "when": "Required for application compliance and developer terms.",
+   "required": "conditional",
+   "when": "Not stated as required in the cited docs; commonly requested for production apps (unverified)",
    "claimIds": [
     "c-terms-privacy"
    ]
@@ -405,9 +405,10 @@
   {
    "id": "c-terms-privacy",
    "text": "Terms of Service, Privacy Policy, Cookies, and Developer Terms apply.",
-   "evidence": "sourced",
+   "evidence": "uncertain",
    "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/overview",
    "quote": "Terms of Service Privacy Policy Cookies Developer Terms",
+   "reason": "Only a footer link to the privacy policy was found; no page states a privacy policy URL is required for X developer apps.",
    "checkedAt": "2026-11-03"
   },
   {

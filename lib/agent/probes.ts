@@ -93,6 +93,7 @@ export async function probeAuthorize(authorizeUrl: string, extraParams: Record<s
   u.searchParams.set("redirect_uri", PROBE_REDIRECT);
   u.searchParams.set("response_type", "code");
   u.searchParams.set("state", "greenlight-probe");
+  if (!u.searchParams.has("scope")) u.searchParams.set("scope", "openid"); // some providers reject missing scope before checking the client
   for (const [k, v] of Object.entries(extraParams)) u.searchParams.set(k, v);
   const r = await get(u.toString());
   return { id: `p-authorize-${u.host}`, kind: "authorize-dummy-client" as const, ...r };

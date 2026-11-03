@@ -60,5 +60,41 @@
   ],
   "removeClaims": [
     "c-pricing-model"
+  ],
+  "setClaims": {
+    "c-terms-privacy": {
+      "evidence": "uncertain",
+      "reason": "Only a footer link to the privacy policy was found; no page states a privacy policy URL is required for X developer apps."
+    }
+  },
+  "replaceRequirements": [
+    {
+      "kind": "privacy-policy",
+      "label": "Privacy Policy",
+      "required": "conditional",
+      "when": "Not stated as required in the cited docs; commonly requested for production apps (unverified)",
+      "claimIds": [
+        "c-terms-privacy"
+      ]
+    },
+    {
+      "kind": "domain-verification",
+      "label": "Callback URL Validation",
+      "required": "yes",
+      "when": "Mandatory exact match validation for callback URLs.",
+      "claimIds": [
+        "c-callback-rules"
+      ]
+    },
+    {
+      "kind": "paid-plan",
+      "label": "Prepaid API credits",
+      "required": "yes",
+      "when": "Before your agent can make API calls beyond any free credits",
+      "claimIds": [
+        "c-x-ppu",
+        "c-x-credits"
+      ]
+    }
   ]
 }

@@ -19,12 +19,29 @@ export type VerifyReport = {
   verifierModel?: string;
 };
 
+/** Quotes that are just menu/footer text ("Terms of Service Privacy Policy Cookies") prove nothing. */
+export function looksLikeNavigation(quote: string): boolean {
+  const words = quote.replace(/[^A-Za-z\s]/g, " ").split(/\s+/).filter((w) => w.length > 2);
+  if (/[0-9$€£_]/.test(quote) || /^(click|select|open|go|enable|add|choose|navigate|tap)\b/i.test(quote.trim())) return false;
+  if (words.length < 4) return true;
+  const title = words.filter((w) => /^[A-Z]/.test(w)).length / words.length;
+  const hasSentence = /[a-z]{3,}\s+(is|are|must|can|will|should|may|require|requires|allow|allows|use|need|needs|be|have|has)\b/i.test(quote);
+  const dataLike = /[0-9$€£_]/.test(quote); // table cells, prices, error codes
+  const imperative = /^(click|select|open|go|enable|add|choose|navigate|tap)\b/i.test(quote.trim());
+  return title > 0.7 && !hasSentence && !dataLike && !imperative;
+}
+
 export async function verifyQuotes(claims: Claim[], fresh = false): Promise<{ claims: Claim[]; misses: string[] }> {
   const misses: string[] = [];
   const out: Claim[] = [];
   for (const c of claims) {
     if (c.evidence !== "sourced" || !c.sourceUrl || !c.quote) {
       out.push(c);
+      continue;
+    }
+    if (looksLikeNavigation(c.quote)) {
+      misses.push(c.id);
+      out.push({ ...c, evidence: "uncertain", reason: "Cited text is navigation/menu text, not a statement that supports the claim." });
       continue;
     }
     // fetchPage caches per process; the standalone verify script runs in a fresh process.
