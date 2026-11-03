@@ -1,0 +1,544 @@
+{
+ "slug": "linkedin-ads",
+ "app": {
+  "name": "LinkedIn Ads (Marketing API)",
+  "website": "https://linkedin.com",
+  "developerDocsUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access?view=li-lms-2026-10",
+  "composioSlug": "LINKEDIN_ADS",
+  "composioManaged": false,
+  "authSchemes": [
+   "OAUTH2"
+  ]
+ },
+ "verdict": {
+  "difficulty": 4,
+  "label": "Heavy review / verification",
+  "summary": "Developing a LinkedIn Marketing integration requires an approved developer application, explicit advertising API access approval, and tier-specific upgrades.",
+  "firstTokenMinutes": {
+   "min": 10,
+   "max": 30
+  },
+  "productionDays": {
+   "min": 7,
+   "max": 30
+  },
+  "cost": "Free to apply; API access tiers and partner requirements determined by LinkedIn.",
+  "claimIds": [
+   "c-diff-verdict",
+   "c-prod-days",
+   "c-li-open-approved",
+   "c-li-apply-products"
+  ]
+ },
+ "composioFit": {
+  "summary": "Composio does not manage a pre-built OAuth app for LinkedIn Ads, so you must bring your own custom OAuth app credentials.",
+  "whyOwnApp": [
+   "Composio-managed OAuth available? No",
+   "Required for custom API permissions, scope tuning, and dedicated rate limits."
+  ],
+  "claimIds": [
+   "c-composio-no"
+  ]
+ },
+ "phases": [
+  {
+   "id": "create-app",
+   "name": "Create Developer Application",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 5,
+    "max": 10
+   },
+   "steps": [
+    "Sign in to the LinkedIn Developer Portal.",
+    "Create a developer application in the Developer Portal.",
+    "Select your app from My Apps, navigate to the Products tab, and add the Advertising API product."
+   ],
+   "handoff": "Provide your Client ID and Client Secret to configure your custom auth config.",
+   "claimIds": [
+    "c-create-app",
+    "c-add-advertising-api"
+   ]
+  },
+  {
+   "id": "configure-oauth",
+   "name": "Configure OAuth and Redirect URIs",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 5,
+    "max": 15
+   },
+   "steps": [
+    "Add the redirect (callback) URL via HTTPS to your server or Composio callback URL.",
+    "Confirm required permissions under the Auth tab for your app."
+   ],
+   "handoff": "Ready to test authentication code flow and token exchange.",
+   "claimIds": [
+    "c-redirect-https",
+    "c-confirm-auth-tab"
+   ]
+  },
+  {
+   "id": "testing",
+   "name": "Test with Developer Tokens",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 15,
+    "max": 30
+   },
+   "steps": [
+    "Use the Developer Portal Token Generator or Postman workspace to generate an access token for testing.",
+    "Make authenticated API calls for testing."
+   ],
+   "handoff": "Complete end-to-end integration and workflow testing before requesting standard tier access.",
+   "claimIds": [
+    "c-token-generator",
+    "c-postman-workspace"
+   ]
+  },
+  {
+   "id": "tier-upgrade",
+   "name": "Apply for Standard Tier / Review",
+   "owner": "you",
+   "waiting": true,
+   "minutes": {
+    "min": 10080,
+    "max": 43200
+   },
+   "steps": [
+    "After you build and test your application, apply for Standard tier access.",
+    "Submit a tier upgrade request with a video demonstrating how your platform creates, edits, or optimizes LinkedIn campaigns."
+   ],
+   "handoff": "Wait for LinkedIn review and approval.",
+   "claimIds": [
+    "c-standard-tier-apply",
+    "c-video-demo-req"
+   ]
+  }
+ ],
+ "artefacts": [
+  {
+   "id": "art-app-form",
+   "kind": "app-form",
+   "title": "LinkedIn Developer App Registration Details",
+   "body": "App Name: AI Agent Marketing Integration\nDescription: AI agent platform automating LinkedIn Ads management workflows via Composio.\nWebsite URL: https://example.com\nPrivacy Policy URL: https://example.com/privacy\nRedirect URI: <Composio callback URL from your auth config>"
+  },
+  {
+   "id": "art-scope-justification",
+   "kind": "scope-justification",
+   "title": "Scope Justification Statement for Advertising API",
+   "body": "Our application requests r_ads and rw_ads to enable authorized users to manage, retrieve reporting data for, and optimize their ad accounts and campaigns through an AI agent assistant."
+  },
+  {
+   "id": "art-reviewer-email",
+   "kind": "reviewer-email",
+   "title": "Standard Tier Upgrade Request",
+   "body": "Subject: Request for Advertising API Standard Tier Access - [Your App Name]\n\nHello LinkedIn Developer Support,\n\nWe have built and tested our integration using the Development tier. We are now requesting an upgrade to the Advertising API Standard tier to support live campaign management solutions with unlimited ad accounts.\n\nAttached is our demonstration video showcasing our platform's capabilities.\n\nThank you,\n[Your Name]"
+  }
+ ],
+ "requirements": [
+  {
+   "kind": "partner-application",
+   "label": "Advertising API Approval",
+   "required": "yes",
+   "when": "Required for all marketing integrations",
+   "claimIds": [
+    "c-advertising-api-required"
+   ]
+  },
+  {
+   "kind": "demo-video",
+   "label": "Demonstration Video",
+   "required": "yes",
+   "when": "Required when applying to upgrade to Advertising API Standard tier",
+   "claimIds": [
+    "c-video-demo-req"
+   ]
+  },
+  {
+   "kind": "privacy-policy",
+   "label": "Privacy Policy URL",
+   "required": "yes",
+   "when": "Configured in developer app settings",
+   "claimIds": [
+    "c-privacy-policy-required"
+   ]
+  },
+  {
+   "kind": "partner-application",
+   "label": "Advertising API access application (Products tab → access form)",
+   "required": "yes",
+   "when": "Before any Marketing API scope (r_ads, rw_ads, r_ads_reporting) works",
+   "claimIds": [
+    "c-li-apply-products",
+    "c-li-open-approved"
+   ]
+  }
+ ],
+ "scopes": [
+  {
+   "scope": "r_ads",
+   "purpose": "Read ad accounts data",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-scope-r-ads"
+   ]
+  },
+  {
+   "scope": "rw_ads",
+   "purpose": "Manage and read an authenticated member's ad accounts.",
+   "tier": "sensitive",
+   "reviewTrigger": true,
+   "claimIds": [
+    "c-scope-rw-ads"
+   ]
+  },
+  {
+   "scope": "r_organization_social",
+   "purpose": "Read social actions for organizations that you are an administrator of",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-scope-r-org-social"
+   ]
+  },
+  {
+   "scope": "rw_organization_social",
+   "purpose": "Manage social actions for organizations that you are an administrator of",
+   "tier": "sensitive",
+   "reviewTrigger": true,
+   "claimIds": [
+    "c-scope-rw-org-social"
+   ]
+  }
+ ],
+ "redirectRules": [
+  {
+   "rule": "Add the redirect (callback) URL via HTTPS to your server.",
+   "claimIds": [
+    "c-redirect-https"
+   ]
+  },
+  {
+   "rule": "If you are using Postman to test this flow, use https://oauth.pstmn.io/v1/callback as your redirect URL and enable Authorize using browser.",
+   "claimIds": [
+    "c-redirect-postman"
+   ]
+  }
+ ],
+ "blockers": [
+  {
+   "id": "blocker-redirect-http",
+   "symptom": "Redirect URI validation error or invalid redirect URL error during auth code request.",
+   "cause": "Using HTTP instead of HTTPS, or using an unregistered callback URL.",
+   "fix": "Ensure all redirect URLs use HTTPS and exactly match the URLs defined in your developer application configuration.",
+   "fallback": "Check the developer portal redirect settings and update your auth config.",
+   "claimIds": [
+    "c-redirect-https"
+   ]
+  },
+  {
+   "id": "blocker-expired-code",
+   "symptom": "Authorization code exchange fails or returns error.",
+   "cause": "The authorization code has a 30-minute lifespan and must be used immediately.",
+   "fix": "Restart the OAuth flow to obtain a fresh authorization code and exchange it immediately.",
+   "fallback": "Automate code exchange directly in your callback handler to avoid manual delays.",
+   "claimIds": [
+    "c-code-lifespan"
+   ]
+  },
+  {
+   "id": "blocker-state-mismatch",
+   "symptom": "Application returns a 401 Unauthorized error code.",
+   "cause": "The value returned in the state parameter does not match the state value from your original authorization code request (CSRF check failure).",
+   "fix": "Ensure state storage and validation correctly persist across the redirect roundtrip.",
+   "fallback": "Disable strict state checks only during isolated local debugging.",
+   "claimIds": [
+    "c-state-mismatch"
+   ]
+  }
+ ],
+ "checklist": [
+  {
+   "id": "chk-1",
+   "text": "Create a developer application in the LinkedIn Developer Portal.",
+   "owner": "you",
+   "phaseId": "create-app"
+  },
+  {
+   "id": "chk-2",
+   "text": "Add the Advertising API product under the Products tab.",
+   "owner": "you",
+   "phaseId": "create-app"
+  },
+  {
+   "id": "chk-3",
+   "text": "Configure the redirect (callback) URL via HTTPS.",
+   "owner": "you",
+   "phaseId": "configure-oauth"
+  },
+  {
+   "id": "chk-4",
+   "text": "Confirm access to required permissions in the Developer Portal under the Auth tab.",
+   "owner": "you",
+   "phaseId": "configure-oauth"
+  },
+  {
+   "id": "chk-5",
+   "text": "Generate an access token using the Developer Portal Token Generator or Postman.",
+   "owner": "you",
+   "phaseId": "testing"
+  },
+  {
+   "id": "chk-6",
+   "text": "Build and test application end-to-end workflows in the Development tier.",
+   "owner": "you",
+   "phaseId": "testing"
+  },
+  {
+   "id": "chk-7",
+   "text": "Record demonstration video showing campaign creation, editing, or optimization.",
+   "owner": "you",
+   "phaseId": "tier-upgrade"
+  },
+  {
+   "id": "chk-8",
+   "text": "Submit tier upgrade request for Advertising API Standard tier.",
+   "owner": "you",
+   "phaseId": "tier-upgrade"
+  }
+ ],
+ "claims": [
+  {
+   "id": "c-composio-no",
+   "text": "Composio-managed OAuth available? No",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/toolkits/linkedin_ads",
+   "quote": "Composio-managed OAuth available? No",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-create-app",
+   "text": "Create a developer application in the Developer Portal.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start?view=li-lms-2026-10",
+   "quote": "Create a developer application in the Developer Portal.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-add-advertising-api",
+   "text": "Developers seeking to build a marketing related integration using Advertising API permissions must be approved. You can apply for access through the Developer Portal. To do this, select your app from My Apps, navigate to the Products tab, and add the Advertising API product.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access",
+   "quote": "Developers seeking to build a marketing related integration using Advertising API permissions must be approved. You can apply for access through the Developer Portal . To do this, select your app from",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-redirect-https",
+   "text": "Add the redirect (callback) URL via HTTPS to your server.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+   "quote": "Add the redirect (callback) URL via HTTPS to your server.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-redirect-postman",
+   "text": "If you are using Postman to test this flow, use https://oauth.pstmn.io/v1/callback as your redirect URL and enable Authorize using browser.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+   "quote": "If you are using Postman to test this flow, use https://oauth.pstmn.io/v1/callback as your redirect URL and enable Authorize using browser .",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-confirm-auth-tab",
+   "text": "Review the permissions available and confirm you have access to the required permissions in the Developer Portal under the Auth tab for your app.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start?view=li-lms-2026-10",
+   "quote": "Review the permissions available and confirm you have access to the required permissions in the Developer Portal under the Auth tab for your app.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-token-generator",
+   "text": "Generate an access token to make authenticated API calls for testing, either by using the Token Generator tool available on the Developer Portal or the LinkedIn Marketing Solutions Workspace on the Postman Network.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start?view=li-lms-2026-10",
+   "quote": "Generate an access token to make authenticated API calls for testing, either by using the Token Generator tool available on the Developer Portal or the LinkedIn Marketing Solutions Workspace on the Po",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-postman-workspace",
+   "text": "Generate an access token to make authenticated API calls for testing either through Token Generator tool available on the Developer Portal or the LinkedIn Marketing Solutions Workspace on the Postman Network.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start?view=li-lms-2026-10",
+   "quote": "Generate an access token to make authenticated API calls for testing either through Token Generator tool available on the Developer Portal or the LinkedIn Marketing Solutions Workspace on the Postman ",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-standard-tier-apply",
+   "text": "After you build and test your application, apply for Standard tier access. To upgrade to Advertising API Standard tier , submit a tier upgrade request with a video demonstrating how your platform creates, edits, or optimizes LinkedIn campaigns.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start?view=li-lms-2026-10",
+   "quote": "After you build and test your application, apply for Standard tier access. To upgrade to Advertising API Standard tier , submit a tier upgrade request with a video demonstrating how your platform crea",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-video-demo-req",
+   "text": "To upgrade to Advertising API Standard tier , submit a tier upgrade request with a video demonstrating how your platform creates, edits, or optimizes LinkedIn campaigns.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start?view=li-lms-2026-10",
+   "quote": "To upgrade to Advertising API Standard tier , submit a tier upgrade request with a video demonstrating how your platform creates, edits, or optimizes LinkedIn campaigns.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-scope-r-ads",
+   "text": "Manage and read an authenticated member's ad accounts.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access?view=li-lms-2026-10",
+   "quote": "Manage and read an authenticated member's ad accounts.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-scope-rw-ads",
+   "text": "Manage and read an authenticated member's ad accounts.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access?view=li-lms-2026-10",
+   "quote": "Manage and read an authenticated member's ad accounts.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-scope-r-org-social",
+   "text": "Read social actions for organizations that you are an administrator of to focus on Community Management partners.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access?view=li-lms-2026-10",
+   "quote": "Read social actions for organizations that you are an administrator of to focus on Community Management partners.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-scope-rw-org-social",
+   "text": "Manage social actions for organizations that you are an administrator of.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access?view=li-lms-2026-10",
+   "quote": "Manage social actions for organizations that you are an administrator of.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-code-lifespan",
+   "text": "For security reasons, the authorization code has a 30-minute lifespan and must be used immediately.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+   "quote": "For security reasons, the authorization code has a 30-minute lifespan and must be used immediately.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-state-mismatch",
+   "text": "Before you use the authorization code, your application should ensure that the value returned in the state parameter matches the state value from your original authorization code request... your application should return a 401 Unauthorized error code in response.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+   "quote": "Before you use the authorization code, your application should ensure that the value returned in the state parameter matches the state value from your original authorization code request. This ensures",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-advertising-api-required",
+   "text": "The Advertising API , Community Management API , Events Management API , Lead Sync API , Conversions API , and Matched Audiences API are open to all approved developers — apply through the standard process.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access?view=li-lms-2026-10",
+   "quote": "The Advertising API , Community Management API , Events Management API , Lead Sync API , Conversions API , and Matched Audiences API are open to all approved developers — apply through the standard pr",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-diff-verdict",
+   "text": "Development tier is designed to build end-to-end workflows and supports read-only access for unlimited ad accounts and edit capabilities for up to five (5) Ad Accounts.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access?view=li-lms-2026-10",
+   "quote": "Development tier is designed to build end-to-end workflows and supports read-only access for unlimited ad accounts and edit capabilities for up to five (5) Ad Accounts.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-prod-days",
+   "text": "For restricted APIs, LinkedIn evaluates applications based on partnership fit and access criteria. Restricted APIs are evaluated on a case-by-case basis with no fixed timeline.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access?view=li-lms-2026-10",
+   "quote": "For restricted APIs, LinkedIn evaluates applications based on partnership fit and access criteria. Restricted APIs are evaluated on a case-by-case basis with no fixed timeline — contact Developer Supp",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-privacy-policy-required",
+   "text": "Privacy policy requirements and integration requirements apply.",
+   "evidence": "uncertain",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access?view=li-lms-2026-10",
+   "quote": "Review the integration requirements page for your program before building. Each page lists technical prerequisites, data handling obligations, and launch criteria.",
+   "reason": "Verifier: quote does not support claim (The quote discusses integration requirements, technical prerequisites, and launch criteria, but does not explicitly mention privacy policy requirements.)",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-li-open-approved",
+   "text": "The Advertising API (and Community Management, Lead Sync, Conversions, Matched Audiences) is open to all approved developers via the standard application.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access",
+   "quote": "Matched Audiences API are open to all approved developers — apply through the standard process.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-li-restricted",
+   "text": "Audience Insights and Media Planning APIs are restricted to developers who meet additional criteria evaluated by LinkedIn.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access",
+   "quote": "Access to Audience Insights and Media Planning APIs is restricted to developers who meet additional qualification criteria evaluated by LinkedIn.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-li-apply-products",
+   "text": "You apply for an API under the Products tab of your app and complete an access form.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start",
+   "quote": "Apply to the desired API under the Products tab of your app. - Complete the access form.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-li-ads-scopes",
+   "text": "Advertising API permissions include r_ads, rw_ads and r_ads_reporting, available once approved for Advertising API access.",
+   "evidence": "sourced",
+   "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access",
+   "quote": "Available to all developers approved for Advertising API access. Apply to Advertising API.",
+   "checkedAt": "2026-11-03"
+  }
+ ],
+ "uncertainties": [
+  "Exact SLA duration for LinkedIn Standard tier review approvals.",
+  "Exact token expiration time (TTL) for LinkedIn OAuth access tokens beyond general TTL tool inspection mention.",
+  "LinkedIn does not publish a review time for Advertising API applications; the production range is an estimate."
+ ],
+ "generatedBy": "gold",
+ "reviewStatus": "unreviewed",
+ "lastVerified": "2026-11-03",
+ "probes": [
+  {
+   "id": "p-oidc-discovery-0",
+   "kind": "oidc-discovery",
+   "url": "https://linkedin.com/.well-known/openid-configuration",
+   "status": 301,
+   "location": "https://www.linkedin.com/.well-known/openid-configuration",
+   "bodySnippet": "",
+   "at": "2026-11-03T13:18:34.322Z"
+  },
+  {
+   "id": "p-oauth-metadata-1",
+   "kind": "oauth-metadata",
+   "url": "https://linkedin.com/.well-known/oauth-authorization-server",
+   "status": 301,
+   "location": "https://www.linkedin.com/.well-known/oauth-authorization-server",
+   "bodySnippet": "",
+   "at": "2026-11-03T13:18:34.324Z"
+  }
+ ],
+ "generation": {
+  "draftModel": "gemini-3.5-flash-lite",
+  "verifierModel": "gemini-3.5-flash-lite",
+  "ms": 24698,
+  "sources": 6
+ }
+}

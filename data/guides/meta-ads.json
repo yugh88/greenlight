@@ -1,0 +1,441 @@
+{
+ "slug": "meta-ads",
+ "app": {
+  "name": "Meta Ads (Marketing API)",
+  "website": "https://facebook.com",
+  "developerDocsUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authorization",
+  "composioSlug": "METAADS",
+  "composioManaged": false,
+  "authSchemes": [
+   "OAUTH2",
+   "API_KEY"
+  ]
+ },
+ "verdict": {
+  "difficulty": 4,
+  "label": "Heavy review / verification",
+  "summary": "Meta Ads requires creating a Business App, adding the Marketing API, completing Business Verification, and undergoing App Review for advanced access to manage other users' ad accounts.",
+  "firstTokenMinutes": {
+   "min": 15,
+   "max": 30
+  },
+  "productionDays": {
+   "min": 3,
+   "max": 14
+  },
+  "cost": "Free",
+  "claimIds": [
+   "c-diff-1",
+   "c-diff-2",
+   "c-me-bv",
+   "c-me-500"
+  ]
+ },
+ "composioFit": {
+  "summary": "Meta Ads does not have a Composio-managed OAuth app, so you must bring your own custom OAuth app and wire your Client ID and Client Secret into Composio.",
+  "whyOwnApp": [
+   "Composio-managed OAuth available? No",
+   "Required for custom scopes and dedicated provider quota",
+   "Allows custom OAuth branding and redirect URIs"
+  ],
+  "claimIds": [
+   "c-comp-1",
+   "c-comp-2"
+  ]
+ },
+ "phases": [
+  {
+   "id": "create-app",
+   "name": "Create App in Meta Developer Portal",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 5,
+    "max": 10
+   },
+   "steps": [
+    "Go to the Meta App Dashboard and create a new app.",
+    "Select the appropriate app type and add the Marketing API product."
+   ],
+   "handoff": "Copy your App ID and App Secret into your environment.",
+   "claimIds": [
+    "c-phase-1"
+   ]
+  },
+  {
+   "id": "configure-auth",
+   "name": "Configure Auth & Redirect URIs",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 10,
+    "max": 15
+   },
+   "steps": [
+    "Set up the Composio auth config to retrieve your unique redirect URI.",
+    "Add the redirect URI in your Meta app settings."
+   ],
+   "handoff": "Ready to test authentication with your own developer account.",
+   "claimIds": [
+    "c-phase-2"
+   ]
+  },
+  {
+   "id": "business-verification",
+   "name": "Complete Business Verification & App Review",
+   "owner": "you",
+   "waiting": true,
+   "minutes": {
+    "min": 4320,
+    "max": 20160
+   },
+   "steps": [
+    "Connect your app to a verified Business in the Business Manager.",
+    "Submit for Advanced Access and App Review for ads_read or ads_management permissions."
+   ],
+   "handoff": "Wait for Meta to approve your App Review submission and Business Verification.",
+   "claimIds": [
+    "c-phase-3"
+   ]
+  }
+ ],
+ "artefacts": [
+  {
+   "id": "art-app-form",
+   "kind": "app-form",
+   "title": "Meta App Registration Details",
+   "body": "App Name: AI Ad Assistant\nApp Contact Email: dev@example.com\nApp Purpose: Managing ad campaigns and fetching insights via AI agent.\nRedirect URI: <Composio callback URL from your auth config>"
+  },
+  {
+   "id": "art-justification",
+   "kind": "scope-justification",
+   "title": "Scope Justification for ads_management / ads_read",
+   "body": "Our application uses the ads_management and ads_read permissions to allow authorized users to view ad performance reports and programmatically create/edit ad campaigns through our AI agent interface."
+  }
+ ],
+ "requirements": [
+  {
+   "kind": "business-verification",
+   "label": "Business Verification",
+   "required": "yes",
+   "when": "Required if your app requires advanced level access to permissions or manages other businesses' data.",
+   "claimIds": [
+    "c-req-1"
+   ]
+  },
+  {
+   "kind": "demo-video",
+   "label": "App Review Demo Video",
+   "required": "conditional",
+   "when": "Required when submitting for Advanced Access and App Review.",
+   "claimIds": [
+    "c-req-2"
+   ]
+  },
+  {
+   "kind": "other",
+   "label": "500 Marketing API calls in 15 days to qualify for Full Access",
+   "required": "conditional",
+   "when": "Before Full Access to the Marketing API tier",
+   "claimIds": [
+    "c-me-500"
+   ]
+  }
+ ],
+ "scopes": [
+  {
+   "scope": "ads_read",
+   "purpose": "Read ad reports for ad accounts you own or have been granted access to.",
+   "tier": "sensitive",
+   "reviewTrigger": true,
+   "alternative": "None for production external users",
+   "claimIds": [
+    "c-scope-1"
+   ]
+  },
+  {
+   "scope": "ads_management",
+   "purpose": "Read and manage ads for ad accounts you own or have been granted access to.",
+   "tier": "sensitive",
+   "reviewTrigger": true,
+   "alternative": "None for production external users",
+   "claimIds": [
+    "c-scope-2"
+   ]
+  }
+ ],
+ "redirectRules": [
+  {
+   "rule": "Must use the exact redirect URI provided in the Composio auth config dashboard.",
+   "claimIds": [
+    "c-redir-1"
+   ]
+  }
+ ],
+ "blockers": [
+  {
+   "id": "blocker-rate-limit-1",
+   "symptom": "User request limit reached",
+   "cause": "Exceeded ad account rate limits while in the Marketing API development tier or hitting mutation limits.",
+   "fix": "Upgrade to Full access of Marketing API Access Tier or space out requests.",
+   "fallback": "Reduce request frequency and implement exponential backoff.",
+   "claimIds": [
+    "c-block-1"
+   ]
+  },
+  {
+   "id": "blocker-concurrent",
+   "symptom": "Calls to this api have exceeded the rate limit. (Subcode: 4841018)",
+   "cause": "Concurrent frequent POST requests targeting the same object causing database lock contention.",
+   "fix": "Avoid editing the same object too frequently, space out requests, and retry at least 30 seconds apart.",
+   "fallback": "Queue requests sequentially per object ID.",
+   "claimIds": [
+    "c-block-2"
+   ]
+  },
+  {
+   "id": "blocker-spend-limit",
+   "symptom": "You can only change your account spending limit 10 times per day. (Subcode: 1885172)",
+   "cause": "Exceeded the maximum allowed changes to the ad account spend or spend_cap fields.",
+   "fix": "Wait until the next day to make more changes or reduce frequency of updates.",
+   "fallback": "Cache spend limit state locally.",
+   "claimIds": [
+    "c-block-3"
+   ]
+  }
+ ],
+ "checklist": [
+  {
+   "id": "chk-1",
+   "text": "Create a Meta Developer account and register a new App.",
+   "owner": "you",
+   "phaseId": "create-app"
+  },
+  {
+   "id": "chk-2",
+   "text": "Add the Marketing API product to your Meta app dashboard.",
+   "owner": "you",
+   "phaseId": "create-app"
+  },
+  {
+   "id": "chk-3",
+   "text": "Set up a custom auth config in Composio and copy the redirect URI.",
+   "owner": "you",
+   "phaseId": "configure-auth"
+  },
+  {
+   "id": "chk-4",
+   "text": "Configure the redirect URI and OAuth settings in the Meta App Dashboard.",
+   "owner": "you",
+   "phaseId": "configure-auth"
+  },
+  {
+   "id": "chk-5",
+   "text": "Connect your app to a Business Manager entity and complete Business Verification.",
+   "owner": "you",
+   "phaseId": "business-verification"
+  },
+  {
+   "id": "chk-6",
+   "text": "Submit permissions (ads_read, ads_management) for App Review if managing external ad accounts.",
+   "owner": "you",
+   "phaseId": "business-verification"
+  }
+ ],
+ "claims": [
+  {
+   "id": "c-diff-1",
+   "text": "As of February 1, 2023, if your app requires advanced level access to permissions, you might need to complete Business Verification.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.facebook.com/documentation/development/release/business-verification",
+   "quote": "As of February 1, 2023, if your app requires advanced level access to permissions, you might need to complete Business Verification.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-diff-2",
+   "text": "Advanced access must be approved through the App Review process on an individual permission and feature basis.",
+   "evidence": "uncertain",
+   "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authorization",
+   "quote": "Advanced access must be approved through the App Review process on an individual permission and feature basis.",
+   "reason": "Quote not found on the cited page when re-checked (match 0.588).",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-comp-1",
+   "text": "Composio-managed OAuth available? No",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/toolkits/metaads",
+   "quote": "Composio-managed OAuth available? No",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-comp-2",
+   "text": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+   "quote": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-phase-1",
+   "text": "When you add the Marketing API product in your App Dashboard, you will get the Limited tier of Marketing API Access Tier by default.",
+   "evidence": "uncertain",
+   "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/overview/rate-limiting",
+   "quote": "When you add the Marketing API product in your App Dashboard, you will get the Limited tier of Marketing API Access Tier by default.",
+   "reason": "Quote not found on the cited page when re-checked (match 0.792).",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-phase-2",
+   "text": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+   "quote": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-phase-3",
+   "text": "Click Start Business Verification to load the unverified Business in the Business Manager and complete the verification process.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.facebook.com/documentation/development/release/business-verification",
+   "quote": "Click Start Business Verification to load the unverified Business in the Business Manager and complete the verification process.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-req-1",
+   "text": "Advanced Access now requires Business Verification.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.facebook.com/documentation/development/release/business-verification",
+   "quote": "Advanced Access now requires Business Verification.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-req-2",
+   "text": "As part of the review process we will test your app to verify that it actually uses the permissions and features you are requesting.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.facebook.com/documentation/resp-plat-initiatives/individual-processes/app-review",
+   "quote": "As part of the review process we will test your app to verify that it actually uses the permissions and features you are requesting.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-scope-1",
+   "text": "You want to read ad reports for ad accounts you own or have been granted access to by the ad account owner. - Permission: ads_read",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authorization",
+   "quote": "You want to read ad reports for ad accounts you own or have been granted access to by the ad account owner. | * **Permission:** ads_read",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-scope-2",
+   "text": "You want to read and manage ads for ad accounts you own or have been granted access to by the ad account owner. - Permission: ads_management",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authorization",
+   "quote": "You want to read and manage ads for ad accounts you own or have been granted access to by the ad account owner. | * **Permission:** ads_management",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-redir-1",
+   "text": "For OAuth toolkits, the dashboard shows the redirect URI to add in the provider's developer portal.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+   "quote": "For OAuth toolkits, the dashboard shows the redirect URI to add in the provider's developer portal.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-block-1",
+   "text": "Related error code: 17, Error subcode: 2446079, Message: User request limit reached.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/overview/rate-limiting",
+   "quote": "Related error code: 17, Error subcode: 2446079, Message: User request limit reached.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-block-2",
+   "text": "Related error code: 613, Error subcode: 4841018, Message: Calls to this api have exceeded the rate limit.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/overview/rate-limiting",
+   "quote": "Related error code: 613, Error subcode: 4841018, Message: Calls to this api have exceeded the rate limit.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-block-3",
+   "text": "Related error code: 17, Error subcode: 1885172, Message: You can only change your account spending limit 10 times per day.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/overview/rate-limiting",
+   "quote": "Related error code: 17, Error subcode: 1885172, Message: You can only change your account spending limit 10 times per day.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-me-bv",
+   "text": "Apps requesting advanced access for permissions may need to be connected to a verified business.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.facebook.com/docs/graph-api/overview/access-levels",
+   "quote": "apps requesting advanced access for permissions may have to be connected to a verified business",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-me-tier-rename",
+   "text": "Marketing API tiers were renamed: Standard Access is now Limited Access and Advanced Access is now Full Access.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.facebook.com/docs/marketing-api/get-started/authorization",
+   "quote": "Ads Management Standard Access is now Marketing API Access Tier",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-me-500",
+   "text": "Qualifying for Full Access requires 500 Marketing API calls in the past 15 days (lowered from 1,500).",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.facebook.com/docs/marketing-api/get-started/authorization",
+   "quote": "The revised qualification threshold for Full Access has been reduced from 1,500 to",
+   "checkedAt": "2026-11-03"
+  }
+ ],
+ "uncertainties": [
+  "Exact turnaround time for Meta Business Verification and App Review is not explicitly stated in the documentation and can vary.",
+  "Token expiration and refresh token lifetimes for Marketing API user access tokens are not fully detailed in the provided text."
+ ],
+ "generatedBy": "gold",
+ "reviewStatus": "unreviewed",
+ "lastVerified": "2026-11-03",
+ "probes": [
+  {
+   "id": "p-oidc-discovery-0",
+   "kind": "oidc-discovery",
+   "url": "https://facebook.com/.well-known/openid-configuration",
+   "status": 200,
+   "bodySnippet": "{\"issuer\":\"https://www.facebook.com\",\"authorization_endpoint\":\"https://facebook.com/dialog/oauth/\",\"jwks_uri\":\"https://www.facebook.com/.well-known/oauth/openid/jwks/\",\"response_types_supported\":[\"id_token\",\"token id_token\"],\"subject_types_supported\":[\"pairwise\"],\"id_token_signing_alg_values_supported\":[\"RS256\"],\"claims_supported\":[\"iss\",\"aud\",\"sub\",\"iat\",\"exp\",\"jti\",\"nonce\",\"at_hash\",\"name\",\"give",
+   "at": "2026-11-03T13:17:42.399Z"
+  },
+  {
+   "id": "p-oidc-discovery-2",
+   "kind": "oidc-discovery",
+   "url": "https://www.facebook.com/.well-known/openid-configuration",
+   "status": 200,
+   "bodySnippet": "{\"issuer\":\"https://www.facebook.com\",\"authorization_endpoint\":\"https://facebook.com/dialog/oauth/\",\"jwks_uri\":\"https://www.facebook.com/.well-known/oauth/openid/jwks/\",\"response_types_supported\":[\"id_token\",\"token id_token\"],\"subject_types_supported\":[\"pairwise\"],\"id_token_signing_alg_values_supported\":[\"RS256\"],\"claims_supported\":[\"iss\",\"aud\",\"sub\",\"iat\",\"exp\",\"jti\",\"nonce\",\"at_hash\",\"name\",\"give",
+   "at": "2026-11-03T13:17:42.405Z"
+  },
+  {
+   "id": "p-oidc-discovery-10",
+   "kind": "oidc-discovery",
+   "url": "https://api.facebook.com/.well-known/openid-configuration",
+   "status": 200,
+   "bodySnippet": "{\"issuer\":\"https://www.facebook.com\",\"authorization_endpoint\":\"https://facebook.com/dialog/oauth/\",\"jwks_uri\":\"https://www.facebook.com/.well-known/oauth/openid/jwks/\",\"response_types_supported\":[\"id_token\",\"token id_token\"],\"subject_types_supported\":[\"pairwise\"],\"id_token_signing_alg_values_supported\":[\"RS256\"],\"claims_supported\":[\"iss\",\"aud\",\"sub\",\"iat\",\"exp\",\"jti\",\"nonce\",\"at_hash\",\"name\",\"give",
+   "at": "2026-11-03T13:17:42.414Z"
+  },
+  {
+   "id": "p-authorize-facebook.com",
+   "kind": "authorize-dummy-client",
+   "url": "https://facebook.com/dialog/oauth/?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe",
+   "status": 301,
+   "location": "https://www.facebook.com/dialog/oauth/?encrypted_query_string=AeFAo6P2U8UA9q7EyjHWoI3k6hozQYCQCpOqAGfyAb3nQHrCrmYX5Lzi6UrpcntfAbn3w4z6z5rzIRXTVaraNp6-Gt4rRoQrhHWrI-Sx67WAOLlYnV0xy7eh_wO-aUIAJoNwIf4uPlEs8oOlGafyCBnVHm_q4JeFijnWYmNap5HKEf66BkQVs4T49vlzuYQx_odxo7BUgR67fdDKkxQgM7PE2N2EGbxowi5FkwrHtdSk1IoDRSPFq4kRs30F__piJXqDfg",
+   "bodySnippet": "",
+   "at": "2026-11-03T13:17:44.233Z"
+  }
+ ],
+ "generation": {
+  "draftModel": "gemini-3.5-flash-lite",
+  "verifierModel": "gemini-3.5-flash-lite",
+  "ms": 29329,
+  "sources": 7
+ }
+}

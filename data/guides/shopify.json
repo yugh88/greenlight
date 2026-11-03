@@ -1,0 +1,478 @@
+{
+ "slug": "shopify",
+ "app": {
+  "name": "Shopify",
+  "website": "https://shopify.com",
+  "developerDocsUrl": "https://shopify.dev/docs/apps/build/authentication-authorization",
+  "composioSlug": "SHOPIFY",
+  "composioManaged": false,
+  "authSchemes": [
+   "OAUTH2",
+   "S2S_OAUTH2"
+  ]
+ },
+ "verdict": {
+  "difficulty": 3,
+  "label": "Full review",
+  "summary": "Pick distribution first, because it's irreversible: custom distribution (one merchant or one Plus organization) works without App Store review; serving many merchants needs public distribution, a one-time App Store registration fee and Shopify's app review.",
+  "firstTokenMinutes": {
+   "min": 15,
+   "max": 30
+  },
+  "productionDays": {
+   "min": 3,
+   "max": 14
+  },
+  "cost": "Free for custom apps; one-time App Store registration fee for public apps",
+  "claimIds": [
+   "c-verdict-diff",
+   "c-public-dist",
+   "c-sh-custom-vs-public",
+   "c-sh-irreversible",
+   "c-sh-review"
+  ]
+ },
+ "composioFit": {
+  "summary": "Shopify does not have a Composio-managed OAuth app, so you must bring your own OAuth app and configure custom auth in Composio.",
+  "whyOwnApp": [
+   "Composio-managed OAuth available? No",
+   "Required to use your own client ID and client secret for Shopify OAuth"
+  ],
+  "claimIds": [
+   "c-composio-no-managed"
+  ]
+ },
+ "phases": [
+  {
+   "id": "create-app",
+   "name": "Create App in Shopify Dashboard",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 5,
+    "max": 10
+   },
+   "steps": [
+    "Go to the Shopify Developer Dashboard.",
+    "Create a new app and choose public distribution."
+   ],
+   "handoff": "Client ID and Client Secret generated",
+   "claimIds": [
+    "c-create-app"
+   ]
+  },
+  {
+   "id": "configure-auth",
+   "name": "Configure Redirect URIs and Scopes",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 10,
+    "max": 15
+   },
+   "steps": [
+    "Copy the redirect URI from your Composio auth config.",
+    "Add the redirect URI to your app settings in the Dev Dashboard or shopify.app.toml.",
+    "Declare required access scopes."
+   ],
+   "handoff": "Redirect URI and scopes saved",
+   "claimIds": [
+    "c-redirect-uri",
+    "c-scopes-declare"
+   ]
+  },
+  {
+   "id": "test-dev",
+   "name": "Test with Development Store",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 15,
+    "max": 30
+   },
+   "steps": [
+    "Install the app on a development store.",
+    "Test the OAuth authorization code grant flow."
+   ],
+   "handoff": "Tokens successfully exchanged",
+   "claimIds": [
+    "c-test-dev"
+   ]
+  },
+  {
+   "id": "app-review",
+   "name": "Shopify App Review",
+   "owner": "provider",
+   "waiting": true,
+   "minutes": {
+    "min": 4320,
+    "max": 20160
+   },
+   "steps": [
+    "Submit the public app for Shopify App Store review.",
+    "Wait for the review team to approve the submission."
+   ],
+   "handoff": "App status changes to Published",
+   "claimIds": [
+    "c-app-review"
+   ]
+  }
+ ],
+ "artefacts": [
+  {
+   "id": "art-app-form",
+   "kind": "app-form",
+   "title": "Shopify App Registration Values",
+   "body": "App Name: AI Agent Connector\nApp URL: https://your-app.example.com\nRedirect URI: <Composio callback URL from your auth config>"
+  },
+  {
+   "id": "art-scope-justification",
+   "kind": "scope-justification",
+   "title": "Scope Justification",
+   "body": "Our AI agent application requires read_products and write_orders access to help merchants manage their store inventory and fulfill customer orders seamlessly."
+  }
+ ],
+ "requirements": [
+  {
+   "kind": "privacy-policy",
+   "label": "Privacy Policy",
+   "required": "yes",
+   "when": "Required for all public apps listed on the Shopify App Store",
+   "claimIds": [
+    "c-public-dist"
+   ]
+  },
+  {
+   "kind": "partner-application",
+   "label": "Shopify Partner Account & App Store Registration",
+   "required": "yes",
+   "when": "Required to register public apps",
+   "claimIds": [
+    "c-public-dist"
+   ]
+  },
+  {
+   "kind": "other",
+   "label": "Choose custom vs public distribution (irreversible)",
+   "required": "yes",
+   "when": "Before installing on merchant stores; can't be changed later",
+   "claimIds": [
+    "c-sh-irreversible",
+    "c-sh-custom-vs-public"
+   ]
+  },
+  {
+   "kind": "paid-plan",
+   "label": "Shopify App Store registration (one-time fee)",
+   "required": "conditional",
+   "when": "Only for public distribution",
+   "claimIds": [
+    "c-sh-appstore-fee"
+   ]
+  }
+ ],
+ "scopes": [
+  {
+   "scope": "read_products",
+   "purpose": "Read store product data",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-scopes-basic"
+   ]
+  },
+  {
+   "scope": "write_orders",
+   "purpose": "Create and manage orders",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-scopes-basic"
+   ]
+  }
+ ],
+ "redirectRules": [
+  {
+   "rule": "Redirect URI must exactly match the URI configured in the Dev Dashboard or your app's configuration TOML file.",
+   "claimIds": [
+    "c-redirect-uri"
+   ]
+  }
+ ],
+ "blockers": [
+  {
+   "id": "b-sh-distribution",
+   "symptom": "A second merchant can't install your app",
+   "cause": "The app was created with custom distribution, which is limited to one store (or one Plus organization) and can't be switched.",
+   "fix": "Create a new app with public distribution for multi-merchant use and go through App Store review.",
+   "fallback": "Create one custom-distribution app per merchant for a pilot.",
+   "claimIds": [
+    "c-sh-custom-scope",
+    "c-sh-irreversible"
+   ]
+  },
+  {
+   "id": "blocker-unacceptable-format",
+   "symptom": "{\"message\":\"Unacceptable Format\",\"description\":\"We cannot handle the requested format.\"}",
+   "cause": "Invalid client_id or incorrect authorization endpoint format during test probe.",
+   "fix": "Ensure you use your correct client ID from the Shopify Dev Dashboard and target https://{shop}/admin/oauth/authorize.",
+   "fallback": "Verify app credentials in the developer console.",
+   "claimIds": [
+    "c-blocker-format"
+   ]
+  },
+  {
+   "id": "blocker-missing-scopes",
+   "symptom": "Missing scopes: ...",
+   "cause": "The merchant modified or denied requested access scopes during the authorization prompt.",
+   "fix": "Check the granted scope response against your required scope list and re-prompt authorization if necessary.",
+   "fallback": "Request scopes again via authorization URL.",
+   "claimIds": [
+    "c-blocker-scopes"
+   ]
+  },
+  {
+   "id": "blocker-invalid-shop",
+   "symptom": "Shop parameter validation failure",
+   "cause": "The shop domain parameter does not match the required myshopify.com pattern.",
+   "fix": "Anchor shop parameter validation with regex ^[a-zA-Z0-9][a-zA-Z0-9\\-]*\\.myshopify\\.com$.",
+   "fallback": "Enforce strict string matching on shop domain.",
+   "claimIds": [
+    "c-blocker-shop"
+   ]
+  }
+ ],
+ "checklist": [
+  {
+   "id": "chk-1",
+   "text": "Sign up for a Shopify Partner account.",
+   "owner": "you",
+   "phaseId": "create-app"
+  },
+  {
+   "id": "chk-2",
+   "text": "Create a new public app in the Shopify Developer Dashboard.",
+   "owner": "you",
+   "phaseId": "create-app"
+  },
+  {
+   "id": "chk-3",
+   "text": "Retrieve Client ID and Client Secret.",
+   "owner": "you",
+   "phaseId": "create-app"
+  },
+  {
+   "id": "chk-4",
+   "text": "Obtain the callback URL from your Composio auth config.",
+   "owner": "you",
+   "phaseId": "configure-auth"
+  },
+  {
+   "id": "chk-5",
+   "text": "Add the redirect URI to your app settings in the Dev Dashboard.",
+   "owner": "you",
+   "phaseId": "configure-auth"
+  },
+  {
+   "id": "chk-6",
+   "text": "Configure access scopes in your app settings.",
+   "owner": "you",
+   "phaseId": "configure-auth"
+  },
+  {
+   "id": "chk-7",
+   "text": "Input Client ID and Client Secret into your Composio auth config.",
+   "owner": "you",
+   "phaseId": "configure-auth"
+  },
+  {
+   "id": "chk-8",
+   "text": "Install the app on a development store to test authentication.",
+   "owner": "you",
+   "phaseId": "test-dev"
+  },
+  {
+   "id": "chk-9",
+   "text": "Submit the app for Shopify App Store review.",
+   "owner": "you",
+   "phaseId": "app-review"
+  }
+ ],
+ "claims": [
+  {
+   "id": "c-verdict-diff",
+   "text": "Shopify OAuth app setup requires configuring public distribution and review for production use.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/launch/distribution",
+   "quote": "Public distribution also requires registering for the Shopify App Store, which has a one-time fee.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-public-dist",
+   "text": "Public distribution requires registering for the Shopify App Store and passing review.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/launch/distribution",
+   "quote": "Public distribution also requires registering for the Shopify App Store, which has a one-time fee. To register, refer to Get started.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-no-managed",
+   "text": "Composio-managed OAuth is not available for Shopify, requiring custom auth configuration.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/toolkits/shopify",
+   "quote": "Composio-managed OAuth available? No",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-create-app",
+   "text": "You have your app's client ID and client secret from the Dev Dashboard.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/build/authentication-authorization/authenticate-standalone-apps",
+   "quote": "You have your app's client ID and client secret from the Dev Dashboard.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-redirect-uri",
+   "text": "The redirect URI must exactly match a redirect URI you've configured in the Dev Dashboard or your app's configuration TOML file.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/build/authentication-authorization/authenticate-standalone-apps",
+   "quote": "The URL Shopify redirects to after authorization. Must exactly match a redirect URI you've configured in the Dev Dashboard or your app's configuration TOML file.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-scopes-declare",
+   "text": "You must know which access scopes your app requires.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/build/authentication-authorization/authenticate-standalone-apps",
+   "quote": "You know which access scopes your app requires.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-test-dev",
+   "text": "Prepare your app for review by testing it on a development store to check for any bugs or errors.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/launch/app-store-review/review-process",
+   "quote": "Before you submit your app for review, you need to test it on a development store to check for any bugs or errors.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-app-review",
+   "text": "When you submit an app, it goes through an app review process to make sure that it meets Shopify's requirements.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/launch/app-store-review/review-process",
+   "quote": "When you submit an app, it goes through an app review process to make sure that it meets Shopify's requirements for safe, quality apps.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-scopes-basic",
+   "text": "Access scopes control which store data your app can read and write.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/api/usage/access-scopes",
+   "quote": "Access scopes control which store data your app can read and write. This guide lists available access scopes, grouped by scope type.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-blocker-format",
+   "text": "An invalid request format returns an Unacceptable Format response.",
+   "evidence": "tested",
+   "artifact": "probe:p-authorize-accounts.shopify.com",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-blocker-scopes",
+   "text": "Merchants can modify requested scopes during authorization, so always verify before storing the token.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/build/authentication-authorization/authenticate-standalone-apps",
+   "quote": "Merchants can modify requested scopes during authorization, so always verify before storing the token.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-blocker-shop",
+   "text": "Confirm the shop parameter matches ^[a-zA-Z0-9][a-zA-Z0-9\\-]*\\.myshopify\\.com$.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/build/authentication-authorization/authenticate-standalone-apps",
+   "quote": "Confirm the shop parameter matches ^[a-zA-Z0-9][a-zA-Z0-9\\-]*\\.myshopify\\.com$. Anchor the pattern at both ends.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-sh-custom-vs-public",
+   "text": "Use custom distribution when building for a specific merchant and public distribution when building for many merchants.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/launch/distribution",
+   "quote": "Building for a specific merchant**: You'll typically use custom distribution.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-sh-irreversible",
+   "text": "You can't change the distribution method after you select it.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/launch/distribution",
+   "quote": "You can't change the distribution method after you select it.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-sh-custom-scope",
+   "text": "Custom-distribution apps install on a single store, on stores of the same Plus organization, or on development stores.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/launch/distribution",
+   "quote": "Installed on a single Shopify store, on multiple stores that belong to the same Plus organization",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-sh-appstore-fee",
+   "text": "Public distribution requires registering for the Shopify App Store, which has a one-time fee.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/launch/distribution",
+   "quote": "Public distribution also requires registering for the Shopify App Store, which has a one-time fee.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-sh-review",
+   "text": "Apps submitted for public distribution go through Shopify's app review process.",
+   "evidence": "sourced",
+   "sourceUrl": "https://shopify.dev/docs/apps/launch/app-store-review/review-process",
+   "quote": "When you submit an app, it goes through an app review process",
+   "checkedAt": "2026-11-03"
+  }
+ ],
+ "uncertainties": [
+  "Exact review turnaround times in business days are not explicitly stated in the documentation beyond standard review stages.",
+  "Specific constraints on developer store user caps before review were not detailed.",
+  "Shopify's app review duration isn't stated on the cited review-process page."
+ ],
+ "generatedBy": "gold",
+ "reviewStatus": "unreviewed",
+ "lastVerified": "2026-11-03",
+ "probes": [
+  {
+   "id": "p-oidc-discovery-4",
+   "kind": "oidc-discovery",
+   "url": "https://accounts.shopify.com/.well-known/openid-configuration",
+   "status": 200,
+   "bodySnippet": "{ \"issuer\": \"https://accounts.shopify.com\", \"authorization_endpoint\": \"https://accounts.shopify.com/oauth/authorize\", \"token_endpoint\": \"https://accounts.shopify.com/oauth/token\", \"userinfo_endpoint\": \"https://accounts.shopify.com/oauth/userinfo\", \"end_session_endpoint\": \"https://accounts.shopify.com/logout\", \"jwks_uri\": \"https://accounts.shopify.com/oauth/discovery/keys\", \"unified_session_jwks_ur",
+   "at": "2026-11-03T13:18:11.163Z"
+  },
+  {
+   "id": "p-oauth-metadata-11",
+   "kind": "oauth-metadata",
+   "url": "https://api.shopify.com/.well-known/oauth-authorization-server",
+   "status": 200,
+   "bodySnippet": "{\"issuer\":\"https:\\/\\/api.shopify.com\",\"token_endpoint\":\"https:\\/\\/api.shopify.com\\/auth\\/access_token\",\"grant_types_supported\":[\"client_credentials\",\"urn:shopify:params:oauth:grant-type:ecp-credentials\",\"urn:ietf:params:oauth:grant-type:jwt-bearer\"],\"token_endpoint_auth_methods_supported\":[\"client_secret_post\",\"client_secret_basic\"]}",
+   "at": "2026-11-03T13:18:11.166Z"
+  },
+  {
+   "id": "p-authorize-accounts.shopify.com",
+   "kind": "authorize-dummy-client",
+   "url": "https://accounts.shopify.com/oauth/authorize?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe",
+   "status": 406,
+   "bodySnippet": "{\"message\":\"Unacceptable Format\",\"description\":\"We cannot handle the requested format.\"}",
+   "at": "2026-11-03T13:18:11.975Z"
+  }
+ ],
+ "generation": {
+  "draftModel": "gemini-3.5-flash-lite",
+  "verifierModel": "gemini-3.5-flash-lite",
+  "ms": 28384,
+  "sources": 7
+ }
+}
