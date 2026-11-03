@@ -67,7 +67,7 @@ function statusOf(err: unknown): number | undefined {
 export async function withModel<T>(
   role: ModelRole,
   fn: (model: LanguageModel, modelId: string) => Promise<T>,
-  { triesPerModel = 3, label = role }: { triesPerModel?: number; label?: string } = {},
+  { triesPerModel = Number(process.env.GREENLIGHT_TRIES ?? 3), label = role }: { triesPerModel?: number; label?: string } = {},
 ): Promise<{ result: T; modelId: string }> {
   let lastErr: unknown;
   for (const id of chain(role)) {

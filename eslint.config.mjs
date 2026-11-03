@@ -18,8 +18,12 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "scripts/**",
+      "scratch/**",
     ],
   },
+  // External API payloads (Composio MCP, provider probes) are untyped JSON by nature.
+  { rules: { "@typescript-eslint/no-explicit-any": "warn" } },
 ];
 
 export default eslintConfig;

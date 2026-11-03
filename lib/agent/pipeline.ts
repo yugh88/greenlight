@@ -26,15 +26,28 @@ export type PipelineResult = {
   report: VerifyReport & { draftModel: string; sources: number; ms: number };
 };
 
-export async function runPipeline(input: string, emit: Emit): Promise<PipelineResult> {
+export type PipelineOptions = {
+  /** Curated source URLs (gold path): skip link ranking and read exactly these. */
+  seedUrls?: string[];
+  name?: string;
+  website?: string;
+  composioSlug?: string;
+  slug?: string;
+  excerptBudget?: number;
+  /** Ask for the full coverage checklist (gold runs, eval). */
+  depth?: boolean;
+};
+
+export async function runPipeline(input: string, emit: Emit, opts: PipelineOptions = {}): Promise<PipelineResult> {
   const t0 = Date.now();
   const today = new Date().toISOString().slice(0, 10);
 
   // 1. Discover
   emit("discover", `Looking up "${input}"`);
-  const d = await discover(input, (m) => emit("discover", m));
-  const slug = slugify(d.name);
-  const comp = await composioFacts(d.name || d.domain);
+  const d = await discover(opts.website ?? input, (m) => emit("discover", m));
+  if (opts.name) d.name = opts.name;
+  const slug = opts.slug ?? slugify(d.name);
+  const comp = await composioFacts(d.name || d.domain, opts.composioSlug);
   emit(
     "discover",
     comp.slug
@@ -45,9 +58,9 @@ export async function runPipeline(input: string, emit: Emit): Promise<PipelineRe
 
   // 2. Investigate: read top pages
   emit("investigate", `Ranking ${d.candidates.length} links to read`);
-  const picks = d.candidates.length ? await rankLinks(d.name, d.candidates, 7) : [];
+  const picks = opts.seedUrls ?? (d.candidates.length ? await rankLinks(d.name, d.candidates, 7) : []);
   const pages: Page[] = [];
-  if (d.portal) pages.push(d.portal);
+  if (d.portal && !opts.seedUrls) pages.push(d.portal);
   for (const href of picks) {
     if (pages.some((p) => p.finalUrl === href || p.url === href)) continue;
     const p = await fetchPage(href);
@@ -79,14 +92,14 @@ export async function runPipeline(input: string, emit: Emit): Promise<PipelineRe
     appName: d.name,
     website: d.website,
     sources: [
-      ...pages.slice(0, 8).map((page, i) => ({ ref: `S${i + 1}`, page, excerpt: excerpt(page.text) })),
+      ...pages.slice(0, 8).map((page, i) => ({ ref: `S${i + 1}`, page, excerpt: excerpt(page.text, opts.excerptBudget) })),
       ...(composioDoc ? [{ ref: "C2", page: composioDoc, excerpt: excerpt(composioDoc.text, 3_500) }] : []),
     ],
     probes: probes.map((probe, i) => ({ ref: `P${i + 1}`, probe, artifact: `probe:${probe.id}` })),
     composio: { ...comp, ref: "C1" },
   };
   emit("draft", `Drafting guide from ${pack.sources.length} pages and ${pack.probes.length} probes`);
-  const { draft, modelId } = await draftGuide(pack);
+  const { draft, modelId } = await draftGuide(pack, { depth: Boolean(opts.seedUrls) || opts.depth });
   emit("draft", `Draft ready (${draft.claims.length} claims) via ${modelId}`);
 
   // map refs → evidence
@@ -115,7 +128,7 @@ export async function runPipeline(input: string, emit: Emit): Promise<PipelineRe
     app: {
       name: d.name,
       website: d.website,
-      developerDocsUrl: d.portal?.finalUrl,
+      developerDocsUrl: opts.seedUrls ? pages[0]?.finalUrl : d.portal?.finalUrl,
       composioSlug: comp.slug,
       composioManaged: comp.managed,
       authSchemes: comp.authSchemes.length ? comp.authSchemes : ["OAUTH2"],

@@ -23,9 +23,55 @@ export function fetchPage(url: string, timeoutMs = 15_000): Promise<Page | null>
 }
 
 async function doFetch(url: string, timeoutMs: number): Promise<Page | null> {
+  const page = await plainFetch(withEnglish(url), timeoutMs);
+  // JS-rendered docs (e.g. Xero): render with a headless browser, only where allowed (local gold runs)
+  if (page && page.status < 400 && page.text.length < 300 && process.env.GREENLIGHT_RENDER === "1") {
+    const rendered = await renderFetch(url).catch(() => null);
+    if (rendered && rendered.text.length > page.text.length) return rendered;
+  }
+  return page;
+}
+
+function withEnglish(url: string) {
+  try {
+    const u = new URL(url);
+    if (/(^|\.)google\.com$/.test(u.hostname) && !u.searchParams.has("hl")) u.searchParams.set("hl", "en");
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
+async function renderFetch(url: string): Promise<Page | null> {
+  const { chromium } = await import(/* webpackIgnore: true */ "playwright" as string);
+  const browser = await chromium.launch();
+  try {
+    const p = await browser.newPage({ locale: "en-US", userAgent: UA });
+    const res = await p.goto(url, { waitUntil: "networkidle", timeout: 30_000 }).catch(() => null);
+    await p.waitForTimeout(1500);
+    const html: string = await p.content();
+    return {
+      url,
+      finalUrl: p.url(),
+      status: res?.status() ?? 200,
+      title: await p.title(),
+      text: htmlToText(html),
+      links: extractLinks(html, p.url()),
+      fetchedAt: new Date().toISOString(),
+    };
+  } finally {
+    await browser.close();
+  }
+}
+
+async function plainFetch(url: string, timeoutMs: number): Promise<Page | null> {
   try {
     const res = await fetch(url, {
-      headers: { "user-agent": UA, accept: "text/html,text/markdown,text/plain;q=0.9,*/*;q=0.5" },
+      headers: {
+        "user-agent": UA,
+        accept: "text/html,text/markdown,text/plain;q=0.9,*/*;q=0.5",
+        "accept-language": "en-US,en;q=0.9",
+      },
       redirect: "follow",
       signal: AbortSignal.timeout(timeoutMs),
     });
@@ -35,7 +81,7 @@ async function doFetch(url: string, timeoutMs: number): Promise<Page | null> {
     const isHtml = /html/.test(type) || /^\s*<(!doctype|html)/i.test(raw);
     return {
       url,
-      finalUrl: res.url || url,
+      finalUrl: cleanUrl(res.url || url),
       status: res.status,
       title: isHtml ? decode(raw.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? "").trim() : "",
       text: isHtml ? htmlToText(raw) : raw,
@@ -125,4 +171,15 @@ export function quoteMatch(quote: string, text: string, threshold = 0.85): { ok:
     if (best >= 0.999) break;
   }
   return { ok: best >= threshold, score: Number(best.toFixed(3)) };
+}
+
+/** Drop tracking/session params so cited URLs are stable. */
+export function cleanUrl(u: string) {
+  try {
+    const x = new URL(u);
+    for (const k of ["visit_id", "rd", "utm_source", "utm_medium", "utm_campaign"]) x.searchParams.delete(k);
+    return x.toString();
+  } catch {
+    return u;
+  }
 }

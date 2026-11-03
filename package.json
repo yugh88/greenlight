@@ -11,7 +11,9 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "hello": "tsx scripts/hello-composio.ts",
-    "guides:index": "tsx scripts/build-guide-index.mts"
+    "guides:index": "tsx scripts/build-guide-index.mts",
+    "eval": "tsx eval/run.mts",
+    "verify": "tsx scripts/verify-gold.mts"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.111",
@@ -42,6 +44,7 @@
     "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "15.5.28",
+    "playwright": "^1.64.1",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5"

@@ -64,7 +64,19 @@ const RUBRIC = Object.entries(DIFFICULTY_LABELS)
   .map(([k, v]) => `${k} = ${v}`)
   .join("; ");
 
-export async function draftGuide(pack: EvidencePack) {
+const DEPTH = `COVERAGE (address each one the evidence allows; mark gaps in uncertainties):
+- which app type to register if the provider offers several (e.g. OAuth app vs. platform app; public vs. private/custom; single- vs. multi-tenant)
+- where in the console you create it and which fields it asks for
+- redirect URI rules (HTTPS required? localhost allowed? exact match? how many?)
+- development/testing limits before review (user caps, test users, dev mode, rate limits)
+- what triggers review/verification, what it requires (privacy policy, video, business docs, security assessment), and how long it takes
+- scope tiers and which scopes trigger review
+- API access tiers or pricing that gate production use
+- token lifetime / refresh behaviour that affects an always-on agent
+- at least 3 blockers with exact error text when available
+Aim for 15-30 well-supported claims.`;
+
+export async function draftGuide(pack: EvidencePack, opts: { depth?: boolean } = {}) {
   const sources = pack.sources
     .map((s) => `### ${s.ref}: ${s.page.title || s.page.finalUrl}\nURL: ${s.page.finalUrl}\n${s.excerpt}`)
     .join("\n\n");
@@ -94,7 +106,8 @@ RULES
 - blockers: realistic failure modes with the exact error text where the evidence gives it; fallback options (Composio-managed app if available, narrower scopes, different API tier...).
 - checklist: 6-14 concrete imperative steps, each with owner.
 - uncertainties: plain-language list of what you could not verify.
-- Be concise. No marketing language.`;
+- Be concise. No marketing language.
+${opts.depth ? DEPTH : ""}`;
 
   const { object, modelId } = await structured("agent", Draft, prompt);
   return { draft: object, modelId };

@@ -1,0 +1,72 @@
+{
+  "github": { "name": "GitHub", "website": "https://github.com", "composio": "GITHUB", "urls": [
+    "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+    "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/deciding-when-to-build-a-github-app",
+    "https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-authorization-request-errors",
+    "https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api"]},
+  "slack": { "name": "Slack", "website": "https://slack.com", "composio": "SLACK", "urls": [
+    "https://docs.slack.dev/authentication/installing-with-oauth",
+    "https://docs.slack.dev/distribution/",
+    "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+    "https://docs.slack.dev/apis/web-api/rate-limits",
+    "https://docs.slack.dev/changelog/2025/05/29/rate-limit-changes-for-non-marketplace-apps",
+    "https://docs.slack.dev/authentication/best-practices-for-security"]},
+  "gmail": { "name": "Gmail (Google)", "website": "https://developers.google.com/workspace/gmail", "composio": "GMAIL", "urls": [
+    "https://developers.google.com/workspace/gmail/api/auth/scopes",
+    "https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification",
+    "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+    "https://support.google.com/cloud/answer/13463073",
+    "https://support.google.com/cloud/answer/10311615",
+    "https://developers.google.com/identity/protocols/oauth2/web-server",
+    "https://developers.google.com/identity/protocols/oauth2/policies"]},
+  "spotify": { "name": "Spotify", "website": "https://spotify.com", "composio": "SPOTIFY", "urls": [
+    "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+    "https://developer.spotify.com/documentation/web-api/concepts/apps",
+    "https://developer.spotify.com/documentation/web-api/concepts/redirect_uri",
+    "https://developer.spotify.com/documentation/web-api/concepts/scopes",
+    "https://developer.spotify.com/documentation/web-api/tutorials/code-flow",
+    "https://developer.spotify.com/blog/2025-04-15-updating-the-criteria-for-web-api-extended-access"]},
+  "microsoft-entra-id": { "name": "Microsoft Entra ID", "website": "https://www.microsoft.com/security/business/identity-access/microsoft-entra-id", "composio": "MICROSOFT_ENTRA_ID", "urls": [
+    "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
+    "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview",
+    "https://learn.microsoft.com/en-us/entra/identity-platform/reply-url",
+    "https://learn.microsoft.com/en-us/entra/identity-platform/permissions-consent-overview",
+    "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/configure-user-consent",
+    "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow"]},
+  "xero": { "name": "Xero", "website": "https://www.xero.com", "composio": "XERO", "urls": [
+    "https://developer.xero.com/documentation/guides/oauth2/overview/",
+    "https://developer.xero.com/documentation/guides/oauth2/limits/",
+    "https://developer.xero.com/documentation/guides/oauth2/scopes/",
+    "https://developer.xero.com/documentation/guides/oauth2/auth-flow/",
+    "https://developer.xero.com/pricing",
+    "https://developer.xero.com/documentation/xero-app-store/app-partner-guides/app-partner-steps/"]},
+  "shopify": { "name": "Shopify", "website": "https://www.shopify.com", "composio": "SHOPIFY", "urls": [
+    "https://shopify.dev/docs/apps/build/authentication-authorization",
+    "https://shopify.dev/docs/apps/launch/distribution",
+    "https://shopify.dev/docs/apps/launch/shopify-app-store/app-store-requirements",
+    "https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens/authorization-code-grant",
+    "https://shopify.dev/docs/api/usage/access-scopes",
+    "https://shopify.dev/docs/apps/launch/app-store-review/review-process"]},
+  "x": { "name": "X (Twitter)", "website": "https://x.com", "composio": "TWITTER", "urls": [
+    "https://docs.x.com/fundamentals/authentication/oauth-2-0/overview",
+    "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+    "https://docs.x.com/x-api/getting-started/about-x-api",
+    "https://docs.x.com/x-api/getting-started/pricing",
+    "https://docs.x.com/fundamentals/developer-apps",
+    "https://developer.x.com/en/products/x-api"]},
+  "meta-ads": { "name": "Meta Ads (Marketing API)", "website": "https://www.facebook.com/business/ads", "composio": "METAADS", "urls": [
+    "https://developers.facebook.com/docs/marketing-api/get-started/authorization",
+    "https://developers.facebook.com/docs/marketing-api/overview/authorization",
+    "https://developers.facebook.com/docs/app-review",
+    "https://developers.facebook.com/docs/development/release/business-verification",
+    "https://developers.facebook.com/docs/graph-api/overview/access-levels",
+    "https://developers.facebook.com/docs/marketing-api/overview/rate-limiting"]},
+  "linkedin-ads": { "name": "LinkedIn Ads (Marketing API)", "website": "https://www.linkedin.com", "composio": "LINKEDIN_ADS", "urls": [
+    "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access",
+    "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start",
+    "https://learn.microsoft.com/en-us/linkedin/marketing/getting-access",
+    "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+    "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access"]}
+}
