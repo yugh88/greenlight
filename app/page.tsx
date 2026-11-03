@@ -12,6 +12,9 @@ export default async function Home() {
   const guides = await listGuides();
   const d = directory as { counts: { managed: number; bringYourOwn: number }; checkedAt: string };
   const total = d.counts.managed + d.counts.bringYourOwn;
+  const gold = guides.filter((g) => g.generatedBy === "gold");
+  const reviewed = gold.filter((g) => g.reviewStatus === "reviewed").length;
+  const e2e = gold.filter((g) => g.endToEnd).length;
   return (
     <div>
       <section className="mx-auto max-w-3xl pt-12 text-center sm:pt-16">
@@ -42,7 +45,7 @@ export default async function Home() {
         {[
           ["Two clocks", "Time to first token (minutes, your own account) vs. time to production (days to weeks, after review)."],
           ["Agent vs. you", "Every step has an owner. The agent hands you pre-filled forms, scope justifications and reviewer emails."],
-          ["Proof, not prose", "Quotes are re-fetched and checked. Public endpoints are probed. Gold guides are tested end-to-end through Composio."],
+          ["Proof, not prose", "Quotes are re-fetched and checked. Public endpoints are probed. GitHub and Slack are tested end-to-end through Composio with our own OAuth apps."],
         ].map(([t, b]) => (
           <div key={t} className="glow-card rounded-2xl border border-border bg-white/[0.02] p-4">
             <p className="font-medium">{t}</p>
@@ -56,7 +59,8 @@ export default async function Home() {
           <div>
             <h2 className="text-xl font-semibold tracking-tight">Library</h2>
             <p className="text-sm text-muted-foreground">
-              Gold guides are researched and walked through by a human. Agent guides are generated live and labelled unreviewed.
+              {gold.length} gold guides built from curated official sources, every quote re-verified live: {reviewed} human-reviewed,{" "}
+              {e2e} tested end-to-end through Composio. Agent guides are generated live and labelled unreviewed.
             </p>
           </div>
           <Link href="/method" className="hidden text-sm text-muted-foreground underline sm:inline">How we score</Link>

@@ -252,7 +252,7 @@ export function GuideView({ guide: g }: { guide: Guide }) {
         <Sources claims={g.claims} />
         <p className="mt-6 text-xs text-muted-foreground">
           {g.generatedBy === "gold"
-            ? "Gold guide: researched and walked through by a human, with an agent re-checking every quote."
+            ? `Gold guide: drafted from curated official sources and curated by hand; every quote re-verified live${g.endToEnd ? "; walked through end-to-end through Composio" : ""}. ${g.reviewStatus === "reviewed" ? "Verdict reviewed by the author." : "Not yet reviewed by the author."}`
             : "Agent-generated from public pages and public endpoint probes only. Unreviewed: verify before relying on it."}
           {g.generation ? ` Draft model ${g.generation.draftModel}; verifier ${g.generation.verifierModel ?? "n/a"}; ${Math.round(g.generation.ms / 1000)}s; ${g.generation.sources} sources.` : ""}
         </p>

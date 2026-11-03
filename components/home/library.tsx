@@ -70,9 +70,9 @@ export function Library({ guides }: { guides: GuideSummary[] }) {
                 <span><span className="text-muted-foreground">prod </span>{fmtDays(g.productionDays)}</span>
                 <span className="ml-auto">
                   {g.endToEnd ? (
-                    <span className="inline-flex items-center gap-1 text-emerald-300"><ShieldCheck className="size-3.5" />e2e tested</span>
+                    <span className="inline-flex items-center gap-1 text-emerald-300"><ShieldCheck className="size-3.5" />e2e tested{g.reviewStatus === "reviewed" ? " · reviewed" : ""}</span>
                   ) : g.generatedBy === "gold" ? (
-                    <span className="text-emerald-300/80">gold</span>
+                    <span className="text-emerald-300/80">{g.reviewStatus === "reviewed" ? "gold · reviewed" : "gold"}</span>
                   ) : (
                     <span className="text-violet-300/80">agent · unreviewed</span>
                   )}

@@ -8,7 +8,24 @@
 | **PM memo (1 page)** | [MEMO.md](MEMO.md) |
 | **How scoring and evidence work** | https://greenlight-blue-ten.vercel.app/method |
 | **For agents** | [/agents](https://greenlight-blue-ten.vercel.app/agents) explains [`/llms.txt`](https://greenlight-blue-ten.vercel.app/llms.txt), `/guides/<app>.md` and the MCP endpoint `/api/mcp` |
-| **Loom walkthrough** | _link added at submission_ |
+| **Loom walkthrough** | TODO: add Loom link |
+
+### Brief requirement → where it's met
+
+| Brief requirement | Where it's met |
+|---|---|
+| Library of ready-to-use guides (goal 100; a few varied apps for the take-home) | 10 gold guides across all 5 tiers ([§8](#8-the-gold-library-what-was-tested-vs-sourced)) + live agent guides; batch path to 100 ([§2](#2-what-greenlight-does)) |
+| Submit an app name or website → agent investigates and generates a shareable guide in real time, incl. apps outside the library | Home search → [`/generate/<job>`](https://greenlight-blue-ten.vercel.app) streams the agent's steps, then a permanent `/guides/<app>` link ([§3](#3-try-it-in-two-minutes)) |
+| How easy or hard it is | Verdict card: difficulty 1–5 with rubric ([/method](https://greenlight-blue-ten.vercel.app/method)) |
+| Time and effort, including any approval wait | Two clocks (first token vs production) + timeline with hatched provider waits |
+| Requirements and nuances that affect setup | Requirements, scopes table (tier, triggers review, safer alternative), redirect URI rules |
+| What an agent can do vs where the developer takes over | Agent / You / Provider swimlane + copy-paste artefacts |
+| Where to start and what to do next | "Start here / your next step" box + checklist (progress saved in the link) |
+| How to proceed at a blocker | Blockers playbook with an "I'm stuck at…" search |
+| Agents investigate and attempt as much of the setup as practical | Public endpoint probes, `composio.toolkits.get()` for every gold app, GitHub + Slack closed loop through Composio ([§7](#7-proof-tested-end-to-end-through-composio)) |
+| Clear about tested vs sourced vs uncertain | Evidence label on every claim; quotes re-verified live ([§6](#6-evidence-model)) |
+| Usable and shareable without explanation | Guided tour, shareable URLs, OG link previews, Markdown per guide |
+| OAuth app ↔ Composio auth config ↔ connected accounts | Primer + diagram on every guide and on [/method](https://greenlight-blue-ten.vercel.app/method#primer) |
 
 ---
 
@@ -29,6 +46,8 @@
    - *What can an agent do, and where do I take over?* An Agent / You / Provider swimlane plus copy-paste artefacts
 4. **Proof instead of prose**: every claim has an evidence label; quotes are re-verified against the live page; GitHub and Slack were **tested end-to-end through Composio** with our own OAuth apps.
 
+**Path to 100 guides:** the same pipeline runs in batch over Composio's 262 bring-your-own toolkits (`scripts/batch.mts`: 143 distinct providers still without a guide; sequential, under the same `GENERATIONS_PER_HOUR` throttle as the public endpoint). Batch guides publish as *agent · unreviewed*; a guide is promoted to gold after a human walkthrough (curated sources + quote-verified patch).
+
 ## 3. Try it in two minutes
 
 New here? Click **Take the tour** (top right). A guided walkthrough spotlights every feature on the home page and on each guide page, and starts automatically on your first visit.
@@ -37,7 +56,7 @@ New here? Click **Take the tour** (top right). A guided walkthrough spotlights e
 2. In the **Blockers** box, type `invalid_grant`: it jumps to *"Testing-mode tokens expire after 7 days"*, the issue that silently breaks always-on agents.
 3. Tick a checklist item, then copy the URL: the link carries your progress (`#done=…`).
 4. Open the **[GitHub guide](https://greenlight-blue-ten.vercel.app/guides/github)** and look for the green *"Tested end-to-end through Composio"* badge, the trace and the console screenshots.
-5. On the **[home page](https://greenlight-blue-ten.vercel.app)**, type **Strava** (not in the library and not on Composio) and watch the agent's steps stream live.
+5. On the **[home page](https://greenlight-blue-ten.vercel.app)**, type **Todoist** (not in the library yet) and watch the agent's steps stream live; it typically publishes in 1–2 minutes. Apps that already have a guide (e.g. Strava, Oura) open instantly; use the **Regenerate** button on an agent guide to run a fresh investigation.
 6. Compare apps side by side: [/compare?apps=github,gmail,spotify,x](https://greenlight-blue-ten.vercel.app/compare?apps=github,gmail,spotify,x).
 7. Read it the way an agent does: [/guides/spotify.md](https://greenlight-blue-ten.vercel.app/guides/spotify.md) or `claude mcp add --transport http greenlight https://greenlight-blue-ten.vercel.app/api/mcp`.
 
@@ -109,18 +128,18 @@ All 10 gold guides also carry a `tested` claim from **`composio.toolkits.get()`*
 <!-- GOLD_TABLE -->
 ## 8. The gold library: what was tested vs. sourced
 
-| App | Difficulty | Time to production | Composio | Tested | Sourced | Uncertain | End-to-end |
-|---|---|---|---|---|---|---|---|
-| [GitHub](https://greenlight-blue-ten.vercel.app/guides/github) | 1 Self-serve | same day | managed | 10 (probe, Composio call, screenshot) | 21 | 1 | ✅ 2026-11-03 |
-| [Slack](https://greenlight-blue-ten.vercel.app/guides/slack) | 2 Light review | <1–70 days | managed | 8 (Composio call, screenshot) | 19 | 0 | ✅ 2026-11-03 |
-| [X (Twitter)](https://greenlight-blue-ten.vercel.app/guides/x) | 2 Light review | 1–7 days | BYO | 1 (Composio call) | 16 | 3 | n/a |
-| [Microsoft Entra ID](https://greenlight-blue-ten.vercel.app/guides/microsoft-entra-id) | 3 Full review | 1–21 days | BYO | 1 (Composio call) | 18 | 0 | n/a |
-| [Shopify](https://greenlight-blue-ten.vercel.app/guides/shopify) | 3 Full review | 3–14 days | BYO | 2 (probe, Composio call) | 16 | 0 | n/a |
-| [Xero](https://greenlight-blue-ten.vercel.app/guides/xero) | 3 Full review | 1–14 days | BYO | 1 (Composio call) | 24 | 0 | n/a |
-| [Gmail (Google)](https://greenlight-blue-ten.vercel.app/guides/gmail) | 4 Heavy review / verification | 2–13 weeks | managed | 2 (probe, Composio call) | 24 | 5 | n/a |
-| [LinkedIn Ads (Marketing API)](https://greenlight-blue-ten.vercel.app/guides/linkedin-ads) | 4 Heavy review / verification | 7–30 days | BYO | 1 (Composio call) | 23 | 1 | n/a |
-| [Meta Ads (Marketing API)](https://greenlight-blue-ten.vercel.app/guides/meta-ads) | 4 Heavy review / verification | 3–14 days | BYO | 1 (Composio call) | 16 | 2 | n/a |
-| [Spotify](https://greenlight-blue-ten.vercel.app/guides/spotify) | 5 Partner-only or paid / gated | 4–26 weeks | BYO | 2 (probe, Composio call) | 22 | 3 | n/a |
+| App | Difficulty | Time to production | Composio | Tested | Sourced | Uncertain | End-to-end | Reviewed |
+|---|---|---|---|---|---|---|---|---|
+| [GitHub](https://greenlight-blue-ten.vercel.app/guides/github) | 1 Self-serve | same day | managed | 10 (probe, Composio call, screenshot) | 21 | 1 | ✅ 2026-11-03 | pending |
+| [Slack](https://greenlight-blue-ten.vercel.app/guides/slack) | 2 Light review | <1–70 days | managed | 8 (Composio call, screenshot) | 19 | 0 | ✅ 2026-11-03 | pending |
+| [X (Twitter)](https://greenlight-blue-ten.vercel.app/guides/x) | 2 Light review | 1–7 days | BYO | 1 (Composio call) | 16 | 3 | n/a | pending |
+| [Microsoft Entra ID](https://greenlight-blue-ten.vercel.app/guides/microsoft-entra-id) | 3 Full review | 1–21 days | BYO | 1 (Composio call) | 18 | 0 | n/a | pending |
+| [Shopify](https://greenlight-blue-ten.vercel.app/guides/shopify) | 3 Full review | 3–14 days | BYO | 2 (probe, Composio call) | 16 | 0 | n/a | pending |
+| [Xero](https://greenlight-blue-ten.vercel.app/guides/xero) | 3 Full review | 1–14 days | BYO | 1 (Composio call) | 24 | 0 | n/a | pending |
+| [Gmail (Google)](https://greenlight-blue-ten.vercel.app/guides/gmail) | 4 Heavy review / verification | 2–13 weeks | managed | 2 (probe, Composio call) | 24 | 5 | n/a | pending |
+| [LinkedIn Ads (Marketing API)](https://greenlight-blue-ten.vercel.app/guides/linkedin-ads) | 4 Heavy review / verification | 7–30 days | BYO | 1 (Composio call) | 23 | 1 | n/a | pending |
+| [Meta Ads (Marketing API)](https://greenlight-blue-ten.vercel.app/guides/meta-ads) | 4 Heavy review / verification | 3–14 days | BYO | 1 (Composio call) | 16 | 2 | n/a | pending |
+| [Spotify](https://greenlight-blue-ten.vercel.app/guides/spotify) | 5 Partner-only or paid / gated | 4–26 weeks | BYO | 2 (probe, Composio call) | 22 | 3 | n/a | pending |
 
 Every sourced quote is re-checked against the live page (`pnpm verify`); curation edits live in `data/gold-patches/` and are applied by a script that rejects any quote it can't find.
 <!-- /GOLD_TABLE -->
@@ -149,9 +168,7 @@ Every sourced quote is re-checked against the live page (`pnpm verify`); curatio
 
 **How to read the eval:** what the live agent *states* is reliable (high precision and citation validity) but *shallow* (low recall). It reads about 7 pages and misses facts on deep policy pages, and it underrates gated providers when it never reaches the gating page. That's why the library ships curated gold guides and labels live guides *unreviewed*. The next investment is clear: read more pages and use a stronger model.
 
-## 10. What the evidence corrected
-
-The original plan's guesses, corrected by the sources:
+## 10. Assumptions the evidence corrected
 
 | App | Plan assumed | Evidence showed |
 |---|---|---|
@@ -207,6 +224,7 @@ pnpm tsx scripts/composio-sdk-lookup.mts               # re-derive Composio fact
 pnpm tsx scripts/e2e-composio.mts github <clientId> GITHUB_GET_THE_AUTHENTICATED_USER   # Composio half of the closed loop
 pnpm verify                                            # re-check every gold quote against the live page
 pnpm eval                                              # score the live agent vs eval/ground-truth.json
+pnpm tsx scripts/batch.mts [--run 10]                  # batch-generate bring-your-own toolkits (dry run by default)
 pnpm tsx scripts/readme-tables.mts                     # refresh the data-driven README tables
 ```
 
@@ -234,7 +252,7 @@ MEMO.md · PROGRESS.md · docs/research-notes.md · docs/loom-script.md
 - **Some evidence needs a human.** Sign-in, sudo confirmation and consent clicks stay human; GitHub and Slack were walked through; the other gold guides are mostly *sourced* plus SDK-tested Composio facts.
 - **Review times are rarely published.** Without a provider SLA, timelines are wide ranges marked uncertain.
 - **Policies drift.** Every guide shows its last-verified date; `pnpm verify` catches quote drift.
-- **Gold guides are agent-drafted and human-patched**, but still labelled *unreviewed* until the author signs off on each one.
+- **Gold guides are agent-drafted from curated sources and hand-patched.** Each is marked *human-reviewed* only after the author checks its verdict (see the *Reviewed* column in [§8](#8-the-gold-library-what-was-tested-vs-sourced)); only GitHub and Slack were walked through end-to-end.
 
 ## 15. What I'd build next (inside Composio)
 

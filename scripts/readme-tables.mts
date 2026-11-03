@@ -14,9 +14,9 @@ const rows = guides.map((g) => {
   const n = (e: string) => g.claims.filter((c: any) => c.evidence === e).length;
   const tested = g.claims.filter((c: any) => c.evidence === "tested").map((c: any) => c.artifact?.startsWith("probe:") ? "probe" : c.artifact?.startsWith("lookup:") ? "lookup" : c.artifact?.includes("composio") || c.artifact?.startsWith("log_") ? "Composio call" : "screenshot");
   const kinds = [...new Set(tested)].join(", ") || "n/a";
-  return `| [${g.app.name}](${SITE}/guides/${g.slug}) | ${g.verdict.difficulty} ${g.verdict.label} | ${fmtD(g.verdict.productionDays)} | ${g.app.composioManaged === null ? "not on Composio" : g.app.composioManaged ? "managed" : "BYO"} | ${n("tested")} (${kinds}) | ${n("sourced")} | ${n("uncertain")} | ${g.endToEnd ? "✅ " + g.endToEnd.testedAt : "n/a"} |`;
+  return `| [${g.app.name}](${SITE}/guides/${g.slug}) | ${g.verdict.difficulty} ${g.verdict.label} | ${fmtD(g.verdict.productionDays)} | ${g.app.composioManaged === null ? "not on Composio" : g.app.composioManaged ? "managed" : "BYO"} | ${n("tested")} (${kinds}) | ${n("sourced")} | ${n("uncertain")} | ${g.endToEnd ? "✅ " + g.endToEnd.testedAt : "n/a"} | ${g.reviewStatus === "reviewed" ? "✅" : "pending"} |`;
 });
-put("GOLD_TABLE", `## 8. The gold library: what was tested vs. sourced\n\n| App | Difficulty | Time to production | Composio | Tested | Sourced | Uncertain | End-to-end |\n|---|---|---|---|---|---|---|---|\n${rows.join("\n")}\n\nEvery sourced quote is re-checked against the live page (\`pnpm verify\`); curation edits live in \`data/gold-patches/\` and are applied by a script that rejects any quote it can't find.`);
+put("GOLD_TABLE", `## 8. The gold library: what was tested vs. sourced\n\n| App | Difficulty | Time to production | Composio | Tested | Sourced | Uncertain | End-to-end | Reviewed |\n|---|---|---|---|---|---|---|---|---|\n${rows.join("\n")}\n\nEvery sourced quote is re-checked against the live page (\`pnpm verify\`); curation edits live in \`data/gold-patches/\` and are applied by a script that rejects any quote it can't find.`);
 if (existsSync("eval/results.json")) {
   const e = JSON.parse(readFileSync("eval/results.json", "utf8"));
   const p = (x: number) => `${Math.round(x * 100)}%`;
