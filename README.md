@@ -8,7 +8,7 @@
 | **PM memo (1 page)** | [MEMO.md](MEMO.md) |
 | **How scoring and evidence work** | https://greenlight-blue-ten.vercel.app/method |
 | **For agents** | [/agents](https://greenlight-blue-ten.vercel.app/agents) explains [`/llms.txt`](https://greenlight-blue-ten.vercel.app/llms.txt), `/guides/<app>.md` and the MCP endpoint `/api/mcp` |
-| **Loom walkthrough** | TODO: add Loom link |
+| **Video walkthrough** | https://youtu.be/xdIdEFDCvdc |
 
 ### Brief requirement → where it's met
 
