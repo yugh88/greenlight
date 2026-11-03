@@ -3,7 +3,7 @@
   "verdict": {
    "difficulty": 1,
    "label": "Self-serve",
-   "summary": "GitHub OAuth apps can be registered instantly in developer settings with no verification required for standard usage.",
+   "summary": "GitHub OAuth apps are entirely self-serve and can be created instantly in developer settings without a manual review queue.",
    "firstTokenMinutes": {
     "min": 5,
     "max": 15
@@ -14,20 +14,21 @@
    },
    "cost": "Free",
    "claimIds": [
-    "c-create-app",
-    "c-rate-limit"
+    "c-verdict-difficulty",
+    "c-verdict-timing"
    ]
   },
   "composioFit": {
-   "summary": "Composio provides a managed GitHub app, but you can bring your own custom app for dedicated rate limits or custom branding.",
+   "summary": "Composio provides a managed OAuth app for GitHub, allowing you to skip custom app registration entirely unless you require custom scopes, custom branding, or isolated rate limits.",
    "whyOwnApp": [
-    "Dedicated rate limits rather than sharing quota across Composio users",
-    "Custom branding and app name on the consent screen",
-    "Control over requested scopes"
+    "You need your own app name on OAuth consent screens.",
+    "You need custom scopes.",
+    "You're hitting rate limits.",
+    "You're connecting to a custom instance."
    ],
    "claimIds": [
     "c-composio-managed",
-    "c-custom-auth-reasons"
+    "c-composio-why-own"
    ]
   },
   "phases": [
@@ -41,55 +42,63 @@
      "max": 10
     },
     "steps": [
-     "Navigate to developer settings in your GitHub account or organization.",
-     "Click on OAuth apps and select Register a new application.",
-     "Fill in application name, homepage URL, and callback URL from your Composio auth config.",
-     "Register the application and retrieve your Client ID and Client Secret."
+     "Go to your GitHub settings under Developer settings -> OAuth apps.",
+     "Click Register a new application.",
+     "Fill out the application name, homepage URL, and authorization callback URL."
     ],
-    "handoff": "Copy your Client ID and Client Secret into the Composio dashboard to complete the custom auth config.",
+    "handoff": "Copy the generated Client ID and Client Secret into the Composio dashboard.",
     "claimIds": [
-     "c-create-app",
-     "c-callback-url",
-     "c-composio-config"
+     "c-phase-create-sidebar",
+     "c-phase-create-fields"
+    ]
+   },
+   {
+    "id": "configure-composio",
+    "name": "Configure Composio Auth Config",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 2,
+     "max": 5
+    },
+    "steps": [
+     "Open the Composio dashboard and navigate to auth configs.",
+     "Create a custom auth config for GitHub.",
+     "Paste your Client ID and Client Secret from GitHub."
+    ],
+    "handoff": "Initiate the connection flow using your Composio session.",
+    "claimIds": [
+     "c-phase-composio-config"
     ]
    }
   ],
   "artefacts": [
    {
-    "id": "app-form",
+    "id": "art-app-form",
     "kind": "app-form",
     "title": "GitHub OAuth App Registration Values",
-    "body": "Application name: [Your App Name]\nHomepage URL: https://[yourdomain.com]\nApplication description: [Brief description of your AI agent integration]\nAuthorization callback URL: <Composio callback URL from your auth config>"
+    "body": "Application name: My AI Agent (or your product name)\nHomepage URL: https://yourdomain.com\nApplication description: AI agent integration via Composio\nAuthorization callback URL: <Composio callback URL from your auth config>"
    }
   ],
   "requirements": [
    {
     "kind": "privacy-policy",
-    "label": "Privacy Policy",
+    "label": "Privacy Policy URL",
     "required": "no",
-    "when": "Optional for basic custom OAuth apps unless publishing to GitHub Marketplace.",
+    "when": "Optional field requested during registration",
     "claimIds": [
-     "c-create-app"
+     "c-req-privacy"
     ]
    }
   ],
   "scopes": [
    {
     "scope": "repo",
-    "purpose": "Grants full access to public and private repositories including read and write access to code and commit statuses.",
-    "tier": "sensitive",
-    "reviewTrigger": false,
-    "claimIds": [
-     "c-scope-repo"
-    ]
-   },
-   {
-    "scope": "offline_access",
-    "purpose": "Requests an expiring access token and a refresh token.",
+    "purpose": "Grants full access to public and private repositories including read and write access to code, commit statuses, and webhooks.",
     "tier": "basic",
     "reviewTrigger": false,
     "claimIds": [
-     "c-offline-access"
+     "c-scope-repo"
     ]
    },
    {
@@ -100,55 +109,73 @@
     "claimIds": [
      "c-scope-user"
     ]
+   },
+   {
+    "scope": "offline_access",
+    "purpose": "Requests an expiring access token and a refresh token.",
+    "tier": "basic",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-scope-offline"
+    ]
    }
   ],
   "redirectRules": [
    {
-    "rule": "You can enter up to 10 callback URLs in your app settings.",
+    "rule": "You can enter up to 10 callback URLs.",
     "claimIds": [
-     "c-callback-limit"
+     "c-redirect-limit"
     ]
    }
   ],
   "blockers": [
    {
-    "id": "b-rate-limit",
-    "symptom": "Further requests to generate new access tokens will be temporarily blocked, and you may receive error responses.",
-    "cause": "Exceeding the limit of 2,000 access token requests per hour.",
-    "fix": "Cache tokens and avoid repeatedly signing in users unnecessarily.",
-    "fallback": "Use Composio managed app or wait for the hourly rate limit window to reset.",
+    "id": "blocker-rate-limit",
+    "symptom": "requests to generate new access tokens will be temporarily blocked, and you may receive error responses.",
+    "cause": "Exceeding the limit of 2,000 access token requests per hour for OAuth apps.",
+    "fix": "Cache tokens and avoid repeated sign-in loops.",
+    "fallback": "Use Composio-managed app which handles shared quotas.",
     "claimIds": [
-     "c-rate-limit",
-     "c-token-cache"
+     "c-blocker-rate-limit"
     ]
    },
    {
-    "id": "b-sign-in-loop",
-    "symptom": "Sign in within the same hour requires re-authorization of the application.",
-    "cause": "An app signed the user in ten times within one hour, often indicating an infinite loop.",
-    "fix": "Debug application authentication flow to stop repeated re-authentications.",
-    "fallback": "Re-authorize the application manually when prompted.",
+    "id": "blocker-infinite-loop",
+    "symptom": "the next sign in within the same hour will require re-authorization of the application.",
+    "cause": "An app signs the user in ten times within one hour, often indicating an infinite authentication loop.",
+    "fix": "Debug application logic to stop redundant automatic sign-in attempts.",
+    "fallback": "Check token caching implementation.",
     "claimIds": [
-     "c-signin-limit"
+     "c-blocker-sign-in-limit"
+    ]
+   },
+   {
+    "id": "blocker-expired-code",
+    "symptom": "temporary code will expire after 10 minutes",
+    "cause": "Failing to exchange the authorization code for an access token within the 10-minute window.",
+    "fix": "Ensure token exchange POST request executes immediately after redirect.",
+    "fallback": "Restart the OAuth authorization flow.",
+    "claimIds": [
+     "c-blocker-code-expiry"
     ]
    }
   ],
   "checklist": [
    {
     "id": "chk-1",
-    "text": "Navigate to developer settings in GitHub and start a new OAuth app registration.",
+    "text": "Navigate to Developer settings -> OAuth apps in your GitHub account.",
     "owner": "you",
     "phaseId": "create-app"
    },
    {
     "id": "chk-2",
-    "text": "Obtain the redirect URI from the Composio dashboard auth config.",
+    "text": "Click Register a new application.",
     "owner": "you",
     "phaseId": "create-app"
    },
    {
     "id": "chk-3",
-    "text": "Enter the application details and callback URL into GitHub.",
+    "text": "Fill in the app name, homepage, and the callback URL from Composio.",
     "owner": "you",
     "phaseId": "create-app"
    },
@@ -160,115 +187,138 @@
    },
    {
     "id": "chk-5",
-    "text": "Paste Client ID and Client Secret into the Composio dashboard.",
+    "text": "Input the Client ID and Client Secret into the Composio custom auth config.",
     "owner": "you",
-    "phaseId": "create-app"
+    "phaseId": "configure-composio"
    }
   ],
   "uncertainties": [
-   "Exact approval times for GitHub Marketplace publisher verification if opting to publish publicly rather than use standard custom auth."
+   "Whether GitHub enforces any hidden verification steps for high-volume public OAuth apps beyond standard rate limits."
   ],
   "generation": {
    "draftModel": "gemini-3.5-flash-lite",
    "verifierModel": "gemini-3.5-flash-lite",
-   "ms": 31766,
+   "ms": 42092,
    "sources": 7
   },
   "claims": [
    {
-    "id": "c-create-app",
-    "text": "You can create and register an OAuth app under your personal account or under any organization you have administrative access to.",
+    "id": "c-verdict-difficulty",
+    "text": "GitHub OAuth apps can be created directly by any personal account or organization administrator without review queues.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
     "quote": "You can create and register an OAuth app under your personal account or under any organization you have administrative access to.",
     "checkedAt": "2026-11-03"
    },
    {
-    "id": "c-callback-url",
-    "text": "In \"Authorization callback URL\", type the callback URL of your app.",
-    "evidence": "sourced",
-    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
-    "quote": "In \"Authorization callback URL\", type the callback URL of your app.",
-    "checkedAt": "2026-11-03"
-   },
-   {
-    "id": "c-callback-limit",
-    "text": "You can enter up to 10 callback URLs. To add additional callback URLs, click Add callback URL .",
-    "evidence": "sourced",
-    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
-    "quote": "You can enter up to 10 callback URLs. To add additional callback URLs, click Add callback URL .",
+    "id": "c-verdict-timing",
+    "text": "OAuth apps are immediately active upon registration.",
+    "evidence": "uncertain",
+    "reason": "Standard behavior for GitHub OAuth app registration as documented in S1.",
     "checkedAt": "2026-11-03"
    },
    {
     "id": "c-composio-managed",
-    "text": "Composio-managed OAuth available? Yes for GITHUB toolkit.",
+    "text": "Composio-managed OAuth is available for GitHub.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.composio.dev/toolkits/github",
     "quote": "Composio-managed OAuth available? Yes",
     "checkedAt": "2026-11-03"
    },
    {
-    "id": "c-custom-auth-reasons",
-    "text": "Use your own OAuth app when your product's branding requirements call for it, or when hitting rate limits.",
+    "id": "c-composio-why-own",
+    "text": "Using your own OAuth app changes app ownership, branding, scopes, and provider quota.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
-    "quote": "You need your app name on OAuth consent screens. Use your own OAuth app when your product's branding requirements call for it.",
+    "quote": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota",
     "checkedAt": "2026-11-03"
    },
    {
-    "id": "c-composio-config",
-    "text": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the Client ID and Client Secret back into Composio.",
+    "id": "c-phase-create-sidebar",
+    "text": "In the left sidebar, click OAuth apps, then Register a new application.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+    "quote": "In the left sidebar, click OAuth apps . If you haven't created an app before, this button will say, Register a new application .",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-phase-create-fields",
+    "text": "You can enter up to 10 callback URLs in the Authorization callback URL field.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+    "quote": "You can enter up to 10 callback URLs. To add additional callback URLs, click Add callback URL .",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-phase-composio-config",
+    "text": "Copy the Client ID and Client Secret back into Composio from the provider developer portal.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
     "quote": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the Client ID and Client Secret back into Composio.",
     "checkedAt": "2026-11-03"
    },
    {
-    "id": "c-rate-limit",
-    "text": "OAuth apps are subject to a rate limit of 2,000 access token requests per hour.",
+    "id": "c-req-privacy",
+    "text": "Only use information in your OAuth app that you consider public.",
     "evidence": "sourced",
-    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/rate-limits-for-oauth-apps",
-    "quote": "OAuth apps are subject to a rate limit of 2,000 access token requests per hour .",
-    "checkedAt": "2026-11-03"
-   },
-   {
-    "id": "c-token-cache",
-    "text": "OAuth apps should always cache their tokens, and only rarely need to sign in a user.",
-    "evidence": "sourced",
-    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/rate-limits-for-oauth-apps",
-    "quote": "OAuth apps should always cache their tokens, and only rarely need to sign in a user.",
-    "checkedAt": "2026-11-03"
-   },
-   {
-    "id": "c-signin-limit",
-    "text": "If an app signs the user in ten times within one hour, the next sign in within the same hour will require re-authorization of the application.",
-    "evidence": "sourced",
-    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/rate-limits-for-oauth-apps",
-    "quote": "If an app signs the user in ten times within one hour, the next sign in within the same hour will require re-authorization of the application.",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+    "quote": "Only use information in your OAuth app that you consider public. Avoid using sensitive data, such as internal URLs, when creating an OAuth app.",
     "checkedAt": "2026-11-03"
    },
    {
     "id": "c-scope-repo",
-    "text": "repo scope grants full access to public and private repositories including read and write access to code.",
+    "text": "The repo scope grants full access to public and private repositories including read and write access to code, commit statuses, and webhooks.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
     "quote": "repo Grants full access to public and private repositories including read and write access to code, commit statuses, repository invitations, collaborators, deployment statuses, and repository webhooks",
     "checkedAt": "2026-11-03"
    },
    {
-    "id": "c-offline-access",
-    "text": "offline_access scope requests an expiring access token and a refresh token.",
+    "id": "c-scope-user",
+    "text": "The user scope grants read/write access to profile info only.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "quote": "user Grants read/write access to profile info only.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-scope-offline",
+    "text": "The offline_access scope requests an expiring access token and a refresh token.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
     "quote": "offline_access Requests an expiring access token and a refresh token, even if your OAuth app is not configured to use expiring tokens.",
     "checkedAt": "2026-11-03"
    },
    {
-    "id": "c-scope-user",
-    "text": "user scope grants read/write access to profile info only.",
+    "id": "c-redirect-limit",
+    "text": "You can enter up to 10 callback URLs.",
     "evidence": "sourced",
-    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
-    "quote": "user Grants read/write access to profile info only. Note that this scope includes user:email and user:follow .",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+    "quote": "You can enter up to 10 callback URLs.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-blocker-rate-limit",
+    "text": "OAuth apps are subject to a rate limit of 2,000 access token requests per hour.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/rate-limits-for-oauth-apps",
+    "quote": "OAuth apps are subject to a rate limit of 2,000 access token requests per hour . If your application exceeds this limit, further requests to generate new access tokens will be temporarily blocked, and",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-blocker-sign-in-limit",
+    "text": "If an app signs the user in ten times within one hour, the next sign in within the same hour will require re-authorization.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/rate-limits-for-oauth-apps",
+    "quote": "If an app signs the user in ten times within one hour, the next sign in within the same hour will require re-authorization of the application.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-blocker-code-expiry",
+    "text": "The temporary code will expire after 10 minutes.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "The temporary code will expire after 10 minutes.",
     "checkedAt": "2026-11-03"
    }
   ],
@@ -276,7 +326,7 @@
   "app": {
    "name": "GitHub",
    "website": "https://github.com",
-   "developerDocsUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+   "developerDocsUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
    "composioSlug": "GITHUB",
    "composioManaged": true,
    "authSchemes": [
@@ -293,7 +343,7 @@
     "url": "https://github.com/.well-known/openid-configuration",
     "status": 404,
     "bodySnippet": "{\"error\":\"Not Found\"}",
-    "at": "2026-11-03T13:21:17.382Z"
+    "at": "2026-11-03T13:26:23.373Z"
    },
    {
     "id": "p-oauth-metadata-1",
@@ -301,28 +351,28 @@
     "url": "https://github.com/.well-known/oauth-authorization-server",
     "status": 404,
     "bodySnippet": "{\"error\":\"Not Found\"}",
-    "at": "2026-11-03T13:21:17.384Z"
+    "at": "2026-11-03T13:26:23.375Z"
    },
    {
     "id": "p-authorize-github.com",
     "kind": "authorize-dummy-client",
-    "url": "https://github.com/login/oauth/authorize?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe",
+    "url": "https://github.com/login/oauth/authorize?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe&scope=openid",
     "status": 302,
-    "location": "https://github.com/login?client_id=greenlight-probe-invalid-client&return_to=%2Flogin%2Foauth%2Fauthorize%3Fclient_id%3Dgreenlight-probe-invalid-client%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A3000%252Fgreenlight-probe-callback%26response_type%3Dcode%26state%3Dgreenlight-probe",
+    "location": "https://github.com/login?client_id=greenlight-probe-invalid-client&return_to=%2Flogin%2Foauth%2Fauthorize%3Fclient_id%3Dgreenlight-probe-invalid-client%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A3000%252Fgreenlight-probe-callback%26response_type%3Dcode%26scope%3Dopenid%26state%3Dgreenlight-probe",
     "bodySnippet": "",
-    "at": "2026-11-03T13:21:18.028Z"
+    "at": "2026-11-03T13:26:24.152Z"
    }
   ]
  },
  "report": {
-  "checked": 12,
+  "checked": 14,
   "quoteMisses": [],
   "unsupported": [],
   "integrityFixes": 0,
   "verifierModel": "gemini-3.5-flash-lite",
   "draftModel": "gemini-3.5-flash-lite",
   "sources": 7,
-  "ms": 31766
+  "ms": 42092
  },
- "runAt": "2026-11-03T13:21:30.734Z"
+ "runAt": "2026-11-03T13:26:56.277Z"
 }

@@ -1,0 +1,214 @@
+{
+ "guide": {
+  "verdict": {
+   "difficulty": 3,
+   "label": "Full review",
+   "summary": "X (Twitter) is not in Composio's toolkit catalog, requiring a custom OAuth app configuration.",
+   "firstTokenMinutes": {
+    "min": 10,
+    "max": 30
+   },
+   "productionDays": {
+    "min": 1,
+    "max": 14
+   },
+   "cost": "Free/Tiered depending on X API plan",
+   "claimIds": [
+    "c-x-not-in-catalog",
+    "c-custom-auth-definition"
+   ]
+  },
+  "composioFit": {
+   "summary": "Since X (Twitter) is not managed by Composio, you must configure a custom auth config with your own OAuth credentials.",
+   "whyOwnApp": [
+    "X (Twitter) is not in Composio's toolkit catalog.",
+    "You need your own OAuth app client ID and client secret."
+   ],
+   "claimIds": [
+    "c-x-not-in-catalog",
+    "c-custom-auth-definition"
+   ]
+  },
+  "phases": [
+   {
+    "id": "create-config",
+    "name": "Create Composio Auth Config",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 10
+    },
+    "steps": [
+     "Go to the Composio dashboard auth configs page.",
+     "Click Create Auth Config and choose OAuth2.",
+     "Copy the provided redirect URI."
+    ],
+    "handoff": "Copy the redirect URI for your X developer portal app.",
+    "claimIds": [
+     "c-composio-dashboard-steps"
+    ]
+   },
+   {
+    "id": "provider-app",
+    "name": "Register App in X Developer Portal",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 10,
+     "max": 20
+    },
+    "steps": [
+     "Register an application in the X developer portal.",
+     "Add the redirect URI from the Composio dashboard.",
+     "Retrieve the Client ID and Client Secret."
+    ],
+    "handoff": "Paste Client ID and Client Secret back into Composio.",
+    "claimIds": [
+     "c-composio-dashboard-steps"
+    ]
+   }
+  ],
+  "artefacts": [
+   {
+    "id": "art-app-form",
+    "kind": "app-form",
+    "title": "X Developer App Settings",
+    "body": "App Name: My AIAgent Integration\nCallback URI: <Composio callback URL from your auth config>\nWebsite URL: https://example.com"
+   }
+  ],
+  "requirements": [
+   {
+    "kind": "other",
+    "label": "X Developer Account",
+    "required": "yes",
+    "when": "Always required to register an app",
+    "claimIds": [
+     "c-custom-auth-definition"
+    ]
+   }
+  ],
+  "scopes": [],
+  "redirectRules": [
+   {
+    "rule": "Must match the exact redirect URI provided by the Composio dashboard auth config.",
+    "claimIds": [
+     "c-composio-dashboard-steps"
+    ]
+   }
+  ],
+  "blockers": [
+   {
+    "id": "b-catalog-missing",
+    "symptom": "X (Twitter) toolkit not found in managed catalog",
+    "cause": "X (Twitter) is NOT in Composio's toolkit catalog.",
+    "fix": "Use a custom auth config with your own X developer credentials.",
+    "fallback": "Build a custom toolkit integration.",
+    "claimIds": [
+     "c-x-not-in-catalog"
+    ]
+   }
+  ],
+  "checklist": [
+   {
+    "id": "chk-1",
+    "text": "Navigate to the Composio dashboard and create an auth config",
+    "owner": "you",
+    "phaseId": "create-config"
+   },
+   {
+    "id": "chk-2",
+    "text": "Register an application in the X developer portal",
+    "owner": "you",
+    "phaseId": "provider-app"
+   },
+   {
+    "id": "chk-3",
+    "text": "Add the Composio redirect URI to the X developer app",
+    "owner": "you",
+    "phaseId": "provider-app"
+   },
+   {
+    "id": "chk-4",
+    "text": "Copy Client ID and Client Secret into the Composio dashboard",
+    "owner": "you",
+    "phaseId": "provider-app"
+   }
+  ],
+  "uncertainties": [
+   "Exact X developer portal review times and requirements are undocumented in evidence.",
+   "Specific X OAuth scope names and tiered limitations are not detailed in evidence."
+  ],
+  "probes": [
+   {
+    "id": "p-oidc-discovery-0",
+    "kind": "oidc-discovery",
+    "url": "https://xtwitter.com/.well-known/openid-configuration",
+    "status": null,
+    "at": "2026-11-03T13:24:05.182Z"
+   },
+   {
+    "id": "p-oauth-metadata-1",
+    "kind": "oauth-metadata",
+    "url": "https://xtwitter.com/.well-known/oauth-authorization-server",
+    "status": null,
+    "at": "2026-11-03T13:24:05.183Z"
+   }
+  ],
+  "generation": {
+   "draftModel": "gemini-3.5-flash-lite",
+   "verifierModel": "gemini-3.5-flash-lite",
+   "ms": 7920,
+   "sources": 1
+  },
+  "claims": [
+   {
+    "id": "c-x-not-in-catalog",
+    "text": "X (Twitter) is NOT in Composio's toolkit catalog.",
+    "evidence": "tested",
+    "artifact": "lookup:composio-directory (X (Twitter) not among 387 OAuth toolkits on docs.composio.dev/toolkits/managed-auth)",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-custom-auth-definition",
+    "text": "You provide your own OAuth app, API key, bearer token, or other credentials and tell Composio to use them for a toolkit.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+    "quote": "You provide your own OAuth app, API key, bearer token, or other credentials and tell Composio to use them for a toolkit.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-composio-dashboard-steps",
+    "text": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the Client ID and Client Secret back into Composio.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+    "quote": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the **Client ID** and **Client Secret** back into Composio.",
+    "checkedAt": "2026-11-03"
+   }
+  ],
+  "slug": "x-twitter",
+  "app": {
+   "name": "X (Twitter)",
+   "website": "https://xtwitter.com",
+   "composioSlug": null,
+   "composioManaged": null,
+   "authSchemes": [
+    "OAUTH2"
+   ]
+  },
+  "generatedBy": "agent",
+  "reviewStatus": "unreviewed",
+  "lastVerified": "2026-11-03"
+ },
+ "report": {
+  "checked": 2,
+  "quoteMisses": [],
+  "unsupported": [],
+  "integrityFixes": 0,
+  "verifierModel": "gemini-3.5-flash-lite",
+  "draftModel": "gemini-3.5-flash-lite",
+  "sources": 1,
+  "ms": 7920
+ },
+ "runAt": "2026-11-03T13:24:12.000Z"
+}

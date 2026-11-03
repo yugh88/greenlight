@@ -1,0 +1,332 @@
+{
+ "guide": {
+  "verdict": {
+   "difficulty": 2,
+   "label": "Light review",
+   "summary": "You must register your own Microsoft Entra ID app because Composio does not provide a managed app for Microsoft Entra ID.",
+   "firstTokenMinutes": {
+    "min": 10,
+    "max": 30
+   },
+   "productionDays": {
+    "min": 0,
+    "max": 1
+   },
+   "cost": "Free",
+   "claimIds": [
+    "c-comp-no-managed",
+    "c-app-reg-steps"
+   ]
+  },
+  "composioFit": {
+   "summary": "Composio requires a custom auth configuration for Microsoft Entra ID because no managed app is available in the catalog.",
+   "whyOwnApp": [
+    "Composio-managed OAuth is not available for Microsoft Entra ID.",
+    "You must provide your own Client ID and Client Secret from your Microsoft Entra app registration."
+   ],
+   "claimIds": [
+    "c-comp-no-managed"
+   ]
+  },
+  "phases": [
+   {
+    "id": "register",
+    "name": "Register Application",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 15
+    },
+    "steps": [
+     "Sign in to the Microsoft Entra admin center.",
+     "Navigate to App registrations and select New registration.",
+     "Enter a meaningful Name and select the appropriate supported account types."
+    ],
+    "handoff": "Copy the Application (client) ID from the Overview page.",
+    "claimIds": [
+     "c-app-reg-steps",
+     "c-client-id"
+    ]
+   },
+   {
+    "id": "configure-redirect",
+    "name": "Configure Redirect URIs",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 10
+    },
+    "steps": [
+     "Get the redirect URI from your Composio dashboard auth config.",
+     "Navigate to the Authentication page in your app registration.",
+     "Add the redirect URI for web applications."
+    ],
+    "handoff": "Paste Client ID and Client Secret into the Composio dashboard.",
+    "claimIds": [
+     "c-redirect-config",
+     "c-composio-dashboard"
+    ]
+   }
+  ],
+  "artefacts": [
+   {
+    "id": "art-app-form",
+    "kind": "app-form",
+    "title": "Microsoft Entra App Registration Values",
+    "body": "App Name: AI Agent Entra Integration\nSupported account types: Accounts in any organizational directory and personal Microsoft accounts (or Single tenant depending on use case)\nRedirect URI: <Composio callback URL from your auth config>"
+   }
+  ],
+  "requirements": [
+   {
+    "kind": "privacy-policy",
+    "label": "Privacy Statement",
+    "required": "yes",
+    "when": "Required by terms of use for all applications accessing Microsoft Identity APIs.",
+    "claimIds": [
+     "c-terms-privacy"
+    ]
+   },
+   {
+    "kind": "business-verification",
+    "label": "Microsoft AI Cloud Partner Program Account",
+    "required": "conditional",
+    "when": "Only required if you want to complete publisher verification to remove consent screen warnings.",
+    "claimIds": [
+     "c-publisher-verification"
+    ]
+   }
+  ],
+  "scopes": [
+   {
+    "scope": "User.Read",
+    "purpose": "Sign in and read user profile",
+    "tier": "basic",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-default-perm"
+    ]
+   }
+  ],
+  "redirectRules": [
+   {
+    "rule": "For Web and Single-page applications, you specify a redirect URI manually.",
+    "claimIds": [
+     "c-redirect-config"
+    ]
+   }
+  ],
+  "blockers": [
+   {
+    "id": "b-unsupported-browser",
+    "symptom": "This browser is no longer supported. Upgrade to Microsoft Edge...",
+    "cause": "Accessing Microsoft Learn documentation or certain legacy portals via an unsupported automated or embedded browser.",
+    "fix": "Use a modern supported browser such as Microsoft Edge or Google Chrome.",
+    "fallback": "None",
+    "claimIds": [
+     "c-blocker-browser"
+    ]
+   },
+   {
+    "id": "b-tenant-migration",
+    "symptom": "Attempting to move an application object between different tenants.",
+    "cause": "Once created, you can't move the application object between different tenants.",
+    "fix": "Register a new application in the destination tenant.",
+    "fallback": "Recreate app configuration in the new tenant.",
+    "claimIds": [
+     "c-blocker-tenant"
+    ]
+   },
+   {
+    "id": "b-unverified-publisher",
+    "symptom": "Warning appears on the consent screen informing the user that the app was created by an unverified publisher.",
+    "cause": "Using an unverified multi-tenant app requesting permissions beyond basic sign-in.",
+    "fix": "Complete publisher verification using a Microsoft AI Cloud Partner Program account.",
+    "fallback": "Use single-tenant app registration if multitenancy is not strictly required.",
+    "claimIds": [
+     "c-publisher-verification"
+    ]
+   }
+  ],
+  "checklist": [
+   {
+    "id": "chk-1",
+    "text": "Sign in to the Microsoft Entra admin center as an Application Developer.",
+    "owner": "you",
+    "phaseId": "register"
+   },
+   {
+    "id": "chk-2",
+    "text": "Register a new application and record the Application (client) ID.",
+    "owner": "you",
+    "phaseId": "register"
+   },
+   {
+    "id": "chk-3",
+    "text": "Create an auth config in the Composio dashboard to retrieve the redirect URI.",
+    "owner": "you",
+    "phaseId": "configure-redirect"
+   },
+   {
+    "id": "chk-4",
+    "text": "Add the Composio redirect URI to the Authentication settings of your app registration.",
+    "owner": "you",
+    "phaseId": "configure-redirect"
+   },
+   {
+    "id": "chk-5",
+    "text": "Generate a client secret in the Certificates & secrets section.",
+    "owner": "you",
+    "phaseId": "configure-redirect"
+   },
+   {
+    "id": "chk-6",
+    "text": "Paste Client ID and Client Secret into the Composio dashboard auth config.",
+    "owner": "you",
+    "phaseId": "configure-redirect"
+   }
+  ],
+  "uncertainties": [
+   "Exact token lifetime default values and rate limiting thresholds were not detailed in the provided text excerpts."
+  ],
+  "probes": [
+   {
+    "id": "p-oidc-discovery-0",
+    "kind": "oidc-discovery",
+    "url": "https://microsoftentraid.com/.well-known/openid-configuration",
+    "status": null,
+    "at": "2026-11-03T13:29:07.622Z"
+   },
+   {
+    "id": "p-oauth-metadata-1",
+    "kind": "oauth-metadata",
+    "url": "https://microsoftentraid.com/.well-known/oauth-authorization-server",
+    "status": null,
+    "at": "2026-11-03T13:29:07.623Z"
+   }
+  ],
+  "generation": {
+   "draftModel": "gemini-3.5-flash-lite",
+   "verifierModel": "gemini-3.5-flash-lite",
+   "ms": 27642,
+   "sources": 8
+  },
+  "claims": [
+   {
+    "id": "c-comp-no-managed",
+    "text": "Composio-managed OAuth is not available for Microsoft Entra ID (bring your own OAuth app).",
+    "evidence": "uncertain",
+    "sourceUrl": "https://docs.composio.dev/toolkits/microsoft_entra_id",
+    "quote": "Composio-managed OAuth available? No",
+    "checkedAt": "2026-11-03",
+    "reason": "Verifier: quote does not support claim (The quote only states Composio-managed OAuth available? No, without mentioning Microsoft Entra ID or bring your own OAuth app.)"
+   },
+   {
+    "id": "c-app-reg-steps",
+    "text": "Sign in to the Microsoft Entra admin center as at least an Application Developer to register an application.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
+    "quote": "Sign in to the Microsoft Entra admin center as at least an Application Developer .",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-client-id",
+    "text": "The Application (client) ID uniquely identifies your application and is used in your code.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
+    "quote": "Record the Application (client) ID , which uniquely identifies your application and is used in your application's code",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-redirect-config",
+    "text": "For Web and Single-page applications, you specify a redirect URI manually on the Authentication page.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/how-to-add-redirect-uri",
+    "quote": "For Web and Single-page applications , you specify a redirect URI manually.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-composio-dashboard",
+    "text": "For OAuth toolkits, the dashboard shows the redirect URI to add in the provider's developer portal.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+    "quote": "For OAuth toolkits, the dashboard shows the redirect URI to add in the provider's developer portal.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-terms-privacy",
+    "text": "You must present users with a Privacy Statement that discloses how you collect and use user data.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/legal/microsoft-identity-platform/terms-of-use",
+    "quote": "present Users with a Privacy Statement that discloses how You collect and use User data.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-publisher-verification",
+    "text": "Publisher verification uses a Microsoft AI Cloud Partner Program account associated with the app registration.",
+    "evidence": "uncertain",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview",
+    "quote": "Verifying an app includes using a Microsoft AI Cloud Partner Program (CPP)... account that's been verified and associating the verified PartnerID with an app registration.",
+    "checkedAt": "2026-11-03",
+    "reason": "Quote not found on the cited page when re-checked (match 0.76)."
+   },
+   {
+    "id": "c-default-perm",
+    "text": "Once you register your application, it gets assigned the User.Read permission.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
+    "quote": "Once you register your application, it gets assigned the User.Read permission.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-blocker-browser",
+    "text": "Some documentation pages show errors when visited in unsupported browsers.",
+    "evidence": "uncertain",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
+    "quote": "This browser is no longer supported. Upgrade to Microsoft Edge to take advantage of the latest features",
+    "checkedAt": "2026-11-03",
+    "reason": "Verifier: quote does not support claim (The quote mentions an unsupported browser and upgrading to Edge, but does not state that documentation pages show errors.)"
+   },
+   {
+    "id": "c-blocker-tenant",
+    "text": "Once created, you can't move the application object between different tenants.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
+    "quote": "Once created, you can't move the application object between different tenants.",
+    "checkedAt": "2026-11-03"
+   }
+  ],
+  "slug": "microsoft-entra-id",
+  "app": {
+   "name": "Microsoft Entra ID",
+   "website": "https://microsoftentraid.com",
+   "developerDocsUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
+   "composioSlug": "MICROSOFT_ENTRA_ID",
+   "composioManaged": false,
+   "authSchemes": [
+    "OAUTH2",
+    "S2S_OAUTH2"
+   ]
+  },
+  "generatedBy": "agent",
+  "reviewStatus": "unreviewed",
+  "lastVerified": "2026-11-03"
+ },
+ "report": {
+  "checked": 10,
+  "quoteMisses": [
+   "c-publisher-verification"
+  ],
+  "unsupported": [
+   "c-comp-no-managed",
+   "c-blocker-browser"
+  ],
+  "integrityFixes": 0,
+  "verifierModel": "gemini-3.5-flash-lite",
+  "draftModel": "gemini-3.5-flash-lite",
+  "sources": 8,
+  "ms": 27642
+ },
+ "runAt": "2026-11-03T13:29:23.317Z"
+}

@@ -1,0 +1,371 @@
+{
+ "guide": {
+  "verdict": {
+   "difficulty": 3,
+   "label": "Full review",
+   "summary": "You must register a custom OAuth app with Xero because Composio does not provide a managed Xero app.",
+   "firstTokenMinutes": {
+    "min": 10,
+    "max": 30
+   },
+   "productionDays": {
+    "min": 1,
+    "max": 14
+   },
+   "cost": "Free to develop; financial services or partner programs may incur additional terms or fees",
+   "claimIds": [
+    "c-composio-xero",
+    "c-rate-limits"
+   ]
+  },
+  "composioFit": {
+   "summary": "Composio does not manage a Xero OAuth app, so you must create a custom auth config by supplying your own Xero Client ID and Client Secret.",
+   "whyOwnApp": [
+    "Composio-managed OAuth is not available for Xero, requiring a bring-your-own-app approach.",
+    "Allows you to customize OAuth branding and ensure dedicated API quota."
+   ],
+   "claimIds": [
+    "c-composio-xero",
+    "c-custom-auth-config"
+   ]
+  },
+  "phases": [
+   {
+    "id": "create-app",
+    "name": "Create Xero Developer Account and App",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 10,
+     "max": 15
+    },
+    "steps": [
+     "Go to the Xero Developer portal at https://developer.xero.com/ and sign up or log in.",
+     "Create a new application in your Xero developer console.",
+     "Retrieve your Client ID and Client Secret."
+    ],
+    "handoff": "Copy your Client ID and Client Secret to configure your Composio auth config.",
+    "claimIds": [
+     "c-dev-portal",
+     "c-custom-auth-config"
+    ]
+   },
+   {
+    "id": "configure-redirect",
+    "name": "Configure Redirect URIs",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 10
+    },
+    "steps": [
+     "Obtain the redirect URI from your Composio auth config dashboard.",
+     "Add the absolute redirect URI into your Xero app settings (wildcards are not supported)."
+    ],
+    "handoff": "Ready to test authentication flow.",
+    "claimIds": [
+     "c-redirect-wildcard",
+     "c-redirect-count",
+     "c-custom-auth-config"
+    ]
+   },
+   {
+    "id": "test-auth",
+    "name": "Test Authentication and Token Management",
+    "owner": "agent",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 15
+    },
+    "steps": [
+     "Trigger the connect flow through Composio to connect your Xero organisation.",
+     "Verify token refresh behavior and ensure refresh tokens are cycled properly before expiration."
+    ],
+    "handoff": "Integration tested against your own Xero account.",
+    "claimIds": [
+     "c-refresh-token-expiry",
+     "c-token-refresh-grace"
+    ]
+   }
+  ],
+  "artefacts": [
+   {
+    "id": "app-form-values",
+    "kind": "app-form",
+    "title": "Xero App Registration Values",
+    "body": "App Name: AI Agent Integration\nCompany URL: https://yourdomain.com\nRedirect URI: <Composio callback URL from your auth config>"
+   },
+   {
+    "id": "privacy-policy-checklist",
+    "kind": "privacy-checklist",
+    "title": "Privacy Policy & Terms Requirements",
+    "body": "Your apps must include your own legally binding terms of use and privacy policy that are available to any user. Ensure your terms clearly describe how and why you collect, store, use, and share user data."
+   }
+  ],
+  "requirements": [
+   {
+    "kind": "terms-of-service",
+    "label": "Terms of Use and Privacy Policy",
+    "required": "yes",
+    "when": "Required for all apps connecting to Xero",
+    "claimIds": [
+     "c-user-terms"
+    ]
+   },
+   {
+    "kind": "partner-application",
+    "label": "Financial Services Approval",
+    "required": "conditional",
+    "when": "If offering financial services such as lending, insurance, bank feeds, payments, or data products/underwriting",
+    "claimIds": [
+     "c-financial-services"
+    ]
+   }
+  ],
+  "scopes": [],
+  "redirectRules": [
+   {
+    "rule": "Redirection URI must be an absolute URI. Wildcards are not supported.",
+    "claimIds": [
+     "c-redirect-wildcard"
+    ]
+   },
+   {
+    "rule": "You can use up to 50 redirect URIs for your app.",
+    "claimIds": [
+     "c-redirect-count"
+    ]
+   }
+  ],
+  "blockers": [
+   {
+    "id": "rate-limit-exceeded",
+    "symptom": "HTTP 429 (too many requests)",
+    "cause": "Exceeded the concurrency limit (5 calls), minute limit (60 calls per minute), or daily limit (5000 calls per tenant per day).",
+    "fix": "Respect the Retry-After http header, combine updates into fewer requests, or optimize API usage.",
+    "fallback": "Implement request batching and backoff logic.",
+    "claimIds": [
+     "c-rate-limits",
+     "c-rate-limit-header",
+     "c-rate-limit-retry"
+    ]
+   },
+   {
+    "id": "refresh-token-expired",
+    "symptom": "Token refresh failure after expiration",
+    "cause": "Unused refresh tokens expire after 60 days, or the 30-minute grace period following a failed refresh has elapsed.",
+    "fix": "Send the user through the authorization flow again to obtain a new code.",
+    "fallback": "Prompt the user to re-authenticate via the Composio connection link.",
+    "claimIds": [
+     "c-refresh-token-expiry",
+     "c-token-refresh-grace"
+    ]
+   },
+   {
+    "id": "ai-training-breach",
+    "symptom": "API access suspended or terminated",
+    "cause": "Using API Data sourced from the Xero developer platform to train or fine-tune artificial intelligence models including LLMs.",
+    "fix": "Ensure no Xero API Data is used for training or fine-tuning AI models.",
+    "fallback": "Remove any data pipelines feeding Xero data into model training sets.",
+    "claimIds": [
+     "c-ai-training-prohibition"
+    ]
+   }
+  ],
+  "checklist": [
+   {
+    "id": "chk-signup",
+    "text": "Register for a Xero developer account on the Xero Developer portal.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-create-app",
+    "text": "Create your OAuth app in the Xero developer console and copy the Client ID and Client Secret.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-redirect-uri",
+    "text": "Get the redirect URI from your Composio auth config and add it to your Xero app settings.",
+    "owner": "you",
+    "phaseId": "configure-redirect"
+   },
+   {
+    "id": "chk-terms",
+    "text": "Publish legally binding terms of use and a privacy policy for your app.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-test-auth",
+    "text": "Initiate an OAuth flow via Composio to test connection and token exchanges.",
+    "owner": "agent",
+    "phaseId": "test-auth"
+   }
+  ],
+  "uncertainties": [
+   "Exact UI field names inside the Xero developer app creation form beyond standard Client ID/Secret and Redirect URIs.",
+   "Exact manual review turnaround time for general apps, as the documentation emphasizes terms and limits rather than a formal review SLA."
+  ],
+  "probes": [
+   {
+    "id": "p-oidc-discovery-0",
+    "kind": "oidc-discovery",
+    "url": "https://xero.com/.well-known/openid-configuration",
+    "status": 301,
+    "location": "https://www.xero.com:443/.well-known/openid-configuration",
+    "bodySnippet": "<html> <head><title>301 Moved Permanently</title></head> <body> <center><h1>301 Moved Permanently</h1></center> </body> </html> ",
+    "at": "2026-11-03T13:23:46.644Z"
+   },
+   {
+    "id": "p-oauth-metadata-1",
+    "kind": "oauth-metadata",
+    "url": "https://xero.com/.well-known/oauth-authorization-server",
+    "status": 301,
+    "location": "https://www.xero.com:443/.well-known/oauth-authorization-server",
+    "bodySnippet": "<html> <head><title>301 Moved Permanently</title></head> <body> <center><h1>301 Moved Permanently</h1></center> </body> </html> ",
+    "at": "2026-11-03T13:23:46.646Z"
+   }
+  ],
+  "generation": {
+   "draftModel": "gemini-3.5-flash-lite",
+   "verifierModel": "gemini-3.5-flash-lite",
+   "ms": 26351,
+   "sources": 5
+  },
+  "claims": [
+   {
+    "id": "c-composio-xero",
+    "text": "Composio-managed OAuth available? No for Xero toolkit slug XERO.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/toolkits/xero",
+    "quote": "Composio-managed OAuth available? No",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-custom-auth-config",
+    "text": "You can create a custom auth config by registering an app in the provider's developer portal and adding the redirect URI from the dashboard, then copying the Client ID and Client Secret back into Composio.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+    "quote": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the **Client ID** and **Client Secret** back into Composio.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-dev-portal",
+    "text": "Get started with Xero's AI Toolkit and developer tools via the Xero Developer platform.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/",
+    "quote": "Get Started with Xero's AI Toolkit including OpenAI Agents SDK, MCP Server, LangChain and prompt examples.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-rate-limits",
+    "text": "Xero API rate limits are 5 calls concurrent, 60 calls per minute, and 5000 calls per day per tenant connection.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/faq/limits",
+    "quote": "- Concurrent Limit: 5 calls in progress at one time\n- Minute Limit: 60 calls per minute\n- Daily Limit: 5000 calls per day",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-rate-limit-header",
+    "text": "If you exceed either rate rate limit you will receive an HTTP 429 (too many requests) response.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/faq/limits",
+    "quote": "If you exceed either rate limit you will receive an HTTP 429 (too many requests) response.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-rate-limit-retry",
+    "text": "If you exceed a rate limit you will receive a Retry-After http header that tells you how many seconds to wait before making another request.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/faq/limits",
+    "quote": "If you exceed a rate limit you will receive a Retry-After http header that tells you how many seconds to wait before making another request.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-ai-training-prohibition",
+    "text": "You must not use API Data sourced from the Xero developer platform to train or fine tune any artificial intelligence models including machine learning tools, large language models or predictive analytics tools.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/xero-developer-platform-terms-conditions",
+    "quote": "You must not use API Data sourced from the Xero developer platform to train or fine tune any artificial intelligence models including machine learning tools, large language models or predictive analyt",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-user-terms",
+    "text": "Your apps must include your own legally binding terms of use and privacy policy that are available to any user of your apps and our services.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/xero-developer-platform-terms-conditions",
+    "quote": "Your apps must include your own legally binding terms of use and privacy policy (your terms) that are available to any user of your apps and our services.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-financial-services",
+    "text": "To use the developer platform to offer financial services through your app, your app and your financial services will need to be approved by Xero and you may need to sign up to some additional terms.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/xero-developer-platform-terms-conditions",
+    "quote": "To use the developer platform to offer financial services through your app, for example lending, insurance, bank feeds, payments, or data products / underwriting, your app and your financial services ",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-redirect-wildcard",
+    "text": "The use of wildcards in redirect URI is not supported.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/faq/oauth2",
+    "quote": "The use of wildcards in redirect URI is not supported.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-redirect-count",
+    "text": "You can use up to 50 redirect URIs for your app.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/faq/oauth2",
+    "quote": "You can use up to 50 redirect URIs for your app.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-refresh-token-expiry",
+    "text": "Unused refresh tokens expire after 60 days.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/faq/oauth2",
+    "quote": "Unused refresh tokens expire after 60 days.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-token-refresh-grace",
+    "text": "If you don't receive a response from a token refresh you can retry using your existing refresh token for up to 30 minutes.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/faq/oauth2",
+    "quote": "If you don't receive a response from a token refresh you can retry using your existing refresh token for up to 30 minutes.",
+    "checkedAt": "2026-11-03"
+   }
+  ],
+  "slug": "xero",
+  "app": {
+   "name": "Xero",
+   "website": "https://xero.com",
+   "developerDocsUrl": "https://developer.xero.com/",
+   "composioSlug": "XERO",
+   "composioManaged": false,
+   "authSchemes": [
+    "OAUTH2"
+   ]
+  },
+  "generatedBy": "agent",
+  "reviewStatus": "unreviewed",
+  "lastVerified": "2026-11-03"
+ },
+ "report": {
+  "checked": 13,
+  "quoteMisses": [],
+  "unsupported": [],
+  "integrityFixes": 0,
+  "verifierModel": "gemini-3.5-flash-lite",
+  "draftModel": "gemini-3.5-flash-lite",
+  "sources": 5,
+  "ms": 26351
+ },
+ "runAt": "2026-11-03T13:24:02.093Z"
+}

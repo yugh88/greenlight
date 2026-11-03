@@ -1,0 +1,423 @@
+{
+ "verdict": {
+  "difficulty": 3,
+  "label": "Full review",
+  "summary": "You can test Gmail OAuth immediately via Composio-managed apps, but bringing your own app requires creating a Google Cloud project, configuring OAuth consent, and potentially completing Google app verification depending on scopes.",
+  "firstTokenMinutes": {
+   "min": 0,
+   "max": 5
+  },
+  "productionDays": {
+   "min": 1,
+   "max": 14
+  },
+  "cost": "Free",
+  "claimIds": [
+   "c-managed-app-available",
+   "c-google-cloud-project",
+   "c-verification-process"
+  ]
+ },
+ "composioFit": {
+  "summary": "Composio provides a managed OAuth app for Gmail so you can start testing immediately without registering your own Google Cloud project.",
+  "whyOwnApp": [
+   "You need your own app name and branding on OAuth consent screens.",
+   "You need custom scopes not covered by Composio defaults.",
+   "You need a dedicated rate limit quota instead of sharing Composio's pool."
+  ],
+  "claimIds": [
+   "c-managed-app-available",
+   "c-why-own-app-1",
+   "c-why-own-app-2",
+   "c-why-own-app-3"
+  ]
+ },
+ "phases": [
+  {
+   "id": "p-create",
+   "name": "Create Google Cloud Project & App",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 10,
+    "max": 20
+   },
+   "steps": [
+    "Go to the Google API Console to create a Google Cloud project.",
+    "Choose the Web application client type for server-side usage.",
+    "Obtain client ID and client secret."
+   ],
+   "handoff": "Copy your Client ID and Client Secret into the Composio dashboard.",
+   "claimIds": [
+    "c-google-cloud-project",
+    "c-web-app-type",
+    "c-get-credentials"
+   ]
+  },
+  {
+   "id": "p-configure",
+   "name": "Configure OAuth Consent & Redirects",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 10,
+    "max": 15
+   },
+   "steps": [
+    "Configure the OAuth consent screen and choose scopes.",
+    "Add the redirect URI provided by the Composio dashboard.",
+    "Save credentials back into Composio."
+   ],
+   "handoff": "Test authentication connection via Composio session.",
+   "claimIds": [
+    "c-configure-consent",
+    "c-composio-dashboard-redirect"
+   ]
+  },
+  {
+   "id": "p-verify",
+   "name": "Google App Verification",
+   "owner": "provider",
+   "waiting": true,
+   "minutes": {
+    "min": 1440,
+    "max": 20160
+   },
+   "steps": [
+    "Submit app verification request if using sensitive or restricted scopes.",
+    "Wait for Google review to remove the unverified app warning."
+   ],
+   "handoff": "Production approval received from Google.",
+   "claimIds": [
+    "c-verification-process",
+    "c-sensitive-scopes"
+   ]
+  }
+ ],
+ "artefacts": [
+  {
+   "id": "art-app-form",
+   "kind": "app-form",
+   "title": "Google Cloud OAuth Client Form Values",
+   "body": "Application Type: Web application\nName: Your Agent App Name\nAuthorized redirect URI: <Composio callback URL from your auth config>"
+  },
+  {
+   "id": "art-scope-justification",
+   "kind": "scope-justification",
+   "title": "Scope Justification Statement for Reviewers",
+   "body": "Our AI agent application requires access to Gmail to read messages, draft responses, and send emails on behalf of the user when explicitly requested during conversational workflows."
+  }
+ ],
+ "requirements": [
+  {
+   "kind": "privacy-policy",
+   "label": "Privacy Policy URL",
+   "required": "yes",
+   "when": "Required when configuring the OAuth consent screen for public apps",
+   "claimIds": [
+    "c-configure-consent"
+   ]
+  },
+  {
+   "kind": "security-assessment",
+   "label": "Security Assessment / External Audit",
+   "required": "conditional",
+   "when": "Required if your public application stores restricted scope data on servers or transmits it",
+   "claimIds": [
+    "c-restricted-scopes"
+   ]
+  }
+ ],
+ "scopes": [
+  {
+   "scope": "https://www.googleapis.com/auth/gmail.readonly",
+   "purpose": "View your email messages and settings.",
+   "tier": "sensitive",
+   "reviewTrigger": true,
+   "claimIds": [
+    "c-gmail-readonly-scope"
+   ]
+  },
+  {
+   "scope": "https://www.googleapis.com/auth/gmail.send",
+   "purpose": "Send email on your behalf.",
+   "tier": "sensitive",
+   "reviewTrigger": true,
+   "claimIds": [
+    "c-gmail-send-scope"
+   ]
+  },
+  {
+   "scope": "https://www.googleapis.com/auth/gmail.modify",
+   "purpose": "Read, compose, and send emails from your Gmail account.",
+   "tier": "sensitive",
+   "reviewTrigger": true,
+   "claimIds": [
+    "c-gmail-modify-scope"
+   ]
+  },
+  {
+   "scope": "https://www.googleapis.com/auth/gmail.metadata",
+   "purpose": "View your email message metadata such as labels and headers, but not the email body.",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-gmail-metadata-scope"
+   ]
+  }
+ ],
+ "redirectRules": [
+  {
+   "rule": "Register the exact redirect URI provided by the Composio dashboard in the Google API Console.",
+   "claimIds": [
+    "c-composio-dashboard-redirect"
+   ]
+  }
+ ],
+ "blockers": [
+  {
+   "id": "b-invalid-client",
+   "symptom": "authError=Cg5pbnZhbGlkX2NsaWVudBIfVGhlIE9BdXRoIGNsaWVudCB3YXMgbm90IGZvdW5kLiCRAw",
+   "cause": "The OAuth client ID was not found or is incorrect in your request.",
+   "fix": "Double-check your Client ID in the Google API Console and update your integration configuration.",
+   "fallback": "Use Composio-managed app configuration which handles client credentials automatically.",
+   "claimIds": [
+    "c-invalid-client-error",
+    "c-managed-app-available"
+   ]
+  }
+ ],
+ "checklist": [
+  {
+   "id": "chk-1",
+   "text": "Determine if you want to use the Composio-managed Gmail app or create a custom app.",
+   "owner": "you",
+   "phaseId": "p-create"
+  },
+  {
+   "id": "chk-2",
+   "text": "Create a Google Cloud project in the Google API Console.",
+   "owner": "you",
+   "phaseId": "p-create"
+  },
+  {
+   "id": "chk-3",
+   "text": "Configure the OAuth consent screen with correct app branding and privacy policy links.",
+   "owner": "you",
+   "phaseId": "p-configure"
+  },
+  {
+   "id": "chk-4",
+   "text": "Select required Gmail scopes (e.g., readonly, modify, send).",
+   "owner": "you",
+   "phaseId": "p-configure"
+  },
+  {
+   "id": "chk-5",
+   "text": "Add the Composio redirect URI to your Google Cloud project credentials.",
+   "owner": "you",
+   "phaseId": "p-configure"
+  },
+  {
+   "id": "chk-6",
+   "text": "Copy Client ID and Client Secret into the Composio dashboard auth config.",
+   "owner": "you",
+   "phaseId": "p-configure"
+  },
+  {
+   "id": "chk-7",
+   "text": "Submit for Google verification if utilizing sensitive or restricted scopes for public distribution.",
+   "owner": "provider",
+   "phaseId": "p-verify"
+  }
+ ],
+ "uncertainties": [
+  "Exact verification turnaround times by Google Trust and Safety are variable and not strictly bounded by documentation.",
+  "Specific volume limits for refresh tokens per user-client combination are not exhaustively quantified in public docs."
+ ],
+ "probes": [
+  {
+   "id": "p-oidc-discovery-0",
+   "kind": "oidc-discovery",
+   "url": "https://accounts.google.com/.well-known/openid-configuration",
+   "status": 200,
+   "bodySnippet": "{ \"issuer\": \"https://accounts.google.com\", \"authorization_endpoint\": \"https://accounts.google.com/o/oauth2/v2/auth\", \"device_authorization_endpoint\": \"https://oauth2.googleapis.com/device/code\", \"token_endpoint\": \"https://oauth2.googleapis.com/token\", \"userinfo_endpoint\": \"https://openidconnect.googleapis.com/v1/userinfo\", \"revocation_endpoint\": \"https://oauth2.googleapis.com/revoke\", \"jwks_uri\": ",
+   "at": "2026-11-03T13:25:49.672Z"
+  },
+  {
+   "id": "p-oauth-metadata-1",
+   "kind": "oauth-metadata",
+   "url": "https://accounts.google.com/.well-known/oauth-authorization-server",
+   "status": 200,
+   "bodySnippet": "{ \"issuer\": \"https://accounts.google.com\", \"authorization_endpoint\": \"https://accounts.google.com/o/oauth2/v2/auth\", \"device_authorization_endpoint\": \"https://oauth2.googleapis.com/device/code\", \"token_endpoint\": \"https://oauth2.googleapis.com/token\", \"userinfo_endpoint\": \"https://openidconnect.googleapis.com/v1/userinfo\", \"revocation_endpoint\": \"https://oauth2.googleapis.com/revoke\", \"jwks_uri\": ",
+   "at": "2026-11-03T13:25:49.674Z"
+  },
+  {
+   "id": "p-authorize-accounts.google.com",
+   "kind": "authorize-dummy-client",
+   "url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe&scope=openid",
+   "status": 302,
+   "location": "https://accounts.google.com/signin/oauth/error?authError=Cg5pbnZhbGlkX2NsaWVudBIfVGhlIE9BdXRoIGNsaWVudCB3YXMgbm90IGZvdW5kLiCRAw&flowName=GeneralOAuthFlow&client_id=greenlight-probe-invalid-client&as=S34563123%3A1793712350374783&aes=AVQXgOCDqAOK-lIMa6kIQ4er-a3E",
+   "bodySnippet": "<HTML> <HEAD> <TITLE>Moved Temporarily</TITLE> </HEAD> <BODY BGCOLOR=\"#FFFFFF\" TEXT=\"#000000\"> <!-- GSE Default Error --> <H1>Moved Temporarily</H1> The document has moved <A HREF=\"https://accounts.google.com/signin/oauth/error?authError=Cg5pbnZhbGlkX2NsaWVudBIfVGhlIE9BdXRoIGNsaWVudCB3YXMgbm90IGZvdW5kLiCRAw&amp;flowName=GeneralOAuthFlow&amp;client_id=greenlight-probe-invalid-client&amp;as=S3456312",
+   "at": "2026-11-03T13:25:50.298Z"
+  }
+ ],
+ "generation": {
+  "draftModel": "gemini-3.5-flash-lite",
+  "verifierModel": "gemini-3.5-flash-lite",
+  "ms": 38216,
+  "sources": 7
+ },
+ "claims": [
+  {
+   "id": "c-managed-app-available",
+   "text": "Composio provides a managed OAuth app for Gmail so you do not need to register your own OAuth app initially.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/toolkits/gmail",
+   "quote": "Composio-managed OAuth available? Yes",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-why-own-app-1",
+   "text": "You should use your own OAuth app when your product's branding requirements call for your app name on OAuth consent screens.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+   "quote": "You need your app name on OAuth consent screens. Use your own OAuth app when your product's branding requirements call for it.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-why-own-app-2",
+   "text": "You should use your own OAuth app when you need custom scopes not provided by Composio defaults.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+   "quote": "You need custom scopes. Composio's default scopes may not include everything you need (e.g., write access to a specific Google API).",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-why-own-app-3",
+   "text": "You should use your own OAuth app when you are hitting rate limits because managed apps share quota across all Composio users.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+   "quote": "You're hitting rate limits. Managed apps share quota across all Composio users. Your own app gets a dedicated quota.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-google-cloud-project",
+   "text": "To begin obtaining OAuth 2.0 client credentials, visit the Google API Console.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.google.com/identity/protocols/oauth2?hl=en",
+   "quote": "Visit the Google API Console to obtain OAuth 2.0 credentials such as a client ID and client secret that are known to both Google",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-web-app-type",
+   "text": "For server-side or JavaScript web apps use the Web application application type.",
+   "evidence": "uncertain",
+   "sourceUrl": "https://developers.google.com/identity/protocols/oauth2?hl=en",
+   "quote": "For server-side or JavaScript web apps use the Web application application type. Don't use this application type for any other application",
+   "checkedAt": "2026-11-03",
+   "reason": "Quote not found on the cited page when re-checked (match 0.773)."
+  },
+  {
+   "id": "c-get-credentials",
+   "text": "Obtain OAuth 2.0 client credentials from the Google API Console.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.google.com/identity/protocols/oauth2?hl=en",
+   "quote": "To begin, obtain OAuth 2.0 client credentials from the Google API Console.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-configure-consent",
+   "text": "Configure the OAuth consent screen and choose scopes to define what information is displayed to users and app reviewers.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.google.com/workspace/gmail/api/auth/scopes?hl=en",
+   "quote": "Configure the OAuth consent screen and choose scopes to define what information is displayed to users and app reviewers, and register your app so that you can publish it later.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-verification-process",
+   "text": "If your public application uses scopes that permit access to certain user data, it must complete a verification process.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.google.com/workspace/gmail/api/auth/scopes?hl=en",
+   "quote": "If your public application uses scopes that permit access to certain user data, it must complete a verification process.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-sensitive-scopes",
+   "text": "Sensitive scopes provide access to specific Google user data that users authorize for your app and require additional OAuth App Verification.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.google.com/workspace/gmail/api/auth/scopes?hl=en",
+   "quote": "Sensitive : These scopes provide access to specific Google user data that users authorize for your app. They require additional OAuth App Verification.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-restricted-scopes",
+   "text": "If you store restricted scope data on servers (or transmit), then you must go through a security assessment.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.google.com/workspace/gmail/api/auth/scopes?hl=en",
+   "quote": "If you store restricted scope data on servers (or transmit), then you must go through a security assessment.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-dashboard-redirect",
+   "text": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+   "quote": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the Client ID and Client Secret back into Composio.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-gmail-readonly-scope",
+   "text": "The scope https://www.googleapis.com/auth/gmail.readonly allows viewing email messages and settings.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.google.com/workspace/gmail/api/auth/scopes?hl=en",
+   "quote": "https://www.googleapis.com/auth/gmail.readonly | View your email messages and settings.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-gmail-send-scope",
+   "text": "The scope https://www.googleapis.com/auth/gmail.send allows sending email on your behalf.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.google.com/workspace/gmail/api/auth/scopes?hl=en",
+   "quote": "https://www.googleapis.com/auth/gmail.send | Send email on your behalf.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-gmail-modify-scope",
+   "text": "The scope https://www.googleapis.com/auth/gmail.modify allows reading, composing, and sending emails from your Gmail account.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.google.com/workspace/gmail/api/auth/scopes?hl=en",
+   "quote": "https://www.googleapis.com/auth/gmail.modify | Read, compose, and send emails from your Gmail account.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-gmail-metadata-scope",
+   "text": "The scope https://www.googleapis.com/auth/gmail.metadata allows viewing email message metadata such as labels and headers, but not the email body.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.google.com/workspace/gmail/api/auth/scopes?hl=en",
+   "quote": "https://www.googleapis.com/auth/gmail.metadata | View your email message metadata such as labels and headers, but not the email body.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-invalid-client-error",
+   "text": "Authorize URL with an invalid client results in an invalid client error response indicating the OAuth client was not found.",
+   "evidence": "tested",
+   "artifact": "probe:p-authorize-accounts.google.com",
+   "checkedAt": "2026-11-03"
+  }
+ ],
+ "slug": "gmail",
+ "app": {
+  "name": "Gmail",
+  "website": "https://accounts.google.com",
+  "developerDocsUrl": "https://developers.google.com/identity/protocols/oauth2?hl=en",
+  "composioSlug": "GMAIL",
+  "composioManaged": true,
+  "authSchemes": [
+   "OAUTH2"
+  ]
+ },
+ "generatedBy": "agent",
+ "reviewStatus": "unreviewed",
+ "lastVerified": "2026-11-03"
+}

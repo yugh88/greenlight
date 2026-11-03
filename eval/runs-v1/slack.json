@@ -1,0 +1,457 @@
+{
+ "guide": {
+  "verdict": {
+   "difficulty": 2,
+   "label": "Light review",
+   "summary": "You can test Slack OAuth immediately with your own account and Composio-managed apps, or register a custom Slack app with straightforward redirect configuration.",
+   "firstTokenMinutes": {
+    "min": 5,
+    "max": 15
+   },
+   "productionDays": {
+    "min": 1,
+    "max": 5
+   },
+   "cost": "Free",
+   "claimIds": [
+    "c-slack-managed-yes",
+    "c-oauth-steps",
+    "c-redirect-https"
+   ]
+  },
+  "composioFit": {
+   "summary": "Composio provides a fully managed OAuth app for Slack by default, meaning you can skip registering your own app unless you need custom branding, dedicated rate limits, or custom scopes.",
+   "whyOwnApp": [
+    "You need your own product branding and app name on the OAuth consent screen.",
+    "You need custom scopes not included in Composio's default set.",
+    "You are hitting shared provider rate limits and need a dedicated quota.",
+    "You are connecting to a custom instance or GovSlack."
+   ],
+   "claimIds": [
+    "c-slack-managed-yes",
+    "c-composio-why-custom"
+   ]
+  },
+  "phases": [
+   {
+    "id": "create-app",
+    "name": "Create Slack App",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 10
+    },
+    "steps": [
+     "Go to Slack app management and create a new Slack app.",
+     "Configure OAuth & Permissions and add your redirect URI."
+    ],
+    "handoff": "Provide your Client ID and Client Secret to Composio.",
+    "claimIds": [
+     "c-app-management-create",
+     "c-redirect-uri-config"
+    ]
+   },
+   {
+    "id": "configure-oauth",
+    "name": "Configure Redirect URI and Scopes",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 10
+    },
+    "steps": [
+     "Add the Composio redirect URI in your app settings under OAuth & Permissions.",
+     "Ensure the redirect URI uses HTTPS."
+    ],
+    "handoff": "Test the OAuth connection link.",
+    "claimIds": [
+     "c-redirect-https",
+     "c-redirect-match"
+    ]
+   },
+   {
+    "id": "test-connection",
+    "name": "Test Connection",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 10
+    },
+    "steps": [
+     "Initiate the OAuth flow using the authorize URL with your client_id and required scopes.",
+     "Approve the scopes in your Slack workspace."
+    ],
+    "handoff": "Verify token exchange completes successfully.",
+    "claimIds": [
+     "c-oauth-authorize-url",
+     "c-oauth-three-steps"
+    ]
+   }
+  ],
+  "artefacts": [
+   {
+    "id": "art-app-form",
+    "kind": "app-form",
+    "title": "Slack App Registration Details",
+    "body": "App Name: Your AI Agent Integration\nRedirect URI: <Composio callback URL from your auth config>"
+   },
+   {
+    "id": "art-scope-justification",
+    "kind": "scope-justification",
+    "title": "Scope Justification Example",
+    "body": "We request chat:write and incoming-webhook to allow our AI agent to send automated operational updates and respond to user queries directly within designated channels."
+   }
+  ],
+  "requirements": [
+   {
+    "kind": "privacy-policy",
+    "label": "Privacy Policy URL",
+    "required": "conditional",
+    "when": "Required if publishing to the Slack Marketplace",
+    "claimIds": [
+     "c-marketplace-policy"
+    ]
+   },
+   {
+    "kind": "domain-verification",
+    "label": "HTTPS Redirect URI",
+    "required": "yes",
+    "when": "Always required for OAuth redirect URIs",
+    "claimIds": [
+     "c-redirect-https"
+    ]
+   }
+  ],
+  "scopes": [
+   {
+    "scope": "incoming-webhook",
+    "purpose": "Post messages to Slack via incoming webhooks",
+    "tier": "basic",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-oauth-authorize-url"
+    ]
+   },
+   {
+    "scope": "commands",
+    "purpose": "Add slash commands to your Slack app",
+    "tier": "basic",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-scope-example"
+    ]
+   },
+   {
+    "scope": "search:read",
+    "purpose": "Search workspace content",
+    "tier": "sensitive",
+    "reviewTrigger": true,
+    "claimIds": [
+     "c-user-scope-example"
+    ]
+   }
+  ],
+  "redirectRules": [
+   {
+    "rule": "The redirect_uri must use HTTPS and cannot contain an anchor (#).",
+    "claimIds": [
+     "c-redirect-https"
+    ]
+   },
+   {
+    "rule": "Your redirect_uri must match or be a subdirectory of a Redirect URL configured under App Management.",
+    "claimIds": [
+     "c-redirect-match"
+    ]
+   }
+  ],
+  "blockers": [
+   {
+    "id": "blocker-bad-redirect",
+    "symptom": "bad_redirect_uri error",
+    "cause": "Multiple Redirect URLs are configured in App Management, but the redirect_uri parameter was omitted or did not match the value sent in the Access step.",
+    "fix": "Include the redirect_uri parameter in both the Authorize and Access steps with the exact same value.",
+    "fallback": "Use a single configured redirect URL in App Management.",
+    "claimIds": [
+     "c-bad-redirect-error"
+    ]
+   },
+   {
+    "id": "blocker-query-token",
+    "symptom": "API returns an error when passing access tokens in query strings",
+    "cause": "Apps created after February 24, 2021 are prohibited from sending tokens as query parameters.",
+    "fix": "Send access tokens in the HTTP Authorization header as a Bearer token or as a POST body parameter.",
+    "fallback": "Use Slack's official SDK or libraries which handle token transport automatically.",
+    "claimIds": [
+     "c-no-tokens-querystring"
+    ]
+   },
+   {
+    "id": "blocker-scope-conflict",
+    "symptom": "Scope conflict error during authorization",
+    "cause": "Attempting to combine Sign in with Slack (SIWS) user scopes with non-Sign in with Slack scopes in the same OAuth flow.",
+    "fix": "Request each set of scopes in a separate OAuth flow.",
+    "fallback": "Separate authentication flows for user sign-in and app installation.",
+    "claimIds": [
+     "c-scope-conflict"
+    ]
+   }
+  ],
+  "checklist": [
+   {
+    "id": "chk-1",
+    "text": "Decide whether to use Composio-managed Slack auth or register a custom Slack app.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-2",
+    "text": "Create a new Slack app in the Slack App Management console if using custom auth.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-3",
+    "text": "Configure an HTTPS redirect URI under OAuth & Permissions.",
+    "owner": "you",
+    "phaseId": "configure-oauth"
+   },
+   {
+    "id": "chk-4",
+    "text": "Copy Client ID and Client Secret into the Composio dashboard auth config.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-5",
+    "text": "Construct the OAuth authorize URL with your required bot or user scopes.",
+    "owner": "agent",
+    "phaseId": "test-connection"
+   },
+   {
+    "id": "chk-6",
+    "text": "Test the OAuth flow and complete the temporary authorization code exchange.",
+    "owner": "you",
+    "phaseId": "test-connection"
+   }
+  ],
+  "uncertainties": [
+   "Exact turnaround times for Slack Marketplace app reviews are not explicitly documented in the provided excerpts.",
+   "Specific rate limit numbers for custom non-Marketplace tiers beyond general descriptions are not fully detailed."
+  ],
+  "generation": {
+   "draftModel": "gemini-3.5-flash-lite",
+   "verifierModel": "gemini-3.5-flash-lite",
+   "ms": 36193,
+   "sources": 9
+  },
+  "claims": [
+   {
+    "id": "c-slack-managed-yes",
+    "text": "Composio provides a managed OAuth app for Slack.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/toolkits/slack",
+    "quote": "Composio-managed OAuth available? Yes",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-composio-why-custom",
+    "text": "You can create a custom auth config for branding, scopes, rate limits, polling intervals, or custom instances.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+    "quote": "You can still create a custom auth config for branding, scopes, rate limits, polling intervals, or custom instances.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-oauth-steps",
+    "text": "Slack apps are installed with a v2 OAuth 2.0 flow.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.slack.dev/authentication/installing-with-oauth/",
+    "quote": "Slack apps are installed with a v2 OAuth 2.0 flow.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-oauth-three-steps",
+    "text": "Your app only has to worry about three steps to make OAuth work: requesting scopes, waiting for a user to give their approval, and exchanging a temporary authorization code for an access token.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.slack.dev/authentication/installing-with-oauth/",
+    "quote": "your app really only has to worry about three steps to make OAuth work: requesting scopes, waiting for a user to give their approval, and exchanging a temporary authorization code for an access token.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-oauth-authorize-url",
+    "text": "To request scopes, redirect Slack users to https://slack.com/oauth/v2/authorize.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.slack.dev/authentication/installing-with-oauth/",
+    "quote": "To request scopes, redirect Slack users to https://slack.com/oauth/v2/authorize .",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-scope-example",
+    "text": "Include both your app's client ID and a comma-separated list of scopes, such as scope=incoming-webhook,commands.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.slack.dev/authentication/installing-with-oauth/",
+    "quote": "Include both your app's client ID, which is found in the App Management page, and a comma-separated list of scopes, such as: scope=incoming-webhook,commands .",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-user-scope-example",
+    "text": "If you have specific need for a user token, provide a user_scope parameter with requested user scopes.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.slack.dev/authentication/installing-with-oauth/",
+    "quote": "If you have specific need for a user token (for example, so that you can act on behalf of a user), provide a user_scope parameter with requested user scopes instead of, or in addition to, the scope pa",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-redirect-https",
+    "text": "The redirect_uri must use HTTPS.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.slack.dev/authentication/installing-with-oauth/",
+    "quote": "The redirect_uri must use HTTPS.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-redirect-match",
+    "text": "Your redirect_uri must match or be a subdirectory of a Redirect URL configured under App Management.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.slack.dev/authentication/installing-with-oauth/",
+    "quote": "Your redirect_uri must match or be a subdirectory of a Redirect URL configured under App Management .",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-bad-redirect-error",
+    "text": "When there are multiple Redirect URL values configured, the redirect_uri parameter must be sent in both the Authorize and Access steps, otherwise you will encounter a bad_redirect_uri error.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.slack.dev/authentication/installing-with-oauth/",
+    "quote": "When there are multiple Redirect URL values configured, the redirect_url parameter must be sent in both the Authorize and Access steps described below, and the parameter value must be the same for bot",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-scope-conflict",
+    "text": "A scope conflict occurs when attempting to combine Sign in with Slack user scopes with non-Sign in with Slack scopes in the same OAuth flow.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.slack.dev/authentication/installing-with-oauth/",
+    "quote": "A scope conflict occurs when attempting to combine Sign in with Slack (SIWS) user scopes with non-Sign in with Slack scopes in the same OAuth flow",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-no-tokens-querystring",
+    "text": "Tokens may no longer be passed in the query string for apps created after Feb 24, 2021.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.slack.dev/changelog/2020-11-no-more-tokens-in-querystrings-for-newly-created-apps/",
+    "quote": "Tokens may no longer be passed in the query string for apps created after Feb 24, 2021",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-app-management-create",
+    "text": "You can create Slack apps from app management or explore app creation via the Slack CLI.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.slack.dev/changelog/2024-04-discontinuing-new-creation-of-classic-slack-apps-and-custom-bots/",
+    "quote": "You can create Slack apps from app management or explore app creation via the Slack CLI.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-redirect-uri-config",
+    "text": "Alternatively, you can configure a Redirect URL in the App Management page under OAuth & Permissions.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.slack.dev/authentication/installing-with-oauth/",
+    "quote": "Alternatively, you can configure a Redirect URL in the App Management page under OAuth & Permissions .",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-marketplace-policy",
+    "text": "Slack Marketplace submissions have specific guidelines and policies.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.slack.dev/changelog/2020/09/01/minor-developer-policy-update/",
+    "quote": "We appended our Submission Guidelines to the list of guidelines and policies we expect those submitting to the Slack Marketplace to follow.",
+    "checkedAt": "2026-11-03"
+   }
+  ],
+  "slug": "slack",
+  "app": {
+   "name": "Slack",
+   "website": "https://slack.com",
+   "developerDocsUrl": "https://docs.slack.dev/authentication/installing-with-oauth/",
+   "composioSlug": "SLACK",
+   "composioManaged": true,
+   "authSchemes": [
+    "OAUTH2"
+   ]
+  },
+  "generatedBy": "agent",
+  "reviewStatus": "unreviewed",
+  "lastVerified": "2026-11-03",
+  "probes": [
+   {
+    "id": "p-oidc-discovery-0",
+    "kind": "oidc-discovery",
+    "url": "https://slack.com/.well-known/openid-configuration",
+    "status": 200,
+    "bodySnippet": "{\"issuer\":\"https://slack.com\",\"authorization_endpoint\":\"https://slack.com/openid/connect/authorize\",\"token_endpoint\":\"https://slack.com/api/openid.connect.token\",\"userinfo_endpoint\":\"https://slack.com/api/openid.connect.userInfo\",\"jwks_uri\":\"https://slack.com/openid/connect/keys\",\"scopes_supported\":[\"openid\",\"profile\",\"email\"],\"response_types_supported\":[\"code\"],\"response_modes_supported\":[\"query\"",
+    "at": "2026-11-03T13:21:47.822Z"
+   },
+   {
+    "id": "p-oidc-discovery-4",
+    "kind": "oidc-discovery",
+    "url": "https://accounts.slack.com/.well-known/openid-configuration",
+    "status": 200,
+    "bodySnippet": "{\"issuer\":\"https://slack.com\",\"authorization_endpoint\":\"https://slack.com/openid/connect/authorize\",\"token_endpoint\":\"https://slack.com/api/openid.connect.token\",\"userinfo_endpoint\":\"https://slack.com/api/openid.connect.userInfo\",\"jwks_uri\":\"https://slack.com/openid/connect/keys\",\"scopes_supported\":[\"openid\",\"profile\",\"email\"],\"response_types_supported\":[\"code\"],\"response_modes_supported\":[\"query\"",
+    "at": "2026-11-03T13:21:47.824Z"
+   },
+   {
+    "id": "p-oidc-discovery-8",
+    "kind": "oidc-discovery",
+    "url": "https://login.slack.com/.well-known/openid-configuration",
+    "status": 200,
+    "bodySnippet": "{\"issuer\":\"https://slack.com\",\"authorization_endpoint\":\"https://slack.com/openid/connect/authorize\",\"token_endpoint\":\"https://slack.com/api/openid.connect.token\",\"userinfo_endpoint\":\"https://slack.com/api/openid.connect.userInfo\",\"jwks_uri\":\"https://slack.com/openid/connect/keys\",\"scopes_supported\":[\"openid\",\"profile\",\"email\"],\"response_types_supported\":[\"code\"],\"response_modes_supported\":[\"query\"",
+    "at": "2026-11-03T13:21:47.826Z"
+   },
+   {
+    "id": "p-oidc-discovery-10",
+    "kind": "oidc-discovery",
+    "url": "https://api.slack.com/.well-known/openid-configuration",
+    "status": 200,
+    "bodySnippet": "{\"issuer\":\"https://slack.com\",\"authorization_endpoint\":\"https://slack.com/openid/connect/authorize\",\"token_endpoint\":\"https://slack.com/api/openid.connect.token\",\"userinfo_endpoint\":\"https://slack.com/api/openid.connect.userInfo\",\"jwks_uri\":\"https://slack.com/openid/connect/keys\",\"scopes_supported\":[\"openid\",\"profile\",\"email\"],\"response_types_supported\":[\"code\"],\"response_modes_supported\":[\"query\"",
+    "at": "2026-11-03T13:21:47.826Z"
+   },
+   {
+    "id": "p-oidc-discovery-12",
+    "kind": "oidc-discovery",
+    "url": "https://slack-gov.com/.well-known/openid-configuration",
+    "status": 200,
+    "bodySnippet": "{\"issuer\":\"https://slack-gov.com\",\"authorization_endpoint\":\"https://slack-gov.com/openid/connect/authorize\",\"token_endpoint\":\"https://slack-gov.com/api/openid.connect.token\",\"userinfo_endpoint\":\"https://slack-gov.com/api/openid.connect.userInfo\",\"jwks_uri\":\"https://slack-gov.com/openid/connect/keys\",\"scopes_supported\":[\"openid\",\"profile\",\"email\"],\"response_types_supported\":[\"code\"],\"response_modes",
+    "at": "2026-11-03T13:21:47.827Z"
+   },
+   {
+    "id": "p-authorize-slack.com",
+    "kind": "authorize-dummy-client",
+    "url": "https://slack.com/openid/connect/authorize?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe",
+    "status": 404,
+    "bodySnippet": "<!DOCTYPE html><html lang=\"en-US\" class=\"\" data-cdn=\"https://a.slack-edge.com/\"><head><script type=\"text/javascript\" crossorigin=\"anonymous\" src=\"https://a.slack-edge.com/bv1-13-br/webpack.manifest.4e7059e0ba48b5a1.min.js\" onload=\"window._cdn ? _cdn.ok(this, arguments) : null\" onerror=\"window._cdn ? _cdn.failed(this, arguments) : null\"></script><script>window.ts_endpoint_url = \"https:\\/\\/slack.com",
+    "at": "2026-11-03T13:21:50.778Z"
+   },
+   {
+    "id": "p-authorize-slack.com",
+    "kind": "authorize-dummy-client",
+    "url": "https://slack.com/oauth/v2/authorize?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe",
+    "status": 200,
+    "bodySnippet": "<!DOCTYPE html><html lang=\"en-US\" class=\"\" data-cdn=\"https://a.slack-edge.com/\"><head><script>window.GA = window.GA || {}; window.GA.boot_data = window.GA.boot_data || {}; GA.boot_data.xhp = true; GA.boot_data.version_uid = \"72f95688cf8593a9280e4316e8f56f091b1f501c\"; GA.boot_data.environment = \"prod\"; GA.boot_data.abs_root_url = \"https:\\/\\/slack.com\\/\"; GA.boot_data.document_referrer = \"\"; GA.boot",
+    "at": "2026-11-03T13:21:51.089Z"
+   }
+  ]
+ },
+ "report": {
+  "checked": 15,
+  "quoteMisses": [],
+  "unsupported": [],
+  "integrityFixes": 0,
+  "verifierModel": "gemini-3.5-flash-lite",
+  "draftModel": "gemini-3.5-flash-lite",
+  "sources": 9,
+  "ms": 36193
+ },
+ "runAt": "2026-11-03T13:22:08.450Z"
+}

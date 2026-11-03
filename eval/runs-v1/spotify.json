@@ -1,0 +1,432 @@
+{
+ "guide": {
+  "verdict": {
+   "difficulty": 2,
+   "label": "Light review",
+   "summary": "Spotify requires creating an app in the Developer Dashboard and bringing your own OAuth credentials to Composio, featuring a development mode for initial testing.",
+   "firstTokenMinutes": {
+    "min": 5,
+    "max": 15
+   },
+   "productionDays": {
+    "min": 1,
+    "max": 7
+   },
+   "cost": "Free",
+   "claimIds": [
+    "c-diff",
+    "c-dashboard",
+    "c-dev-mode"
+   ]
+  },
+  "composioFit": {
+   "summary": "Spotify is not a Composio-managed app, so you must bring your own OAuth app configuration.",
+   "whyOwnApp": [
+    "Composio-managed OAuth is not available for Spotify.",
+    "You need your own Client ID and Client Secret to configure the custom auth config in Composio."
+   ],
+   "claimIds": [
+    "c-composio-no"
+   ]
+  },
+  "phases": [
+   {
+    "id": "create-app",
+    "name": "Create Spotify App",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 2,
+     "max": 5
+    },
+    "steps": [
+     "Go to the Spotify Developer Dashboard.",
+     "Click on the Create an App button.",
+     "Fill in app details, accept the Developer Terms of Service, and click CREATE."
+    ],
+    "handoff": "Copy your Client ID and Client Secret from the app overview page.",
+    "claimIds": [
+     "c-dashboard"
+    ]
+   },
+   {
+    "id": "configure-app",
+    "name": "Configure Redirect URIs and Scopes",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 3,
+     "max": 10
+    },
+    "steps": [
+     "Retrieve the redirect URI from your Composio auth config dashboard.",
+     "Add the redirect URI to your Spotify app settings.",
+     "Ensure the redirect URI uses HTTPS (or loopback IP literals like http://127.0.0.1 for local testing)."
+    ],
+    "handoff": "Enter the Client ID and Client Secret into the Composio dashboard auth config.",
+    "claimIds": [
+     "c-redirect-rules",
+     "c-composio-config"
+    ]
+   },
+   {
+    "id": "test-app",
+    "name": "Test Connection",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 15
+    },
+    "steps": [
+     "Initiate the OAuth flow using Composio or your custom application.",
+     "Authorize access to your Spotify account.",
+     "Verify token exchange and successful API calls."
+    ],
+    "handoff": "Your app is ready for development use.",
+    "claimIds": [
+     "c-code-flow"
+    ]
+   }
+  ],
+  "artefacts": [
+   {
+    "id": "art-app-form",
+    "kind": "app-form",
+    "title": "Spotify App Registration Values",
+    "body": "App Name: Your Agent Integration\nApp Description: AI agent integration using Composio\nWebsite: https://example.com\nRedirect URI: <Composio callback URL from your auth config>"
+   },
+   {
+    "id": "art-scope-justification",
+    "kind": "scope-justification",
+    "title": "Scope Justification Statement",
+    "body": "Our application requires access to user profile and playback states via scopes such as user-read-private, user-read-email, and playback scopes to allow the AI assistant to help users manage their Spotify listening experience."
+   }
+  ],
+  "requirements": [
+   {
+    "kind": "terms-of-service",
+    "label": "Developer Terms of Service",
+    "required": "yes",
+    "when": "When creating an app in the Spotify Developer Dashboard",
+    "claimIds": [
+     "c-dashboard"
+    ]
+   },
+   {
+    "kind": "domain-verification",
+    "label": "Website URL",
+    "required": "yes",
+    "when": "Required when filling out app settings",
+    "claimIds": [
+     "c-website-field"
+    ]
+   }
+  ],
+  "scopes": [
+   {
+    "scope": "user-read-private",
+    "purpose": "Access your subscription details and private profile information.",
+    "tier": "basic",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-scope-private"
+    ]
+   },
+   {
+    "scope": "user-read-email",
+    "purpose": "Get your real email address.",
+    "tier": "basic",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-scope-email"
+    ]
+   },
+   {
+    "scope": "user-read-playback-state",
+    "purpose": "Read your currently playing content and Spotify Connect devices information.",
+    "tier": "basic",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-scope-playback"
+    ]
+   }
+  ],
+  "redirectRules": [
+   {
+    "rule": "Use HTTPS for your redirect URI, unless you are using a loopback address, when HTTP is permitted.",
+    "claimIds": [
+     "c-redirect-rules"
+    ]
+   },
+   {
+    "rule": "If you are using a loopback address, use explicit IPv4 or IPv6, like http://127.0.0.1:PORT or http://[::1]:PORT.",
+    "claimIds": [
+     "c-redirect-rules"
+    ]
+   },
+   {
+    "rule": "localhost is not allowed as a redirect URI.",
+    "claimIds": [
+     "c-redirect-rules"
+    ]
+   }
+  ],
+  "blockers": [
+   {
+    "id": "blocker-invalid-client",
+    "symptom": "client_id: Invalid",
+    "cause": "An incorrect or fake Client ID was provided in the authorization request URL.",
+    "fix": "Ensure the correct Client ID from your Spotify Developer Dashboard is used.",
+    "fallback": "Check your Composio auth configuration credentials.",
+    "claimIds": [
+     "p-blocker-invalid-client"
+    ]
+   },
+   {
+    "id": "blocker-rate-limit",
+    "symptom": "429 Too Many Requests",
+    "cause": "Your app exceeded the Web API rate limit, which is more strictly enforced on apps in development mode.",
+    "fix": "Implement a backoff-retry strategy and apply for extended quota mode if needed.",
+    "fallback": "Reduce request polling frequency.",
+    "claimIds": [
+     "c-rate-limits"
+    ]
+   },
+   {
+    "id": "blocker-redirect-mismatch",
+    "symptom": "INVALID_CLIENT: Invalid redirect URI",
+    "cause": "The redirect URI supplied in the authorization request does not exactly match the allowlisted redirect URI in the Spotify Developer Dashboard.",
+    "fix": "Verify that protocols, slashes, and port numbers match exactly.",
+    "fallback": "Update allowlisted redirect URIs in the dashboard.",
+    "claimIds": [
+     "c-redirect-match"
+    ]
+   }
+  ],
+  "checklist": [
+   {
+    "id": "chk-1",
+    "text": "Log in to the Spotify Developer Dashboard.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-2",
+    "text": "Click Create an App, fill out details, and accept the Developer Terms.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-3",
+    "text": "Retrieve the redirect URI from the Composio auth config dashboard.",
+    "owner": "you",
+    "phaseId": "configure-app"
+   },
+   {
+    "id": "chk-4",
+    "text": "Add the redirect URI to the Spotify app settings with exact matching rules (HTTPS or loopback IP literals).",
+    "owner": "you",
+    "phaseId": "configure-app"
+   },
+   {
+    "id": "chk-5",
+    "text": "Copy Client ID and Client Secret into the Composio dashboard.",
+    "owner": "you",
+    "phaseId": "configure-app"
+   },
+   {
+    "id": "chk-6",
+    "text": "Test the OAuth connection using Composio.",
+    "owner": "you",
+    "phaseId": "test-app"
+   }
+  ],
+  "uncertainties": [
+   "Exact production review wait times for extended quota mode are not fully documented in the provided source texts.",
+   "Specific user caps for development mode apps are not explicitly quantified with a number in the evidence."
+  ],
+  "probes": [
+   {
+    "id": "p-oidc-discovery-12",
+    "kind": "oidc-discovery",
+    "url": "https://accounts.spotify.com/.well-known/openid-configuration",
+    "status": 200,
+    "bodySnippet": "{\"issuer\":\"https://accounts.spotify.com\",\"authorization_endpoint\":\"https://accounts.spotify.com/oauth2/v2/auth\",\"token_endpoint\":\"https://accounts.spotify.com/api/token\",\"userinfo_endpoint\":\"https://accounts.spotify.com/oidc/userinfo/v1\",\"revocation_endpoint\":\"https://accounts.spotify.com/oauth2/revoke/v1\",\"scopes_supported\":[\"email\",\"openid\",\"profile\"],\"jwks_uri\":\"https://accounts.spotify.com/oid",
+    "at": "2026-11-03T13:23:08.536Z"
+   },
+   {
+    "id": "p-oauth-metadata-13",
+    "kind": "oauth-metadata",
+    "url": "https://accounts.spotify.com/.well-known/oauth-authorization-server",
+    "status": 200,
+    "bodySnippet": "{\"authorization_endpoint\":\"https://accounts.spotify.com/authorize\",\"code_challenge_methods_supported\":[\"S256\"],\"device_authorization_endpoint\":\"https://accounts.spotify.com/oauth2/device/authorize\",\"dpop_signing_alg_values_supported\":[\"ES256\"],\"grant_types_supported\":[\"authorization_code\",\"refresh_token\",\"client_credentials\",\"urn:ietf:params:oauth:grant-type:jwt-bearer\"],\"issuer\":\"https://accounts",
+    "at": "2026-11-03T13:23:08.537Z"
+   },
+   {
+    "id": "p-authorize-accounts.spotify.com",
+    "kind": "authorize-dummy-client",
+    "url": "https://accounts.spotify.com/oauth2/v2/auth?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe",
+    "status": 400,
+    "bodySnippet": "client_id: Invalid",
+    "at": "2026-11-03T13:23:09.408Z"
+   },
+   {
+    "id": "p-authorize-accounts.spotify.com",
+    "kind": "authorize-dummy-client",
+    "url": "https://accounts.spotify.com/authorize?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe",
+    "status": 303,
+    "location": "https://accounts.spotify.com/en/login?continue=https%3A%2F%2Faccounts.spotify.com%2Fauthorize%3Fclient_id%3Dgreenlight-probe-invalid-client%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A3000%252Fgreenlight-probe-callback%26response_type%3Dcode%26state%3Dgreenlight-probe&client_id=greenlight-probe-invalid-client",
+    "bodySnippet": "",
+    "at": "2026-11-03T13:23:09.601Z"
+   }
+  ],
+  "generation": {
+   "draftModel": "gemini-3.5-flash-lite",
+   "verifierModel": "gemini-3.5-flash-lite",
+   "ms": 20577,
+   "sources": 8
+  },
+  "claims": [
+   {
+    "id": "c-diff",
+    "text": "Spotify apps start in Development Mode with limits on users and API requests.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/apps",
+    "quote": "By default, your app will be in Development Mode with limits on the number of users who can install it, and the number of API requests it can make.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-dashboard",
+    "text": "To create an app, go to your Dashboard and click on the Create an App button.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/apps",
+    "quote": "To create an app, go to your Dashboard and click on the Create an App button to open",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-dev-mode",
+    "text": "New apps default to development mode with quotas that can be extended via request.",
+    "evidence": "uncertain",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/apps",
+    "quote": "Apps in this mode have a rate limit that is much higher than apps in development mode, the default mode for new apps.",
+    "checkedAt": "2026-11-03",
+    "reason": "Quote not found on the cited page when re-checked (match 0.261)."
+   },
+   {
+    "id": "c-composio-no",
+    "text": "Composio-managed OAuth available is No for Spotify.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/toolkits/spotify",
+    "quote": "Composio-managed OAuth available? No",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-redirect-rules",
+    "text": "Use HTTPS for your redirect URI, unless you are using a loopback address, when HTTP is permitted. localhost is not allowed.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/redirect_uri",
+    "quote": "Use HTTPS for your redirect URI, unless you are using a loopback address, when HTTP is permitted.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-composio-config",
+    "text": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+    "quote": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-code-flow",
+    "text": "Spotify implements the authorization code flow with PKCE extension.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/authorization",
+    "quote": "Authorization code with PKCE",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-website-field",
+    "text": "Add a web domain or URL to the Website field.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/apps",
+    "quote": "Add a web domain or URL to the Website field.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-scope-private",
+    "text": "Endpoints that require the user-read-private scope provide access to your subscription details.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/scopes",
+    "quote": "Visible to users Access your subscription details.\nEndpoints that require the user-read-private scope",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-scope-email",
+    "text": "Endpoints that require the user-read-email scope get your real email address.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/scopes",
+    "quote": "Visible to users Get your real email address.\nEndpoints that require the user-read-email scope",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-scope-playback",
+    "text": "Endpoints that require the user-read-playback-state scope read your currently playing content and Spotify Connect devices information.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/scopes",
+    "quote": "Visible to users Read your currently playing content and Spotify Connect devices information.\nEndpoints that require the user-read-playback-state scope",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-rate-limits",
+    "text": "Exceeding the rate limit returns 429 error responses from Spotify's Web API.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/rate-limits",
+    "quote": "then you'll begin to see 429 error responses from Spotify's Web API",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-redirect-match",
+    "text": "The definition of the redirect URI must exactly match the redirect URI you provide when you create your app.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/redirect_uri",
+    "quote": "The definition of the redirect URI must exactly match the redirect URI you provide when you create your app.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "p-blocker-invalid-client",
+    "text": "Authorize URL with a fake client_id returns HTTP 400 with body client_id: Invalid.",
+    "evidence": "tested",
+    "artifact": "probe:p-authorize-accounts.spotify.com",
+    "checkedAt": "2026-11-03"
+   }
+  ],
+  "slug": "spotify",
+  "app": {
+   "name": "Spotify",
+   "website": "https://open.spotify.com",
+   "developerDocsUrl": "https://developer.spotify.com/documentation/web-api/concepts/authorization",
+   "composioSlug": "SPOTIFY",
+   "composioManaged": false,
+   "authSchemes": [
+    "OAUTH2"
+   ]
+  },
+  "generatedBy": "agent",
+  "reviewStatus": "unreviewed",
+  "lastVerified": "2026-11-03"
+ },
+ "report": {
+  "checked": 13,
+  "quoteMisses": [
+   "c-dev-mode"
+  ],
+  "unsupported": [],
+  "integrityFixes": 0,
+  "verifierModel": "gemini-3.5-flash-lite",
+  "draftModel": "gemini-3.5-flash-lite",
+  "sources": 8,
+  "ms": 20577
+ },
+ "runAt": "2026-11-03T13:23:22.645Z"
+}

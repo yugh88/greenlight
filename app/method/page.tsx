@@ -21,9 +21,9 @@ type EvalResults = {
   notes?: string[];
 };
 
-async function loadEval(): Promise<EvalResults | null> {
+async function loadEval(file = "eval/results.json"): Promise<EvalResults | null> {
   try {
-    return JSON.parse(await readFile(path.join(process.cwd(), "eval/results.json"), "utf8"));
+    return JSON.parse(await readFile(path.join(process.cwd(), file), "utf8"));
   } catch {
     return null;
   }
@@ -39,6 +39,7 @@ const RUBRIC: Record<number, string> = {
 
 export default async function MethodPage() {
   const ev = await loadEval();
+  const v1 = await loadEval("eval/results-v1.json");
   const d = directory as { counts: { managed: number; bringYourOwn: number }; checkedAt: string; source: string };
   return (
     <article className="prose-invert max-w-3xl pt-10">
@@ -121,10 +122,10 @@ export default async function MethodPage() {
       {ev ? (
         <div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Stat k="Fact recall" v={pct(ev.factRecall)} />
-            <Stat k="Fact precision" v={pct(ev.factPrecision)} />
-            <Stat k="Citation validity" v={pct(ev.citationValidity)} />
-            <Stat k="Difficulty ±1" v={pct(ev.difficultyWithin1)} sub={`exact ${pct(ev.difficultyExact)}`} />
+            <Stat k="Fact recall" v={pct(ev.factRecall)} sub={v1 ? `v1 ${pct(v1.factRecall)}` : undefined} />
+            <Stat k="Fact precision" v={pct(ev.factPrecision)} sub={v1 ? `v1 ${pct(v1.factPrecision)}` : undefined} />
+            <Stat k="Citation validity" v={pct(ev.citationValidity)} sub={v1 ? `v1 ${pct(v1.citationValidity)}` : undefined} />
+            <Stat k="Difficulty ±1" v={pct(ev.difficultyWithin1)} sub={`exact ${pct(ev.difficultyExact)}${v1 ? ` · v1 ${pct(v1.difficultyWithin1)}` : ""}`} />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
             {ev.facts} hand-checked facts across {ev.apps} apps; live agent run {ev.runAt}. Recall = facts the agent stated; precision = stated facts not contradicted;
@@ -149,6 +150,12 @@ export default async function MethodPage() {
               </tbody>
             </table>
           </div>
+          {v1 ? (
+            <p className="mt-3 text-xs text-muted-foreground">
+              <strong>v1 → v2:</strong> v1 discovery started from the app&apos;s homepage and often landed on a generic portal root (e.g. &ldquo;Gmail&rdquo; → accounts.google.com → developers.google.com), so recall was {pct(v1.factRecall)}.
+              v2 adds the docs site&apos;s <code>llms.txt</code> index, product-path probing and model-suggested docs URLs that must fetch and mention OAuth before use.
+            </p>
+          ) : null}
           {ev.notes?.length ? <ul className="mt-3 list-disc pl-5 text-xs text-muted-foreground">{ev.notes.map((n, i) => <li key={i}>{n}</li>)}</ul> : null}
         </div>
       ) : (

@@ -94,6 +94,18 @@ export async function discover(input: string, emit: (m: string) => void): Promis
       .slice(0, 5),
   ].filter(Boolean) as string[];
 
+  // Model-knowledge hints (verified by fetch before use): helps umbrella providers whose
+  // product docs live deep in a shared portal (Gmail → developers.google.com/workspace/gmail).
+  const hints = await docHints(name, root).catch(() => [] as string[]);
+  if (hints.length) emit(`Checking ${hints.length} likely docs URLs`);
+  const hintPages: Page[] = [];
+  for (const h of hints) {
+    const p = await fetchPage(h, 10_000);
+    if (p && p.status < 400 && /oauth|authoriz/i.test(p.text)) hintPages.push(p);
+  }
+  if (hintPages.length) emit(`Verified ${hintPages.length} docs URL(s): ${hintPages.map((p) => p.finalUrl).join(", ")}`);
+  if (hintPages.length) portalUrls.unshift(...hintPages.map((p) => p.finalUrl));
+
   let portal: Page | null = null;
   for (const u of portalUrls) {
     const p = await fetchPage(u, 10_000);
@@ -109,6 +121,7 @@ export async function discover(input: string, emit: (m: string) => void): Promis
   const orgToken = root.split(".")[0];
   const pool = new Map<string, { href: string; text: string }>();
   const portalHost = portal ? safeHost(portal.finalUrl) : null;
+  const hintOrgs = [...new Set(hintPages.map((p) => (safeHost(p.finalUrl) ?? "").split(".").slice(-2)[0]).filter((t) => t && t.length > 2))];
   // JS-rendered doc sites expose few links per page: also read portal root, /docs/ and sitemap.xml
   const extra: { href: string; text: string }[] = [];
   if (portal) {
@@ -116,6 +129,15 @@ export async function discover(input: string, emit: (m: string) => void): Promis
     for (const u of [`${origin}/`, `${origin}/docs/`]) {
       const p = await fetchPage(u, 8_000);
       if (p && p.status < 400) extra.push(...p.links);
+    }
+    // llms.txt: an agent-oriented index of every doc page (Mintlify, many modern doc sites)
+    for (const u of [`${origin}/llms.txt`, `${origin}/docs/llms.txt`]) {
+      const lt = await fetchPage(u, 8_000);
+      if (lt && lt.status < 400 && /\]\(https?:\/\//.test(lt.text)) {
+        for (const m of lt.text.matchAll(/\[([^\]]{2,120})\]\((https?:\/\/[^)\s]+)\)/g)) extra.push({ href: m[2], text: m[1] });
+        emit(`Read ${u} (agent index of the docs)`);
+        break;
+      }
     }
     const sm = await fetchPage(`${origin}/sitemap.xml`, 8_000);
     if (sm && sm.status < 400 && /<loc>/i.test(sm.text)) {
@@ -128,13 +150,25 @@ export async function discover(input: string, emit: (m: string) => void): Promis
       }
     }
   }
+  if (portal) {
+    const origin = new URL(portal.finalUrl).origin;
+    const tok = slugify(name).split("-")[0];
+    for (const u of [`${origin}/${tok}`, `${origin}/docs/${tok}`]) {
+      const p = await fetchPage(u, 8_000);
+      if (p && p.status < 400) extra.push(...p.links);
+    }
+  }
+  for (const p of hintPages) extra.push({ href: p.finalUrl, text: p.title || "docs" }, ...p.links);
   for (const l of [...(portal?.links ?? []), ...extra, ...(homepage?.links ?? [])]) {
     const host = safeHost(l.href);
-    if (!host || !host.includes(orgToken)) continue;
+    if (!host || !(host.includes(orgToken) || hintOrgs.some((t) => host.includes(t)))) continue;
     const docsNav = host === portalHost && /doc|guide|getting|start|limit|reference|app|review|auth/i.test(l.href + " " + l.text);
     if (docsNav || OAUTH_WORDS.test(l.text + " " + l.href)) pool.set(l.href.replace(/#.*$/, ""), l);
   }
-  const candidates = [...pool.values()].slice(0, 120);
+  const nameToken = slugify(name).split("-")[0];
+  const all = [...pool.values()];
+  const named = all.filter((l) => nameToken.length > 2 && (l.href + " " + l.text).toLowerCase().includes(nameToken));
+  const candidates = [...named, ...all.filter((l) => !named.includes(l))].slice(0, 150);
   emit(`Collected ${candidates.length} OAuth-related links from the provider's own site`);
   return { name, domain: bare, website, homepage, portal, candidates };
 }
@@ -165,3 +199,13 @@ Prefer official docs over blog/marketing pages.\n\n${listing}`,
 }
 
 export { matchToolkit };
+
+/** Ask a cheap model for likely official OAuth docs URLs. Hints only: callers must fetch-verify. */
+async function docHints(name: string, root: string): Promise<string[]> {
+  const { object } = await structured(
+    "verifier",
+    z.object({ urls: z.array(z.string()).describe("up to 4 official documentation URLs") }),
+    `List up to 4 URLs of ${name}'s OFFICIAL developer documentation pages about: creating an OAuth app / OAuth authorization, scopes, and app review or verification / production access. The company's main domain appears to be ${root}. Only official vendor docs. If unsure, return fewer.`,
+  );
+  return object.urls.filter((u) => /^https:\/\//.test(u)).slice(0, 4);
+}

@@ -1,0 +1,295 @@
+{
+ "runAt": "2026-11-03",
+ "apps": 8,
+ "facts": 38,
+ "factRecall": 0.13157894736842105,
+ "factPrecision": 1,
+ "citationValidity": 0.9436619718309859,
+ "difficultyExact": 0.5,
+ "difficultyWithin1": 0.625,
+ "perApp": [
+  {
+   "slug": "github",
+   "gold": 1,
+   "agent": 1,
+   "covered": 2,
+   "contradicted": 0,
+   "total": 5,
+   "citations": "12/12",
+   "judgments": [
+    {
+     "id": "gh-1",
+     "verdict": "stated",
+     "why": "The guide states that GitHub OAuth apps can be registered instantly in developer settings with no verification required."
+    },
+    {
+     "id": "gh-2",
+     "verdict": "stated",
+     "why": "The guide states that you can enter up to 10 callback URLs in your app settings."
+    },
+    {
+     "id": "gh-3",
+     "verdict": "absent",
+     "why": "The guide does not mention error=redirect_uri_mismatch or specific error behavior for mismatched redirect URIs."
+    },
+    {
+     "id": "gh-4",
+     "verdict": "absent",
+     "why": "The guide mentions access token request limits but does not state that authenticated REST API requests are limited to 5,000 per hour per user."
+    },
+    {
+     "id": "gh-5",
+     "verdict": "absent",
+     "why": "The guide does not mention GitHub's recommendation of GitHub Apps over OAuth apps."
+    }
+   ]
+  },
+  {
+   "slug": "slack",
+   "gold": 2,
+   "agent": 2,
+   "covered": 1,
+   "contradicted": 0,
+   "total": 5,
+   "citations": "15/15",
+   "judgments": [
+    {
+     "id": "sl-1",
+     "verdict": "absent",
+     "why": "The guide does not mention Public Distribution for installing the app outside your own workspace."
+    },
+    {
+     "id": "sl-2",
+     "verdict": "stated",
+     "why": "The guide states that the redirect_uri must use HTTPS."
+    },
+    {
+     "id": "sl-3",
+     "verdict": "absent",
+     "why": "The guide does not mention rate limits for conversations.history based on app creation dates."
+    },
+    {
+     "id": "sl-4",
+     "verdict": "absent",
+     "why": "The guide does not specify the review duration of up to 10 weeks for new Marketplace submissions."
+    },
+    {
+     "id": "sl-5",
+     "verdict": "absent",
+     "why": "The guide does not state the requirement for the app to be installed on at least 10 active workspaces for Marketplace submission."
+    }
+   ]
+  },
+  {
+   "slug": "gmail",
+   "gold": 4,
+   "agent": 2,
+   "covered": 0,
+   "contradicted": 0,
+   "total": 6,
+   "citations": "5/6",
+   "judgments": [
+    {
+     "id": "gm-1",
+     "verdict": "absent",
+     "why": "The guide does not mention limits on test users for apps in Testing publishing status."
+    },
+    {
+     "id": "gm-2",
+     "verdict": "absent",
+     "why": "The guide does not state that test-user authorizations and refresh tokens expire after seven days in Testing mode."
+    },
+    {
+     "id": "gm-3",
+     "verdict": "absent",
+     "why": "The guide does not mention annual third-party security assessments for restricted-scope data."
+    },
+    {
+     "id": "gm-4",
+     "verdict": "absent",
+     "why": "The guide does not mention how long restricted scope verification takes."
+    },
+    {
+     "id": "gm-5",
+     "verdict": "absent",
+     "why": "The guide does not state that brand verification is required first and takes 2-3 business days."
+    },
+    {
+     "id": "gm-6",
+     "verdict": "absent",
+     "why": "The guide does not mention full mailbox access or gmail.readonly as restricted scopes."
+    }
+   ]
+  },
+  {
+   "slug": "spotify",
+   "gold": 5,
+   "agent": 2,
+   "covered": 2,
+   "contradicted": 0,
+   "total": 6,
+   "citations": "12/13",
+   "judgments": [
+    {
+     "id": "sp-1",
+     "verdict": "stated",
+     "why": "The guide states that Spotify apps start in Development Mode with limits on users."
+    },
+    {
+     "id": "sp-2",
+     "verdict": "absent",
+     "why": "The guide does not mention that every user must be added to the app's allowlist in development mode."
+    },
+    {
+     "id": "sp-3",
+     "verdict": "absent",
+     "why": "The guide does not mention if the app owner needs Spotify Premium."
+    },
+    {
+     "id": "sp-4",
+     "verdict": "absent",
+     "why": "The guide contains no information about May 15, 2025 or extended quota rules for organizations."
+    },
+    {
+     "id": "sp-5",
+     "verdict": "absent",
+     "why": "The guide does not state any requirement for 250k monthly active users."
+    },
+    {
+     "id": "sp-6",
+     "verdict": "stated",
+     "why": "The guide explicitly states that localhost is not allowed as a redirect URI and that HTTPS or 127.0.0.1 loopback should be used."
+    }
+   ]
+  },
+  {
+   "slug": "microsoft-entra-id",
+   "gold": 3,
+   "agent": 3,
+   "covered": 0,
+   "contradicted": 0,
+   "total": 5,
+   "citations": "2/2",
+   "judgments": [
+    {
+     "id": "en-1",
+     "verdict": "absent",
+     "why": "The guide does not mention multitenant apps consent rules or risk-based step-up consent."
+    },
+    {
+     "id": "en-2",
+     "verdict": "absent",
+     "why": "The guide does not discuss publisher verification or Microsoft AI Cloud Partner Program accounts."
+    },
+    {
+     "id": "en-3",
+     "verdict": "absent",
+     "why": "The guide only states that redirect rules must match the generated URI, without specifying https requirements or localhost exceptions."
+    },
+    {
+     "id": "en-4",
+     "verdict": "absent",
+     "why": "The guide does not state whether redirect URIs are case-sensitive."
+    },
+    {
+     "id": "en-5",
+     "verdict": "absent",
+     "why": "The guide does not mention tenant admin consent restrictions regarding verified publishers."
+    }
+   ]
+  },
+  {
+   "slug": "xero",
+   "gold": 3,
+   "agent": 3,
+   "covered": 0,
+   "contradicted": 0,
+   "total": 5,
+   "citations": "13/13",
+   "judgments": [
+    {
+     "id": "xe-1",
+     "verdict": "absent",
+     "why": "The guide does not mention app tiers or default connections."
+    },
+    {
+     "id": "xe-2",
+     "verdict": "absent",
+     "why": "The guide does not discuss the Core tier or connection limits related to tiers."
+    },
+    {
+     "id": "xe-3",
+     "verdict": "absent",
+     "why": "The guide does not mention listings on the Xero App Store or tier requirements for listing."
+    },
+    {
+     "id": "xe-4",
+     "verdict": "absent",
+     "why": "The guide does not mention pricing tiers like Core costing $35 AUD."
+    },
+    {
+     "id": "xe-5",
+     "verdict": "absent",
+     "why": "The guide does not mention app certification requirements for higher tiers."
+    }
+   ]
+  },
+  {
+   "slug": "x",
+   "gold": 2,
+   "agent": 3,
+   "covered": 0,
+   "contradicted": 0,
+   "total": 3,
+   "citations": "2/2",
+   "judgments": [
+    {
+     "id": "x-1",
+     "verdict": "absent",
+     "why": "The guide does not discuss the pricing model details of the X API beyond mentioning cost is Free/Tiered."
+    },
+    {
+     "id": "x-2",
+     "verdict": "absent",
+     "why": "The guide does not mention buying credits upfront in the Developer Console."
+    },
+    {
+     "id": "x-3",
+     "verdict": "absent",
+     "why": "The guide does not state whether different endpoints have different costs."
+    }
+   ]
+  },
+  {
+   "slug": "meta-ads",
+   "gold": 4,
+   "agent": 2,
+   "covered": 0,
+   "contradicted": 0,
+   "total": 3,
+   "citations": "6/8",
+   "judgments": [
+    {
+     "id": "me-1",
+     "verdict": "absent",
+     "why": "The guide does not mention business verification for advanced access."
+    },
+    {
+     "id": "me-2",
+     "verdict": "absent",
+     "why": "The guide does not contain any information about Marketing API call thresholds."
+    },
+    {
+     "id": "me-3",
+     "verdict": "absent",
+     "why": "The guide does not discuss the renaming of Standard Access or Advanced Access for the Marketing API."
+    }
+   ]
+  }
+ ],
+ "notes": [
+  "The live agent runs with open discovery (no curated source list), so this measures what a developer gets for an app outside the library.",
+  "Judge: a second model (verifier role) compares the generated guide to each reference fact. Spot-check eval/results.json → perApp[].judgments.",
+  "Ground-truth facts are sourced with verbatim quotes and re-verified by script; human confirmation pending."
+ ]
+}

@@ -1,0 +1,154 @@
+[
+ {
+  "id": "p-oidc-discovery-0",
+  "kind": "oidc-discovery",
+  "url": "https://accounts.google.com/.well-known/openid-configuration",
+  "status": 200,
+  "contentType": "application/json",
+  "bodySnippet": "{ \"issuer\": \"https://accounts.google.com\", \"authorization_endpoint\": \"https://accounts.google.com/o/oauth2/v2/auth\", \"device_authorization_endpoint\": \"https://oauth2.googleapis.com/device/code\", \"token_endpoint\": \"https://oauth2.googleapis.com/token\", \"userinfo_endpoint\": \"https://openidconnect.googleapis.com/v1/userinfo\", \"revocation_endpoint\": \"https://oauth2.googleapis.com/revoke\", \"jwks_uri\": \"https://www.googleapis.com/oauth2/v3/certs\", \"response_types_supported\": [ \"code\", \"token\", \"id_token\", \"code token\", \"code id_token\", \"token id_token\", \"code token id_token\", \"none\" ], \"response_mod",
+  "json": {
+   "issuer": "https://accounts.google.com",
+   "authorization_endpoint": "https://accounts.google.com/o/oauth2/v2/auth",
+   "device_authorization_endpoint": "https://oauth2.googleapis.com/device/code",
+   "token_endpoint": "https://oauth2.googleapis.com/token",
+   "userinfo_endpoint": "https://openidconnect.googleapis.com/v1/userinfo",
+   "revocation_endpoint": "https://oauth2.googleapis.com/revoke",
+   "jwks_uri": "https://www.googleapis.com/oauth2/v3/certs",
+   "response_types_supported": [
+    "code",
+    "token",
+    "id_token",
+    "code token",
+    "code id_token",
+    "token id_token",
+    "code token id_token",
+    "none"
+   ],
+   "response_modes_supported": [
+    "query",
+    "fragment",
+    "form_post"
+   ],
+   "subject_types_supported": [
+    "public"
+   ],
+   "id_token_signing_alg_values_supported": [
+    "RS256"
+   ],
+   "scopes_supported": [
+    "openid",
+    "email",
+    "profile"
+   ],
+   "token_endpoint_auth_methods_supported": [
+    "client_secret_post",
+    "client_secret_basic"
+   ],
+   "claims_supported": [
+    "aud",
+    "email",
+    "email_verified",
+    "exp",
+    "family_name",
+    "given_name",
+    "iat",
+    "iss",
+    "name",
+    "picture",
+    "sub"
+   ],
+   "code_challenge_methods_supported": [
+    "plain",
+    "S256"
+   ],
+   "grant_types_supported": [
+    "authorization_code",
+    "refresh_token",
+    "urn:ietf:params:oauth:grant-type:device_code",
+    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+   ],
+   "authorization_response_iss_parameter_supported": true
+  },
+  "at": "2026-11-03T13:25:49.672Z"
+ },
+ {
+  "id": "p-oauth-metadata-1",
+  "kind": "oauth-metadata",
+  "url": "https://accounts.google.com/.well-known/oauth-authorization-server",
+  "status": 200,
+  "contentType": "application/json",
+  "bodySnippet": "{ \"issuer\": \"https://accounts.google.com\", \"authorization_endpoint\": \"https://accounts.google.com/o/oauth2/v2/auth\", \"device_authorization_endpoint\": \"https://oauth2.googleapis.com/device/code\", \"token_endpoint\": \"https://oauth2.googleapis.com/token\", \"userinfo_endpoint\": \"https://openidconnect.googleapis.com/v1/userinfo\", \"revocation_endpoint\": \"https://oauth2.googleapis.com/revoke\", \"jwks_uri\": \"https://www.googleapis.com/oauth2/v3/certs\", \"response_types_supported\": [ \"code\", \"token\", \"id_token\", \"code token\", \"code id_token\", \"token id_token\", \"code token id_token\", \"none\" ], \"subject_type",
+  "json": {
+   "issuer": "https://accounts.google.com",
+   "authorization_endpoint": "https://accounts.google.com/o/oauth2/v2/auth",
+   "device_authorization_endpoint": "https://oauth2.googleapis.com/device/code",
+   "token_endpoint": "https://oauth2.googleapis.com/token",
+   "userinfo_endpoint": "https://openidconnect.googleapis.com/v1/userinfo",
+   "revocation_endpoint": "https://oauth2.googleapis.com/revoke",
+   "jwks_uri": "https://www.googleapis.com/oauth2/v3/certs",
+   "response_types_supported": [
+    "code",
+    "token",
+    "id_token",
+    "code token",
+    "code id_token",
+    "token id_token",
+    "code token id_token",
+    "none"
+   ],
+   "subject_types_supported": [
+    "public"
+   ],
+   "id_token_signing_alg_values_supported": [
+    "RS256"
+   ],
+   "token_endpoint_auth_methods_supported": [
+    "client_secret_post",
+    "client_secret_basic"
+   ],
+   "claims_supported": [
+    "aud",
+    "email",
+    "email_verified",
+    "exp",
+    "family_name",
+    "given_name",
+    "iat",
+    "iss",
+    "name",
+    "picture",
+    "sub"
+   ],
+   "code_challenge_methods_supported": [
+    "plain",
+    "S256"
+   ],
+   "grant_types_supported": [
+    "authorization_code",
+    "refresh_token",
+    "urn:ietf:params:oauth:grant-type:device_code",
+    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+   ],
+   "service_documentation": "https://developers.google.com/identity/protocols/oauth2",
+   "response_modes_supported": [
+    "query",
+    "fragment",
+    "form_post"
+   ],
+   "authorization_response_iss_parameter_supported": true,
+   "op_policy_uri": "https://developers.google.com/terms/api-services-user-data-policy",
+   "op_tos_uri": "https://developers.google.com/terms"
+  },
+  "at": "2026-11-03T13:25:49.674Z"
+ },
+ {
+  "id": "p-authorize-accounts.google.com",
+  "kind": "authorize-dummy-client",
+  "url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe&scope=openid",
+  "status": 302,
+  "location": "https://accounts.google.com/signin/oauth/error?authError=Cg5pbnZhbGlkX2NsaWVudBIfVGhlIE9BdXRoIGNsaWVudCB3YXMgbm90IGZvdW5kLiCRAw&flowName=GeneralOAuthFlow&client_id=greenlight-probe-invalid-client&as=S34563123%3A1793712350374783&aes=AVQXgOCDqAOK-lIMa6kIQ4er-a3E",
+  "contentType": "text/html; charset=UTF-8",
+  "bodySnippet": "<HTML> <HEAD> <TITLE>Moved Temporarily</TITLE> </HEAD> <BODY BGCOLOR=\"#FFFFFF\" TEXT=\"#000000\"> <!-- GSE Default Error --> <H1>Moved Temporarily</H1> The document has moved <A HREF=\"https://accounts.google.com/signin/oauth/error?authError=Cg5pbnZhbGlkX2NsaWVudBIfVGhlIE9BdXRoIGNsaWVudCB3YXMgbm90IGZvdW5kLiCRAw&amp;flowName=GeneralOAuthFlow&amp;client_id=greenlight-probe-invalid-client&amp;as=S34563123%3A1793712350374783&amp;aes=AVQXgOCDqAOK-lIMa6kIQ4er-a3E\">here</A>. </BODY> </HTML> ",
+  "at": "2026-11-03T13:25:50.298Z"
+ }
+]
