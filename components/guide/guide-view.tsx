@@ -4,6 +4,13 @@ import type { Claim, Guide } from "@/lib/schema";
 import { evidenceMix } from "@/lib/schema";
 import { DIFFICULTY_STYLE, fmtDays, fmtMinutes, fmtSpan } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import composioGuides from "@/data/composio-auth-guides.json";
+
+const GUIDE_ALIASES: Record<string, string> = { gmail: "googleapps", x: "twitter", "meta-ads": "facebook", "linkedin-ads": "linkedin" };
+function composioWalkthrough(g: Guide) {
+  const key = GUIDE_ALIASES[g.slug] ?? g.app.composioSlug?.toLowerCase() ?? g.slug;
+  return (composioGuides as { slugs: string[] }).slugs.includes(key) ? `https://composio.dev/auth/${key}` : null;
+}
 import { Chips, EvidenceChip } from "./evidence";
 import { BlockerSearch, Checklist, CopyButton, NextStep, OwnerTag } from "./interactive";
 
@@ -59,7 +66,7 @@ export function GuideView({ guide: g }: { guide: Guide }) {
           <p className="mt-4 text-[15px] leading-relaxed">
             {g.verdict.summary} <Chips ids={g.verdict.claimIds} claims={claims} />
           </p>
-          <dl className="mt-5 grid grid-cols-3 gap-3">
+          <dl className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
             <Clock label="Time to first token" hint="until you can test with your own account" value={fmtMinutes(g.verdict.firstTokenMinutes)} />
             <Clock label="Time to production" hint="incl. provider review waits" value={fmtDays(g.verdict.productionDays)} />
             <Clock label="Cost" hint="provider-side" value={g.verdict.cost} small />
@@ -249,7 +256,7 @@ function Section({ id, title, sub, children }: { id: string; title: string; sub?
 
 function Clock({ label, hint, value, small }: { label: string; hint: string; value: string; small?: boolean }) {
   return (
-    <div className="rounded-xl bg-black/25 p-3">
+    <div className={cn("rounded-xl bg-black/25 p-3", small && "col-span-2 sm:col-span-1")}>
       <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</dt>
       <dd className={cn("mt-1 font-semibold tabular-nums", small ? "text-sm leading-snug" : "text-xl")}>{value}</dd>
       <dd className="mt-0.5 text-[11px] text-muted-foreground">{hint}</dd>
@@ -322,6 +329,15 @@ function Primer({ g, claims }: { g: Guide; claims: Map<string, Claim> }) {
             <Chips ids={g.composioFit.claimIds} claims={claims} />
           </p>
           <p className="mt-1 text-muted-foreground">{g.composioFit.summary}</p>
+          {composioWalkthrough(g) ? (
+            <p className="mt-2">
+              Click-by-click console screenshots:{" "}
+              <a className="text-sky-300 underline" href={composioWalkthrough(g)!}>
+                Composio&apos;s {g.app.name} walkthrough
+              </a>
+              . This guide adds difficulty, timing, review requirements and blockers on top.
+            </p>
+          ) : null}
           {g.composioFit.whyOwnApp.length ? (
             <ul className="mt-2 list-disc space-y-0.5 pl-5 text-muted-foreground">
               {g.composioFit.whyOwnApp.map((w, i) => (

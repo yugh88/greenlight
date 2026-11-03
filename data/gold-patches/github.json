@@ -1,0 +1,51 @@
+{
+  "verdict": {
+    "summary": "No provider review: register an OAuth app (or a GitHub App, which GitHub prefers) in Developer settings, paste Composio's callback URL, and real users can connect the same day."
+  },
+  "addClaims": [
+    {
+      "id": "c-gh-app-preferred",
+      "text": "GitHub generally prefers GitHub Apps over OAuth apps; both use OAuth 2.0, but OAuth apps can only act on behalf of a user.",
+      "sourceUrl": "https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/deciding-when-to-build-a-github-app",
+      "quote": "In general, GitHub Apps are preferred over OAuth apps. Both OAuth apps and GitHub Apps use OAuth 2.0."
+    },
+    {
+      "id": "c-gh-fine-grained",
+      "text": "GitHub Apps use fine-grained permissions instead of the broad scopes OAuth apps use (e.g. reading code with an OAuth app needs the full repo scope).",
+      "sourceUrl": "https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/deciding-when-to-build-a-github-app",
+      "quote": "GitHub Apps use fine-grained permissions. For example, if your app needs to read the contents of a repository, an OAuth app would require the repo scope"
+    },
+    {
+      "id": "c-gh-public-info",
+      "text": "Everything in the OAuth app registration is treated as public; GitHub warns against internal URLs or sensitive data.",
+      "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+      "quote": "Only use information in your OAuth app that you consider public. Avoid using sensitive data, such as internal URLs, when creating an OAuth app."
+    },
+    {
+      "id": "c-composio-gh-app-byo",
+      "text": "Composio accepts your own GitHub App (client ID and secret in the GitHub auth config), not only an OAuth app.",
+      "sourceUrl": "https://docs.composio.dev/toolkits/github",
+      "quote": "You can bring your own GitHub App by configuring its client ID and client secret in the GitHub auth config."
+    },
+    {
+      "id": "c-composio-gh-install",
+      "text": "With a GitHub App, each user must still install the app and grant repository access; Composio does not yet send the installation link automatically.",
+      "sourceUrl": "https://docs.composio.dev/toolkits/github",
+      "quote": "Composio does not currently provide the GitHub App installation link automatically during this flow."
+    }
+  ],
+  "attach": { "verdict": ["c-gh-app-preferred", "c-managed-available"], "composioFit": ["c-composio-gh-app-byo"] },
+  "addBlockers": [
+    {
+      "id": "b-gh-app-not-installed",
+      "symptom": "Connected via your GitHub App, but repository tools return 404 / 'Resource not accessible by integration'",
+      "cause": "The user authorized the GitHub App but never installed it on the account or organization that owns the repositories (permissions come from the installation, not auth-config scopes).",
+      "fix": "Send users your GitHub App's installation link (github.com/apps/<your-app>/installations/new) and have them select the repositories, then retry.",
+      "fallback": "Use an OAuth app with the repo scope (broader access, no installation step), or Composio's managed GitHub app while prototyping.",
+      "claimIds": ["c-composio-gh-install"]
+    }
+  ],
+  "addUncertainties": [
+    "The 'Resource not accessible by integration' error text in the GitHub App blocker is GitHub's commonly reported message, not quoted from the cited pages."
+  ]
+}

@@ -139,3 +139,12 @@ export async function findRunningJob(input: string) {
     .limit(1);
   return rows[0] ?? null;
 }
+
+/** Global throttle for the public live agent (free-tier model quota). */
+export async function recentJobCount(minutes = 60) {
+  const rows = await db()
+    .select({ n: sql<number>`count(*)::int` })
+    .from(schema.jobs)
+    .where(sql`${schema.jobs.createdAt} > now() - make_interval(mins => ${minutes})`);
+  return rows[0]?.n ?? 0;
+}

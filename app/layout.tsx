@@ -18,8 +18,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground antialiased`}>
+    <html lang="en" className={`dark ${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`font-sans min-h-screen bg-background text-foreground antialiased`}>
         <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
           <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4">
             <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">

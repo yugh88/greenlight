@@ -5,7 +5,7 @@
  */
 import { after } from "next/server";
 import { nanoid } from "nanoid";
-import { createJob, findRunningJob, getGuide, getJob, listGuides } from "@/lib/store";
+import { createJob, findRunningJob, getGuide, recentJobCount, getJob, listGuides } from "@/lib/store";
 import { guideToMarkdown } from "@/lib/markdown";
 import { runJob } from "@/lib/agent/run-job";
 import { slugify } from "@/lib/agent/discover";
@@ -71,7 +71,10 @@ async function call(name: string, args: Record<string, string>, base: string) {
       if (cached) return text(guideToMarkdown(cached, base));
       const running = await findRunningJob(input);
       if (running) return text(`Already running. jobId: ${running.id}`);
-      const jobId = nanoid(10);
+      const LIMIT = Number(process.env.GENERATIONS_PER_HOUR ?? 20);
+  if ((await recentJobCount(60)) >= LIMIT)
+    return text("Hourly live-generation limit reached on the free model tier. Try again later.");
+  const jobId = nanoid(10);
       await createJob(jobId, input);
       after(() => runJob(jobId, input));
       return text(`Started. jobId: ${jobId}. Watch live at ${base}/generate/${jobId} or poll get_generation.`);
