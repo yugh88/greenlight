@@ -42,7 +42,8 @@
   ],
   "claimIds": [
    "c-composio-no-managed",
-   "c-composio-auth-config"
+   "c-composio-auth-config",
+   "c-composio-sdk"
   ]
  },
  "phases": [
@@ -472,6 +473,13 @@
    "evidence": "sourced",
    "sourceUrl": "https://developer.xero.com/documentation/guides/oauth2/limits/",
    "quote": "each organisation or practice is limited to connecting a maximum of five uncertified apps. There is no limit on connecting certified apps.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-sdk",
+   "text": "Composio does not manage an OAuth app for Xero: toolkits.get(\"xero\") returns composioManagedAuthSchemes [] (auth modes: OAUTH2), so you bring your own.",
+   "evidence": "tested",
+   "artifact": "/evidence/xero/composio-toolkit.json",
    "checkedAt": "2026-11-03"
   }
  ],

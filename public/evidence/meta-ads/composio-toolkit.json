@@ -1,0 +1,15 @@
+{
+ "call": "composio.toolkits.get(\"metaads\")",
+ "sdk": "@composio/core 0.27.0",
+ "at": "2026-11-03T13:59:31.973Z",
+ "response": {
+  "name": "Meta Ads",
+  "slug": "metaads",
+  "composioManagedAuthSchemes": [],
+  "authConfigModes": [
+   "OAUTH2",
+   "API_KEY"
+  ],
+  "getCurrentUserEndpoint": "https://graph.facebook.com/v26.0/me?fields=id,name"
+ }
+}

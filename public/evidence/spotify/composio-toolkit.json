@@ -1,0 +1,14 @@
+{
+ "call": "composio.toolkits.get(\"spotify\")",
+ "sdk": "@composio/core 0.27.0",
+ "at": "2026-11-03T13:59:33.837Z",
+ "response": {
+  "name": "Spotify",
+  "slug": "spotify",
+  "composioManagedAuthSchemes": [],
+  "authConfigModes": [
+   "OAUTH2"
+  ],
+  "getCurrentUserEndpoint": "https://api.spotify.com/v1/me"
+ }
+}

@@ -39,7 +39,8 @@
    "Required to use your own client ID and client secret for Shopify OAuth"
   ],
   "claimIds": [
-   "c-composio-no-managed"
+   "c-composio-no-managed",
+   "c-composio-sdk"
   ]
  },
  "phases": [
@@ -432,6 +433,13 @@
    "evidence": "sourced",
    "sourceUrl": "https://shopify.dev/docs/apps/launch/app-store-review/review-process",
    "quote": "When you submit an app, it goes through an app review process",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-sdk",
+   "text": "Composio does not manage an OAuth app for Shopify: toolkits.get(\"shopify\") returns composioManagedAuthSchemes [] (auth modes: OAUTH2, S2S_OAUTH2), so you bring your own.",
+   "evidence": "tested",
+   "artifact": "/evidence/shopify/composio-toolkit.json",
    "checkedAt": "2026-11-03"
   }
  ],

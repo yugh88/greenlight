@@ -1,0 +1,16 @@
+{
+ "call": "composio.toolkits.get(\"slack\")",
+ "sdk": "@composio/core 0.27.0",
+ "at": "2026-11-03T13:59:33.393Z",
+ "response": {
+  "name": "Slack",
+  "slug": "slack",
+  "composioManagedAuthSchemes": [
+   "OAUTH2"
+  ],
+  "authConfigModes": [
+   "OAUTH2"
+  ],
+  "getCurrentUserEndpoint": "https://slack.com/api/auth.test"
+ }
+}

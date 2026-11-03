@@ -38,7 +38,8 @@
   ],
   "claimIds": [
    "c-composio-no-managed",
-   "c-composio-why-custom"
+   "c-composio-why-custom",
+   "c-composio-sdk"
   ]
  },
  "phases": [
@@ -465,6 +466,13 @@
    "evidence": "sourced",
    "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing",
    "quote": "Different endpoints have different costs. View current rates in the Developer Console.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-sdk",
+   "text": "Composio does not manage an OAuth app for Twitter: toolkits.get(\"twitter\") returns composioManagedAuthSchemes [] (auth modes: OAUTH2), so you bring your own.",
+   "evidence": "tested",
+   "artifact": "/evidence/x/composio-toolkit.json",
    "checkedAt": "2026-11-03"
   }
  ],

@@ -1,0 +1,16 @@
+{
+ "call": "composio.toolkits.get(\"github\")",
+ "sdk": "@composio/core 0.27.0",
+ "at": "2026-11-03T13:59:30.560Z",
+ "response": {
+  "name": "GitHub",
+  "slug": "github",
+  "composioManagedAuthSchemes": [
+   "OAUTH2"
+  ],
+  "authConfigModes": [
+   "OAUTH2"
+  ],
+  "getCurrentUserEndpoint": "https://api.github.com/user"
+ }
+}

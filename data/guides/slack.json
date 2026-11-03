@@ -42,7 +42,8 @@
    "c-managed-available",
    "c-composio-why-custom-app",
    "c-composio-managed-default",
-   "c-unlisted-rate-limit-penalty"
+   "c-unlisted-rate-limit-penalty",
+   "c-composio-sdk"
   ]
  },
  "phases": [
@@ -503,6 +504,13 @@
    "evidence": "sourced",
    "sourceUrl": "https://docs.slack.dev/app-management/distribution/",
    "quote": "Your app must support SSL for all of the following URLs: - OAuth redirect URLs",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-sdk",
+   "text": "Composio manages an OAuth app for Slack: toolkits.get(\"slack\") returns composioManagedAuthSchemes [OAUTH2].",
+   "evidence": "tested",
+   "artifact": "/evidence/slack/composio-toolkit.json",
    "checkedAt": "2026-11-03"
   }
  ],

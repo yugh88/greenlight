@@ -44,7 +44,8 @@
   ],
   "claimIds": [
    "c-managed-avail",
-   "c-custom-reasons"
+   "c-custom-reasons",
+   "c-composio-sdk"
   ]
  },
  "phases": [
@@ -642,11 +643,18 @@
    "sourceUrl": "https://developers.google.com/workspace/gmail/api/auth/scopes",
    "quote": "Read, compose, send, and permanently delete all your email from Gmail.",
    "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-sdk",
+   "text": "Composio manages an OAuth app for Gmail: toolkits.get(\"gmail\") returns composioManagedAuthSchemes [OAUTH2].",
+   "evidence": "tested",
+   "artifact": "/evidence/gmail/composio-toolkit.json",
+   "checkedAt": "2026-11-03"
   }
  ],
  "uncertainties": [
-  "CASA assessment cost and assessor turnaround are set by the assessor, not Google; budget and time vary.",
-  "'invalid_grant' is the standard OAuth error for an expired refresh token; Google's page states the expiry but not the exact error string."
+  "'invalid_grant' is the standard OAuth error for an expired refresh token; Google's page states the expiry but not the exact error string.",
+  "CASA assessment cost and assessor turnaround are set by the assessor, not Google; budget and time vary."
  ],
  "generatedBy": "gold",
  "reviewStatus": "unreviewed",

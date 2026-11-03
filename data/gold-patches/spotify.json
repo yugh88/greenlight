@@ -59,6 +59,13 @@
       "text": "Requests for users not on the allowlist return a 403 error.",
       "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
       "quote": "will receive a 403 status code error"
+    },
+    {
+      "id": "c-composio-sdk",
+      "text": "Composio does not manage an OAuth app for Spotify: toolkits.get(\"spotify\") returns composioManagedAuthSchemes [] (auth modes: OAUTH2), so you bring your own.",
+      "evidence": "tested",
+      "artifact": "/evidence/spotify/composio-toolkit.json",
+      "checkedAt": "2026-11-03"
     }
   ],
   "verdict": {
@@ -77,6 +84,9 @@
       "c-sp-orgs-only",
       "c-sp-250k",
       "c-sp-premium"
+    ],
+    "composioFit": [
+      "c-composio-sdk"
     ]
   },
   "addRedirectRules": [
@@ -151,5 +161,11 @@
   ],
   "removeUncertainties": [
     0
-  ]
+  ],
+  "app": {
+    "composioManaged": false,
+    "authSchemes": [
+      "OAUTH2"
+    ]
+  }
 }

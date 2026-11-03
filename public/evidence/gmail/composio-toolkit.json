@@ -1,0 +1,16 @@
+{
+ "call": "composio.toolkits.get(\"gmail\")",
+ "sdk": "@composio/core 0.27.0",
+ "at": "2026-11-03T13:59:31.027Z",
+ "response": {
+  "name": "Gmail",
+  "slug": "gmail",
+  "composioManagedAuthSchemes": [
+   "OAUTH2"
+  ],
+  "authConfigModes": [
+   "OAUTH2"
+  ],
+  "getCurrentUserEndpoint": "https://www.googleapis.com/gmail/v1/users/me/profile"
+ }
+}

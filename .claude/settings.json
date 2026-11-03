@@ -1,22 +1,63 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "attribution": { "commit": "", "pr": "" },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "includeCoAuthoredBy": false,
   "permissions": {
     "defaultMode": "acceptEdits",
     "allow": [
-      "Bash(pnpm:*)", "Bash(npx:*)", "Bash(node:*)", "Bash(tsx:*)",
-      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git add:*)",
-      "Bash(git commit:*)", "Bash(git branch:*)", "Bash(git checkout:*)", "Bash(git remote:*)",
-      "Bash(git push:*)", "Bash(gh:*)", "Bash(vercel:*)",
-      "Bash(ls:*)", "Bash(mkdir:*)", "Bash(cat:*)", "Bash(grep:*)", "Bash(find:*)",
-      "Bash(curl:*)", "Bash(jq:*)", "Bash(mv:*)", "Bash(cp:*)",
-      "WebFetch", "WebSearch", "Edit", "Write", "mcp__playwright"
+      "Bash(pnpm:*)",
+      "Bash(npx:*)",
+      "Bash(node:*)",
+      "Bash(tsx:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git remote:*)",
+      "Bash(git push:*)",
+      "Bash(gh:*)",
+      "Bash(vercel:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(curl:*)",
+      "Bash(jq:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)",
+      "WebFetch",
+      "WebSearch",
+      "Edit",
+      "Write",
+      "mcp__playwright",
+      "Bash(bash scripts/deploy.sh)",
+      "Bash(bash scripts/deploy.sh:*)",
+      "Bash(brew install gh)",
+      "Bash(brew install gh:*)",
+      "Bash(npm i -g vercel:*)",
+      "Bash(npm install -g vercel:*)",
+      "Bash(gh repo create:*)",
+      "Bash(gh repo edit:*)",
+      "Bash(vercel deploy:*)",
+      "Bash(vercel env:*)",
+      "Bash(vercel link:*)"
     ],
-    "ask": ["Bash(rm:*)", "Bash(vercel --prod:*)", "Bash(git reset:*)"],
+    "ask": [
+      "Bash(rm:*)",
+      "Bash(git reset:*)"
+    ],
     "deny": [
-      "Bash(git push --force:*)", "Bash(git push -f:*)",
-      "Read(./.env.local)", "Read(./.env)"
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Read(./.env.local)",
+      "Read(./.env)"
     ]
   }
 }

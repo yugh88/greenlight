@@ -65,6 +65,13 @@
       "text": "Full mailbox access (https://mail.google.com/) is a restricted scope that includes permanent deletion.",
       "sourceUrl": "https://developers.google.com/workspace/gmail/api/auth/scopes",
       "quote": "Read, compose, send, and permanently delete all your email from Gmail."
+    },
+    {
+      "id": "c-composio-sdk",
+      "text": "Composio manages an OAuth app for Gmail: toolkits.get(\"gmail\") returns composioManagedAuthSchemes [OAUTH2].",
+      "evidence": "tested",
+      "artifact": "/evidence/gmail/composio-toolkit.json",
+      "checkedAt": "2026-11-03"
     }
   ],
   "verdict": {
@@ -95,7 +102,10 @@
         "c-test-user-cap",
         "c-test-7day-expiry"
       ]
-    }
+    },
+    "composioFit": [
+      "c-composio-sdk"
+    ]
   },
   "replaceScopes": [
     {
@@ -191,5 +201,11 @@
   "addUncertainties": [
     "CASA assessment cost and assessor turnaround are set by the assessor, not Google; budget and time vary.",
     "'invalid_grant' is the standard OAuth error for an expired refresh token; Google's page states the expiry but not the exact error string."
-  ]
+  ],
+  "app": {
+    "composioManaged": true,
+    "authSchemes": [
+      "OAUTH2"
+    ]
+  }
 }

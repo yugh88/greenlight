@@ -42,7 +42,8 @@
    "c-managed-available",
    "c-why-own-app",
    "c-rate-limit-authenticated",
-   "c-composio-gh-app-byo"
+   "c-composio-gh-app-byo",
+   "c-composio-sdk"
   ]
  },
  "phases": [
@@ -467,6 +468,13 @@
    "evidence": "sourced",
    "sourceUrl": "https://docs.composio.dev/toolkits/github",
    "quote": "Composio does not currently provide the GitHub App installation link automatically during this flow.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-sdk",
+   "text": "Composio manages an OAuth app for GitHub: toolkits.get(\"github\") returns composioManagedAuthSchemes [OAUTH2].",
+   "evidence": "tested",
+   "artifact": "/evidence/github/composio-toolkit.json",
    "checkedAt": "2026-11-03"
   }
  ],

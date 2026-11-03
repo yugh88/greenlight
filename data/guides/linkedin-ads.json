@@ -37,7 +37,8 @@
    "Required for custom API permissions, scope tuning, and dedicated rate limits."
   ],
   "claimIds": [
-   "c-composio-no"
+   "c-composio-no",
+   "c-composio-sdk"
   ]
  },
  "phases": [
@@ -504,6 +505,13 @@
    "evidence": "sourced",
    "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access",
    "quote": "Available to all developers approved for Advertising API access. Apply to Advertising API.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-sdk",
+   "text": "Composio does not manage an OAuth app for Linkedin Ads: toolkits.get(\"linkedin_ads\") returns composioManagedAuthSchemes [] (auth modes: OAUTH2), so you bring your own.",
+   "evidence": "tested",
+   "artifact": "/evidence/linkedin-ads/composio-toolkit.json",
    "checkedAt": "2026-11-03"
   }
  ],

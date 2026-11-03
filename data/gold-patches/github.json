@@ -32,9 +32,25 @@
       "text": "With a GitHub App, each user must still install the app and grant repository access; Composio does not yet send the installation link automatically.",
       "sourceUrl": "https://docs.composio.dev/toolkits/github",
       "quote": "Composio does not currently provide the GitHub App installation link automatically during this flow."
+    },
+    {
+      "id": "c-composio-sdk",
+      "text": "Composio manages an OAuth app for GitHub: toolkits.get(\"github\") returns composioManagedAuthSchemes [OAUTH2].",
+      "evidence": "tested",
+      "artifact": "/evidence/github/composio-toolkit.json",
+      "checkedAt": "2026-11-03"
     }
   ],
-  "attach": { "verdict": ["c-gh-app-preferred", "c-managed-available"], "composioFit": ["c-composio-gh-app-byo"] },
+  "attach": {
+    "verdict": [
+      "c-gh-app-preferred",
+      "c-managed-available"
+    ],
+    "composioFit": [
+      "c-composio-gh-app-byo",
+      "c-composio-sdk"
+    ]
+  },
   "addBlockers": [
     {
       "id": "b-gh-app-not-installed",
@@ -42,10 +58,18 @@
       "cause": "The user authorized the GitHub App but never installed it on the account or organization that owns the repositories (permissions come from the installation, not auth-config scopes).",
       "fix": "Send users your GitHub App's installation link (github.com/apps/<your-app>/installations/new) and have them select the repositories, then retry.",
       "fallback": "Use an OAuth app with the repo scope (broader access, no installation step), or Composio's managed GitHub app while prototyping.",
-      "claimIds": ["c-composio-gh-install"]
+      "claimIds": [
+        "c-composio-gh-install"
+      ]
     }
   ],
   "addUncertainties": [
     "The 'Resource not accessible by integration' error text in the GitHub App blocker is GitHub's commonly reported message, not quoted from the cited pages."
-  ]
+  ],
+  "app": {
+    "composioManaged": true,
+    "authSchemes": [
+      "OAUTH2"
+    ]
+  }
 }

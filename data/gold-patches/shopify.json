@@ -29,6 +29,13 @@
       "text": "Apps submitted for public distribution go through Shopify's app review process.",
       "sourceUrl": "https://shopify.dev/docs/apps/launch/app-store-review/review-process",
       "quote": "When you submit an app, it goes through an app review process"
+    },
+    {
+      "id": "c-composio-sdk",
+      "text": "Composio does not manage an OAuth app for Shopify: toolkits.get(\"shopify\") returns composioManagedAuthSchemes [] (auth modes: OAUTH2, S2S_OAUTH2), so you bring your own.",
+      "evidence": "tested",
+      "artifact": "/evidence/shopify/composio-toolkit.json",
+      "checkedAt": "2026-11-03"
     }
   ],
   "attach": {
@@ -36,6 +43,9 @@
       "c-sh-custom-vs-public",
       "c-sh-irreversible",
       "c-sh-review"
+    ],
+    "composioFit": [
+      "c-composio-sdk"
     ]
   },
   "addRequirements": [
@@ -78,5 +88,12 @@
   "verdict": {
     "summary": "Pick distribution first, because it's irreversible: custom distribution (one merchant or one Plus organization) works without App Store review; serving many merchants needs public distribution, a one-time App Store registration fee and Shopify's app review.",
     "cost": "Free for custom apps; one-time App Store registration fee for public apps"
+  },
+  "app": {
+    "composioManaged": false,
+    "authSchemes": [
+      "OAUTH2",
+      "S2S_OAUTH2"
+    ]
   }
 }

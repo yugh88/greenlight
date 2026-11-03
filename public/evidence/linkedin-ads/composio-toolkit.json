@@ -1,0 +1,14 @@
+{
+ "call": "composio.toolkits.get(\"linkedin_ads\")",
+ "sdk": "@composio/core 0.27.0",
+ "at": "2026-11-03T13:59:31.469Z",
+ "response": {
+  "name": "Linkedin Ads",
+  "slug": "linkedin_ads",
+  "composioManagedAuthSchemes": [],
+  "authConfigModes": [
+   "OAUTH2"
+  ],
+  "getCurrentUserEndpoint": "https://api.linkedin.com/v2/userinfo"
+ }
+}

@@ -35,6 +35,13 @@
       "text": "Certification matters beyond tiers: each Xero organisation can connect at most five uncertified apps, while certified apps have no such limit.",
       "sourceUrl": "https://developer.xero.com/documentation/guides/oauth2/limits/",
       "quote": "each organisation or practice is limited to connecting a maximum of five uncertified apps. There is no limit on connecting certified apps."
+    },
+    {
+      "id": "c-composio-sdk",
+      "text": "Composio does not manage an OAuth app for Xero: toolkits.get(\"xero\") returns composioManagedAuthSchemes [] (auth modes: OAUTH2), so you bring your own.",
+      "evidence": "tested",
+      "artifact": "/evidence/xero/composio-toolkit.json",
+      "checkedAt": "2026-11-03"
     }
   ],
   "verdict": {
@@ -49,6 +56,9 @@
       "c-xe-core-50",
       "c-xe-cert",
       "c-xe-fees"
+    ],
+    "composioFit": [
+      "c-composio-sdk"
     ]
   },
   "addBlockers": [
@@ -104,5 +114,11 @@
         "c-xe-appstore-plus"
       ]
     }
-  ]
+  ],
+  "app": {
+    "composioManaged": false,
+    "authSchemes": [
+      "OAUTH2"
+    ]
+  }
 }

@@ -40,7 +40,8 @@
   ],
   "claimIds": [
    "c-comp-managed",
-   "c-custom-config"
+   "c-custom-config",
+   "c-composio-sdk"
   ]
  },
  "phases": [
@@ -420,6 +421,13 @@
    "evidence": "sourced",
    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview",
    "quote": "Publisher verification primarily is for developers who build multitenant apps that use OAuth 2.0 and OpenID Connect",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-sdk",
+   "text": "Composio does not manage an OAuth app for Microsoft Entra ID: toolkits.get(\"microsoft_entra_id\") returns composioManagedAuthSchemes [] (auth modes: OAUTH2, S2S_OAUTH2), so you bring your own.",
+   "evidence": "tested",
+   "artifact": "/evidence/microsoft-entra-id/composio-toolkit.json",
    "checkedAt": "2026-11-03"
   }
  ],

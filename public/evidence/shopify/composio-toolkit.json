@@ -1,0 +1,15 @@
+{
+ "call": "composio.toolkits.get(\"shopify\")",
+ "sdk": "@composio/core 0.27.0",
+ "at": "2026-11-03T13:59:32.955Z",
+ "response": {
+  "name": "Shopify",
+  "slug": "shopify",
+  "composioManagedAuthSchemes": [],
+  "authConfigModes": [
+   "OAUTH2",
+   "S2S_OAUTH2"
+  ],
+  "getCurrentUserEndpoint": "https://{{subdomain}}.myshopify.com/admin/api/2026-04/shop.json"
+ }
+}

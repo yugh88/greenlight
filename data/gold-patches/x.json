@@ -17,6 +17,13 @@
       "text": "Different endpoints cost different amounts; current rates are shown in the Developer Console.",
       "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing",
       "quote": "Different endpoints have different costs. View current rates in the Developer Console."
+    },
+    {
+      "id": "c-composio-sdk",
+      "text": "Composio does not manage an OAuth app for Twitter: toolkits.get(\"twitter\") returns composioManagedAuthSchemes [] (auth modes: OAUTH2), so you bring your own.",
+      "evidence": "tested",
+      "artifact": "/evidence/x/composio-toolkit.json",
+      "checkedAt": "2026-11-03"
     }
   ],
   "verdict": {
@@ -28,6 +35,9 @@
     "verdict": [
       "c-x-ppu",
       "c-x-credits"
+    ],
+    "composioFit": [
+      "c-composio-sdk"
     ]
   },
   "addRequirements": [
@@ -96,5 +106,11 @@
         "c-x-credits"
       ]
     }
-  ]
+  ],
+  "app": {
+    "composioManaged": false,
+    "authSchemes": [
+      "OAUTH2"
+    ]
+  }
 }

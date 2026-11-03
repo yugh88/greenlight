@@ -40,7 +40,8 @@
   ],
   "claimIds": [
    "c-comp-1",
-   "c-comp-2"
+   "c-comp-2",
+   "c-composio-sdk"
   ]
  },
  "phases": [
@@ -387,6 +388,13 @@
    "evidence": "sourced",
    "sourceUrl": "https://developers.facebook.com/docs/marketing-api/get-started/authorization",
    "quote": "The revised qualification threshold for Full Access has been reduced from 1,500 to",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-sdk",
+   "text": "Composio does not manage an OAuth app for Meta Ads: toolkits.get(\"metaads\") returns composioManagedAuthSchemes [] (auth modes: OAUTH2, API_KEY), so you bring your own.",
+   "evidence": "tested",
+   "artifact": "/evidence/meta-ads/composio-toolkit.json",
    "checkedAt": "2026-11-03"
   }
  ],

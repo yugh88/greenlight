@@ -29,6 +29,7 @@ for (const slug of slugs) {
   for (const [id, patch] of Object.entries<any>(p.setClaims ?? {})) g.claims = g.claims.map((c: any) => (c.id === id ? { ...c, ...patch } : c));
   if (p.verdict) g.verdict = { ...g.verdict, ...p.verdict };
   if (p.composioFit) g.composioFit = { ...g.composioFit, ...p.composioFit };
+  if (p.app) g.app = { ...g.app, ...p.app };
   if (p.attach?.verdict) g.verdict.claimIds = [...new Set([...g.verdict.claimIds, ...p.attach.verdict])];
   if (p.attach?.composioFit) g.composioFit.claimIds = [...new Set([...g.composioFit.claimIds, ...p.attach.composioFit])];
   for (const [pid, list] of Object.entries<any>(p.attach?.phases ?? {})) g.phases = g.phases.map((ph: any) => (ph.id === pid ? { ...ph, claimIds: [...new Set([...ph.claimIds, ...list])] } : ph));

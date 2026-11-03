@@ -1,0 +1,15 @@
+{
+ "call": "composio.toolkits.get(\"microsoft_entra_id\")",
+ "sdk": "@composio/core 0.27.0",
+ "at": "2026-11-03T13:59:32.425Z",
+ "response": {
+  "name": "Microsoft Entra ID",
+  "slug": "microsoft_entra_id",
+  "composioManagedAuthSchemes": [],
+  "authConfigModes": [
+   "OAUTH2",
+   "S2S_OAUTH2"
+  ],
+  "getCurrentUserEndpoint": "https://graph.microsoft.com/v1.0/organization"
+ }
+}

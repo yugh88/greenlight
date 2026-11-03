@@ -47,6 +47,13 @@
       "text": "Publisher verification is primarily for developers building multitenant apps that use OAuth 2.0 / OpenID Connect.",
       "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview",
       "quote": "Publisher verification primarily is for developers who build multitenant apps that use OAuth 2.0 and OpenID Connect"
+    },
+    {
+      "id": "c-composio-sdk",
+      "text": "Composio does not manage an OAuth app for Microsoft Entra ID: toolkits.get(\"microsoft_entra_id\") returns composioManagedAuthSchemes [] (auth modes: OAUTH2, S2S_OAUTH2), so you bring your own.",
+      "evidence": "tested",
+      "artifact": "/evidence/microsoft-entra-id/composio-toolkit.json",
+      "checkedAt": "2026-11-03"
     }
   ],
   "verdict": {
@@ -63,6 +70,9 @@
       "c-en-unverified-block",
       "c-en-cpp",
       "c-en-verified-only-policy"
+    ],
+    "composioFit": [
+      "c-composio-sdk"
     ]
   },
   "addRequirements": [
@@ -103,7 +113,7 @@
   ],
   "addUncertainties": [
     "Exact AADSTS error codes shown to blocked users vary by tenant policy; the blocker's symptom text is paraphrased.",
-    "Microsoft doesn't publish a timeline for Partner Program account verification; the 1\u201321 day range is an estimate."
+    "Microsoft doesn't publish a timeline for Partner Program account verification; the 1–21 day range is an estimate."
   ],
   "appendPhases": [
     {
@@ -170,5 +180,12 @@
       "title": "Admin consent request email (for customer IT)",
       "body": "Subject: Approve <YourApp> in Microsoft Entra ID\n\nHi <Admin>,\n\n<YourApp> connects to Microsoft 365 on behalf of your users through Composio. Your tenant requires admin approval for apps that request <permissions> or that come from publishers outside your organization.\n\nPermissions requested (delegated): <User.Read, Mail.Read, ...>\nWhy: <one line per permission>\nPublisher: <Company> (Partner One ID <id> / verification in progress)\n\nAdmin consent link:\nhttps://login.microsoftonline.com/<tenant-id>/adminconsent?client_id=<client-id>\n\nThanks,\n<name>"
     }
-  ]
+  ],
+  "app": {
+    "composioManaged": false,
+    "authSchemes": [
+      "OAUTH2",
+      "S2S_OAUTH2"
+    ]
+  }
 }

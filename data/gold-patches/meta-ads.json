@@ -1,13 +1,69 @@
 {
   "addClaims": [
-    { "id": "c-me-bv", "text": "Apps requesting advanced access for permissions may need to be connected to a verified business.", "sourceUrl": "https://developers.facebook.com/docs/graph-api/overview/access-levels", "quote": "apps requesting advanced access for permissions may have to be connected to a verified business" },
-    { "id": "c-me-tier-rename", "text": "Marketing API tiers were renamed: Standard Access is now Limited Access and Advanced Access is now Full Access.", "sourceUrl": "https://developers.facebook.com/docs/marketing-api/get-started/authorization", "quote": "Ads Management Standard Access is now Marketing API Access Tier" },
-    { "id": "c-me-500", "text": "Qualifying for Full Access requires 500 Marketing API calls in the past 15 days (lowered from 1,500).", "sourceUrl": "https://developers.facebook.com/docs/marketing-api/get-started/authorization", "quote": "The revised qualification threshold for Full Access has been reduced from 1,500 to" }
+    {
+      "id": "c-me-bv",
+      "text": "Apps requesting advanced access for permissions may need to be connected to a verified business.",
+      "sourceUrl": "https://developers.facebook.com/docs/graph-api/overview/access-levels",
+      "quote": "apps requesting advanced access for permissions may have to be connected to a verified business"
+    },
+    {
+      "id": "c-me-tier-rename",
+      "text": "Marketing API tiers were renamed: Standard Access is now Limited Access and Advanced Access is now Full Access.",
+      "sourceUrl": "https://developers.facebook.com/docs/marketing-api/get-started/authorization",
+      "quote": "Ads Management Standard Access is now Marketing API Access Tier"
+    },
+    {
+      "id": "c-me-500",
+      "text": "Qualifying for Full Access requires 500 Marketing API calls in the past 15 days (lowered from 1,500).",
+      "sourceUrl": "https://developers.facebook.com/docs/marketing-api/get-started/authorization",
+      "quote": "The revised qualification threshold for Full Access has been reduced from 1,500 to"
+    },
+    {
+      "id": "c-composio-sdk",
+      "text": "Composio does not manage an OAuth app for Meta Ads: toolkits.get(\"metaads\") returns composioManagedAuthSchemes [] (auth modes: OAUTH2, API_KEY), so you bring your own.",
+      "evidence": "tested",
+      "artifact": "/evidence/meta-ads/composio-toolkit.json",
+      "checkedAt": "2026-11-03"
+    }
   ],
-  "verdict": { "difficulty": 4, "label": "Heavy review / verification" },
-  "attach": { "verdict": ["c-me-bv", "c-me-500"] },
+  "verdict": {
+    "difficulty": 4,
+    "label": "Heavy review / verification"
+  },
+  "attach": {
+    "verdict": [
+      "c-me-bv",
+      "c-me-500"
+    ],
+    "composioFit": [
+      "c-composio-sdk"
+    ]
+  },
   "addRequirements": [
-    { "kind": "business-verification", "label": "Business Verification", "required": "conditional", "when": "When requesting advanced (Full) access to permissions", "claimIds": ["c-me-bv"] },
-    { "kind": "other", "label": "500 Marketing API calls in 15 days to qualify for Full Access", "required": "conditional", "when": "Before Full Access to the Marketing API tier", "claimIds": ["c-me-500"] }
-  ]
+    {
+      "kind": "business-verification",
+      "label": "Business Verification",
+      "required": "conditional",
+      "when": "When requesting advanced (Full) access to permissions",
+      "claimIds": [
+        "c-me-bv"
+      ]
+    },
+    {
+      "kind": "other",
+      "label": "500 Marketing API calls in 15 days to qualify for Full Access",
+      "required": "conditional",
+      "when": "Before Full Access to the Marketing API tier",
+      "claimIds": [
+        "c-me-500"
+      ]
+    }
+  ],
+  "app": {
+    "composioManaged": false,
+    "authSchemes": [
+      "OAUTH2",
+      "API_KEY"
+    ]
+  }
 }

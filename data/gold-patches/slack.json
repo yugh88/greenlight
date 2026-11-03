@@ -11,22 +11,85 @@
       "text": "Distributed apps must support SSL (HTTPS) for OAuth redirect URLs and request URLs.",
       "sourceUrl": "https://docs.slack.dev/app-management/distribution/",
       "quote": "Your app must support SSL for all of the following URLs: - OAuth redirect URLs"
+    },
+    {
+      "id": "c-composio-sdk",
+      "text": "Composio manages an OAuth app for Slack: toolkits.get(\"slack\") returns composioManagedAuthSchemes [OAUTH2].",
+      "evidence": "tested",
+      "artifact": "/evidence/slack/composio-toolkit.json",
+      "checkedAt": "2026-11-03"
     }
   ],
-  "attach": { "verdict": ["c-slack-1rpm"] },
+  "attach": {
+    "verdict": [
+      "c-slack-1rpm"
+    ],
+    "composioFit": [
+      "c-composio-sdk"
+    ]
+  },
   "verdict": {
     "summary": "Unlisted distribution is self-serve in minutes, but unlisted apps created after May 29, 2025 get conversations.history throttled to 1 request/minute; lifting that needs Slack Marketplace approval (10+ active workspaces, up to 10 weeks of review)."
   },
   "replaceScopes": [
-    { "scope": "chat:write", "purpose": "Post messages as the app", "tier": "basic", "reviewTrigger": false, "claimIds": ["c-oauth-flow-steps"] },
-    { "scope": "commands", "purpose": "Add slash commands", "tier": "basic", "reviewTrigger": false, "claimIds": ["c-oauth-flow-steps"] },
-    { "scope": "channels:history", "purpose": "Read public channel messages (via conversations.history / conversations.replies)", "tier": "sensitive", "reviewTrigger": false, "alternative": "Request Marketplace approval if your agent reads history at volume: unlisted apps are limited to 1 request/minute on these methods", "claimIds": ["c-slack-1rpm", "c-unlisted-rate-limit-penalty"] },
-    { "scope": "Legacy / restricted scopes (e.g. identity.*)", "purpose": "Broad workspace access", "tier": "restricted", "reviewTrigger": true, "alternative": "Use granular bot scopes; Marketplace review rejects legacy/restricted scopes", "claimIds": ["c-restricted-marketplace-scopes"] }
+    {
+      "scope": "chat:write",
+      "purpose": "Post messages as the app",
+      "tier": "basic",
+      "reviewTrigger": false,
+      "claimIds": [
+        "c-oauth-flow-steps"
+      ]
+    },
+    {
+      "scope": "commands",
+      "purpose": "Add slash commands",
+      "tier": "basic",
+      "reviewTrigger": false,
+      "claimIds": [
+        "c-oauth-flow-steps"
+      ]
+    },
+    {
+      "scope": "channels:history",
+      "purpose": "Read public channel messages (via conversations.history / conversations.replies)",
+      "tier": "sensitive",
+      "reviewTrigger": false,
+      "alternative": "Request Marketplace approval if your agent reads history at volume: unlisted apps are limited to 1 request/minute on these methods",
+      "claimIds": [
+        "c-slack-1rpm",
+        "c-unlisted-rate-limit-penalty"
+      ]
+    },
+    {
+      "scope": "Legacy / restricted scopes (e.g. identity.*)",
+      "purpose": "Broad workspace access",
+      "tier": "restricted",
+      "reviewTrigger": true,
+      "alternative": "Use granular bot scopes; Marketplace review rejects legacy/restricted scopes",
+      "claimIds": [
+        "c-restricted-marketplace-scopes"
+      ]
+    }
   ],
   "addRequirements": [
-    { "kind": "other", "label": "Marketplace approval to avoid the 1 request/minute history limit", "required": "conditional", "when": "Only if your agent reads channel history at volume and the app is distributed outside your own workspace", "claimIds": ["c-slack-1rpm"] }
+    {
+      "kind": "other",
+      "label": "Marketplace approval to avoid the 1 request/minute history limit",
+      "required": "conditional",
+      "when": "Only if your agent reads channel history at volume and the app is distributed outside your own workspace",
+      "claimIds": [
+        "c-slack-1rpm"
+      ]
+    }
   ],
   "addUncertainties": [
     "Exact scope names for history access depend on conversation type (channels:, groups:, im:, mpim:history); the guide shows channels:history as the common case."
-  ]
+  ],
+  "app": {
+    "composioManaged": true,
+    "authSchemes": [
+      "OAUTH2"
+    ]
+  }
 }
