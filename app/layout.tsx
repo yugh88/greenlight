@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Caveat, Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { LogoMark } from "@/components/brand/logo";
 import { Sparkles } from "@/components/fx/sparkles";
 import { GlowTracker } from "@/components/fx/glow-tracker";
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <Link href="/agents" className="underline">For agents</Link>
         </footer>
         <Tour />
+        <Analytics />
       </body>
     </html>
   );
