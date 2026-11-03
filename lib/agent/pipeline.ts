@@ -99,7 +99,9 @@ export async function runPipeline(input: string, emit: Emit, opts: PipelineOptio
     composio: { ...comp, ref: "C1" },
   };
   emit("draft", `Drafting guide from ${pack.sources.length} pages and ${pack.probes.length} probes`);
-  const { draft, modelId } = await draftGuide(pack, { depth: opts.depth ?? true });
+  // Vercel functions stop at 300s: leave ~60s for verify + publish after the draft.
+  const deadline = t0 + Number(process.env.GREENLIGHT_DRAFT_BUDGET_MS ?? 230_000);
+  const { draft, modelId } = await draftGuide(pack, { depth: opts.depth ?? true, deadline });
   emit("draft", `Draft ready (${draft.claims.length} claims) via ${modelId}`);
 
   // map refs → evidence

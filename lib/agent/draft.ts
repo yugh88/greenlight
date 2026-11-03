@@ -76,7 +76,7 @@ const DEPTH = `COVERAGE (address each one the evidence allows; mark gaps in unce
 - at least 3 blockers with exact error text when available
 Aim for 15-30 well-supported claims.`;
 
-export async function draftGuide(pack: EvidencePack, opts: { depth?: boolean } = {}) {
+export async function draftGuide(pack: EvidencePack, opts: { depth?: boolean; deadline?: number } = {}) {
   const sources = pack.sources
     .map((s) => `### ${s.ref}: ${s.page.title || s.page.finalUrl}\nURL: ${s.page.finalUrl}\n${s.excerpt}`)
     .join("\n\n");
@@ -109,6 +109,6 @@ RULES
 - Be concise. No marketing language.
 ${opts.depth ? DEPTH : ""}`;
 
-  const { object, modelId } = await structured("agent", Draft, prompt);
+  const { object, modelId } = await structured("agent", Draft, prompt, 150_000, opts.deadline);
   return { draft: object, modelId };
 }

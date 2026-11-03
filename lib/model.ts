@@ -77,7 +77,11 @@ function statusOf(err: unknown): number | undefined {
 export async function withModel<T>(
   role: ModelRole,
   fn: (model: LanguageModel, modelId: string) => Promise<T>,
-  { triesPerModel = Number(process.env.GREENLIGHT_TRIES ?? 3), label = role }: { triesPerModel?: number; label?: string } = {},
+  {
+    triesPerModel = Number(process.env.GREENLIGHT_TRIES ?? 3),
+    label = role,
+    deadline,
+  }: { triesPerModel?: number; label?: string; deadline?: number } = {},
 ): Promise<{ result: T; modelId: string }> {
   let lastErr: unknown;
   const rounds = Number(process.env.GREENLIGHT_CHAIN_ROUNDS ?? 1);
@@ -86,7 +90,14 @@ export async function withModel<T>(
     console.warn(`[${label}] all models busy; waiting 45s before round ${round + 1}/${rounds}`);
     await new Promise((r) => setTimeout(r, 45_000));
   }
-  for (const id of chain(role)) {
+  const ids = chain(role);
+  for (const [idx, id] of ids.entries()) {
+    const isLast = idx === ids.length - 1;
+    // Time budget: when < 100s remain, skip slower/overloaded models and use the last (fastest) one.
+    if (deadline && !isLast && deadline - Date.now() < 100_000) {
+      console.warn(`[${label}] time budget low; skipping ${id}`);
+      continue;
+    }
     const model = await build(role, id);
     let delay = 2_000;
     for (let i = 0; i < triesPerModel; i++) {
@@ -98,6 +109,7 @@ export async function withModel<T>(
         const retryable = s === 429 || (s !== undefined && s >= 500);
         if (!retryable) throw err;
         if (i === triesPerModel - 1 || isDailyQuota(err)) break; // move to next model
+        if (deadline && !isLast && deadline - Date.now() < 100_000) break;
         const wait = delay + Math.random() * 1_000;
         console.warn(`[${label}] ${id} → ${s}; retry ${i + 1} in ${Math.round(wait)}ms`);
         await new Promise((r) => setTimeout(r, wait));
@@ -127,18 +139,21 @@ export async function structured<S extends z.ZodType>(
   schema: S,
   prompt: string,
   timeoutMs = 180_000,
+  deadline?: number,
 ): Promise<{ object: z.infer<S>; modelId: string }> {
   const { result, modelId } = await queued(() =>
     withModel(role, async (model) => {
+      const left = deadline ? deadline - Date.now() : timeoutMs;
+      const perCall = Math.max(30_000, Math.min(timeoutMs, left - 15_000));
       const r = await generateText({
         model,
         output: Output.object({ schema }),
         prompt,
         maxRetries: 0,
-        abortSignal: AbortSignal.timeout(timeoutMs),
+        abortSignal: AbortSignal.timeout(perCall),
       });
       return r.output as z.infer<S>;
-    }),
+    }, { deadline }),
   );
   return { object: result, modelId };
 }
