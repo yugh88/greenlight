@@ -1,0 +1,85 @@
+{
+  "description": "Hand-selected, decision-relevant facts per app. Each fact is backed by a verbatim quote on an official page (checked by scripts/check-ground-truth.mts). goldDifficulty follows /method's rubric; cost does not raise difficulty unless access is partner/sales-gated.",
+  "createdAt": "2026-11-03",
+  "confirmedBy": null,
+  "apps": [
+    {
+      "slug": "github", "input": "GitHub", "goldDifficulty": 1,
+      "facts": [
+        { "id": "gh-1", "statement": "There is no provider review before real users can authorize a GitHub OAuth app.", "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app", "quote": "In \"Authorization callback URL\", type the callback URL of your app." },
+        { "id": "gh-2", "statement": "A GitHub OAuth app can register up to 10 callback URLs.", "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app", "quote": "You can enter up to 10 callback URLs." },
+        { "id": "gh-3", "statement": "A redirect_uri that doesn't match the registered callback URL yields error=redirect_uri_mismatch.", "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-authorization-request-errors", "quote": "If you provide a redirect_uri that doesn't match what you've registered with your application, GitHub will redirect to the registered callback URL" },
+        { "id": "gh-4", "statement": "Authenticated REST API requests are limited to 5,000 per hour per user.", "sourceUrl": "https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api", "quote": "All of these requests count towards your personal rate limit of 5,000 requests per hour." },
+        { "id": "gh-5", "statement": "GitHub recommends GitHub Apps over OAuth apps (fine-grained permissions, can act as the app).", "sourceUrl": "https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/deciding-when-to-build-a-github-app", "quote": "In general, GitHub Apps are preferred over OAuth apps. Both OAuth apps and GitHub Apps use OAuth 2.0." }
+      ]
+    },
+    {
+      "slug": "slack", "input": "Slack", "goldDifficulty": 2,
+      "facts": [
+        { "id": "sl-1", "statement": "To install the app outside your own workspace you must activate Public Distribution.", "sourceUrl": "https://docs.slack.dev/app-management/distribution/", "quote": "Click Activate Public Distribution . Once distribution is enabled, you'll get access to an embeddable Add to Slack button" },
+        { "id": "sl-2", "statement": "OAuth redirect URLs must use HTTPS.", "sourceUrl": "https://docs.slack.dev/authentication/installing-with-oauth/", "quote": "The redirect_uri must use HTTPS." },
+        { "id": "sl-3", "statement": "Non-Marketplace (unlisted) commercially distributed apps created after May 29, 2025 get conversations.history limited to 1 request per minute.", "sourceUrl": "https://docs.slack.dev/changelog/2025/05/29/rate-limit-changes-for-non-marketplace-apps/", "quote": "The new rate limits will be updated to allow 1 request per minute and will return a maximum of 15 objects per request." },
+        { "id": "sl-4", "statement": "Slack Marketplace functional review can take up to 10 weeks for new submissions.", "sourceUrl": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide/", "quote": "the functional review takes up to 10 weeks for new submissions" },
+        { "id": "sl-5", "statement": "Marketplace submission requires the app to be installed on at least 10 active workspaces.", "sourceUrl": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide/", "quote": "Your app has been installed on 10 or more active workspaces" }
+      ]
+    },
+    {
+      "slug": "gmail", "input": "Gmail", "goldDifficulty": 4,
+      "facts": [
+        { "id": "gm-1", "statement": "Apps in Testing publishing status are limited to 100 test users.", "sourceUrl": "https://support.google.com/cloud/answer/15549945", "quote": "Projects configured with a publishing status of Testing are limited to up to 100 test users listed in the OAuth consent screen." },
+        { "id": "gm-2", "statement": "In Testing mode, test-user authorizations (and refresh tokens) expire after seven days.", "sourceUrl": "https://support.google.com/cloud/answer/15549945", "quote": "Authorizations by a test user will expire seven days from the time of consent." },
+        { "id": "gm-3", "statement": "Apps that access restricted-scope data through a server must pass an annual third-party security assessment.", "sourceUrl": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification", "quote": "must go through a security assessment from Google-empanelled" },
+        { "id": "gm-4", "statement": "Restricted scope verification can take several weeks.", "sourceUrl": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification", "quote": "the restricted scopes verification process can potentially take several weeks to complete" },
+        { "id": "gm-5", "statement": "Brand verification is required first and typically takes 2-3 business days.", "sourceUrl": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification", "quote": "step first, which typically takes 2-3 business days" },
+        { "id": "gm-6", "statement": "Full mailbox access (https://mail.google.com/) and gmail.readonly are restricted scopes.", "sourceUrl": "https://developers.google.com/workspace/gmail/api/auth/scopes", "quote": "Read, compose, send, and permanently delete all your email from Gmail." }
+      ]
+    },
+    {
+      "slug": "spotify", "input": "Spotify", "goldDifficulty": 5,
+      "facts": [
+        { "id": "sp-1", "statement": "New apps start in development mode, limited to up to 5 authenticated users.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes", "quote": "Up to 5 authenticated Spotify users can use an app that is in development mode" },
+        { "id": "sp-2", "statement": "In development mode every user must be added to the app's allowlist.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes", "quote": "Each Spotify user who installs your app will need to be added to your app's allowlist before they can use it." },
+        { "id": "sp-3", "statement": "The app owner needs Spotify Premium for development mode apps to work.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes", "quote": "The app owner must have a Spotify Premium account for apps in development mode to function." },
+        { "id": "sp-4", "statement": "Since May 15, 2025 extended quota is only granted to organizations, not individuals.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes", "quote": "as of May 15th 2025, Spotify only accepts applications from organizations (not individuals)" },
+        { "id": "sp-5", "statement": "Extended quota requires at least 250k monthly active users.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes", "quote": "Maintaining a minimum of active users (at least 250k MAUs)" },
+        { "id": "sp-6", "statement": "localhost is not allowed as a redirect URI; use 127.0.0.1 loopback or HTTPS.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/redirect_uri", "quote": "localhost is not allowed as redirect URI." }
+      ]
+    },
+    {
+      "slug": "microsoft-entra-id", "input": "Microsoft Entra ID", "goldDifficulty": 3,
+      "facts": [
+        { "id": "en-1", "statement": "Users can't consent to most newly registered multitenant apps that aren't publisher verified (when risk-based step-up consent is on).", "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview", "quote": "users can't consent to most newly registered multitenant apps that aren't publisher verified" },
+        { "id": "en-2", "statement": "Publisher verification needs a verified Microsoft AI Cloud Partner Program account (Partner One ID).", "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview", "quote": "The developer must have a Partner One ID for a valid Microsoft AI Cloud Partner Program account that has completed the verification process." },
+        { "id": "en-3", "statement": "Redirect URIs must use https, with exceptions for some localhost URIs.", "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/reply-url", "quote": "Redirect URIs must begin with the scheme https , with exceptions for some localhost redirect URIs." },
+        { "id": "en-4", "statement": "Redirect URIs are case-sensitive.", "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/reply-url", "quote": "Redirect URIs are case-sensitive and must match the case of the URL path of your running application." },
+        { "id": "en-5", "statement": "Tenant admins can restrict user consent to apps from verified publishers, so some customers will need admin consent.", "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/configure-user-consent", "quote": "Allow limited user consent only for apps from verified publishers and apps that are registered in your tenant" }
+      ]
+    },
+    {
+      "slug": "xero", "input": "Xero", "goldDifficulty": 3,
+      "facts": [
+        { "id": "xe-1", "statement": "New apps default to the Starter tier with 5 connections.", "sourceUrl": "https://developer.xero.com/documentation/guides/oauth2/limits/", "quote": "New apps default to the starter tier with 5 connections." },
+        { "id": "xe-2", "statement": "Moving to the Core tier allows up to 50 connections.", "sourceUrl": "https://developer.xero.com/documentation/guides/oauth2/limits/", "quote": "Moving up to Core will give you up to 50 connections." },
+        { "id": "xe-3", "statement": "Listing on the Xero App Store requires the Plus tier or above.", "sourceUrl": "https://developer.xero.com/documentation/guides/oauth2/limits/", "quote": "To be listed on the App Store, you will need to be in the Plus tier or above." },
+        { "id": "xe-4", "statement": "Core costs $35 AUD per month; Starter has no charge.", "sourceUrl": "https://developer.xero.com/pricing", "quote": "Monthly Tier Fee No charge $35 AUD $245 AUD $1445 AUD" },
+        { "id": "xe-5", "statement": "Higher tiers require app certification.", "sourceUrl": "https://developer.xero.com/pricing", "quote": "Prerequisites App Certification App Certification App Certification" }
+      ]
+    },
+    {
+      "slug": "x", "input": "X (Twitter)", "goldDifficulty": 2,
+      "facts": [
+        { "id": "x-1", "statement": "The X API uses pay-per-usage pricing with no subscriptions.", "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing", "quote": "The X API uses pay-per-usage pricing with no subscriptions." },
+        { "id": "x-2", "statement": "You buy credits upfront in the Developer Console and they are deducted per request.", "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing", "quote": "Purchase credits upfront in the Developer Console. Credits are deducted as you make API requests." },
+        { "id": "x-3", "statement": "Different endpoints have different costs.", "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing", "quote": "Different endpoints have different costs." }
+      ]
+    },
+    {
+      "slug": "meta-ads", "input": "Meta Ads", "goldDifficulty": 4,
+      "facts": [
+        { "id": "me-1", "statement": "Apps requesting advanced access may need to be connected to a verified business (Business Verification).", "sourceUrl": "https://developers.facebook.com/docs/graph-api/overview/access-levels", "quote": "apps requesting advanced access for permissions may have to be connected to a verified business" },
+        { "id": "me-2", "statement": "Marketing API Full Access requires 500 Marketing API calls in the past 15 days (threshold lowered from 1,500).", "sourceUrl": "https://developers.facebook.com/docs/marketing-api/get-started/authorization", "quote": "The revised qualification threshold for Full Access has been reduced from 1,500 to" },
+        { "id": "me-3", "statement": "Standard Access was renamed Limited Access and Advanced Access renamed Full Access for the Marketing API tier.", "sourceUrl": "https://developers.facebook.com/docs/marketing-api/get-started/authorization", "quote": "Ads Management Standard Access is now Marketing API Access Tier" }
+      ]
+    }
+  ]
+}

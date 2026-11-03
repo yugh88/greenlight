@@ -9,9 +9,12 @@ for (const slug of process.argv.slice(2)) {
   const s = src[slug];
   const out = `data/guides/${slug}.json`;
   if (existsSync(out) && !process.env.FORCE) { console.log("skip (exists)", out); continue; }
-  const r = await runPipeline(s.name, (stage, msg) => console.log(`[${slug}:${stage}] ${msg}`), {
+  let r;
+  try {
+  r = await runPipeline(s.name, (stage, msg) => console.log(`[${slug}:${stage}] ${msg}`), {
     seedUrls: s.urls, name: s.name, website: s.website, composioSlug: s.composio, slug, excerptBudget: 9000,
   });
+  } catch (e) { console.log(`FAILED ${slug}: ${(e as Error).message.slice(0, 160)}`); continue; }
   const g = { ...r.guide, generatedBy: "gold", reviewStatus: "unreviewed" };
   mkdirSync("data/guides", { recursive: true });
   writeFileSync(out, JSON.stringify(g, null, 1));

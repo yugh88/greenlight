@@ -70,6 +70,12 @@ export async function withModel<T>(
   { triesPerModel = Number(process.env.GREENLIGHT_TRIES ?? 3), label = role }: { triesPerModel?: number; label?: string } = {},
 ): Promise<{ result: T; modelId: string }> {
   let lastErr: unknown;
+  const rounds = Number(process.env.GREENLIGHT_CHAIN_ROUNDS ?? 1);
+  for (let round = 0; round < rounds; round++) {
+  if (round > 0) {
+    console.warn(`[${label}] all models busy; waiting 45s before round ${round + 1}/${rounds}`);
+    await new Promise((r) => setTimeout(r, 45_000));
+  }
   for (const id of chain(role)) {
     const model = await build(role, id);
     let delay = 2_000;
@@ -89,6 +95,7 @@ export async function withModel<T>(
       }
     }
     console.warn(`[${label}] ${id} unavailable, falling back`);
+  }
   }
   throw lastErr;
 }
