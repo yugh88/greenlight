@@ -1,6 +1,7 @@
 // Regenerates the data-driven README sections between <!-- X --> ... <!-- /X --> markers.
+const TARGET = "docs/DETAILS.md"; // generated tables live in the details doc
 import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
-let md = readFileSync("README.md", "utf8");
+let md = readFileSync(TARGET, "utf8");
 const SITE = process.env.README_SITE ?? "https://greenlight-blue-ten.vercel.app";
 const put = (tag: string, body: string) => {
   const re = new RegExp(`<!-- ${tag} -->[\\s\\S]*?(<!-- /${tag} -->|$)`);
@@ -24,5 +25,5 @@ if (existsSync("eval/results.json")) {
   const v1row = v1 ? `\n| v1 (homepage-first discovery) | ${p(v1.factRecall)} | ${p(v1.factPrecision)} | ${p(v1.citationValidity)} | ${p(v1.difficultyExact)} / ${p(v1.difficultyWithin1)} |` : "";
   put("EVAL_TABLE", `## 9. Eval: live agent vs. hand-checked facts\n\n| Run | Fact recall | Fact precision | Citation validity | Difficulty exact / ±1 |\n|---|---|---|---|---|${v1row}\n| **v2 (llms.txt + verified doc hints)** | ${p(e.factRecall)} | ${p(e.factPrecision)} | ${p(e.citationValidity)} | ${p(e.difficultyExact)} / ${p(e.difficultyWithin1)} |\n\n${e.facts} facts across ${e.apps} apps (\`eval/ground-truth.json\`, every quote verified live), run ${e.runAt}. The agent ran with **open discovery** (no curated sources), which is what a developer gets for an app outside the library. Per-app detail: [/method#eval](${SITE}/method#eval) and \`eval/results.json\`.\n\n| App | Gold | Agent | Facts stated | Contradicted | Citations valid |\n|---|---|---|---|---|---|\n${e.perApp.map((a: any) => `| ${a.slug} | ${a.gold} | ${a.agent ?? "n/a"} | ${a.covered}/${a.total} | ${a.contradicted} | ${a.citations} |`).join("\n")}`);
 }
-writeFileSync("README.md", md);
-console.log("README tables updated:", guides.length, "gold guides");
+writeFileSync(TARGET, md);
+console.log("DETAILS tables updated:", guides.length, "gold guides");
