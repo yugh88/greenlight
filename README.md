@@ -10,6 +10,17 @@
 | **For agents** | [/agents](https://greenlight-blue-ten.vercel.app/agents) explains [`/llms.txt`](https://greenlight-blue-ten.vercel.app/llms.txt), `/guides/<app>.md` and the MCP endpoint `/api/mcp` |
 | **Video walkthrough** | https://youtu.be/xdIdEFDCvdc |
 
+### Key decisions (and why)
+
+1. **Answer with two clocks, not one estimate.** *Time to first token* (minutes) vs *time to production* (days to months), because the review queue, not engineering, is where developers lose time.
+2. **Every claim carries evidence: tested / sourced / uncertain.** A wrong confident answer about an approval process costs a launch, so unprovable claims are shown as *uncertain* with a reason, never dropped or guessed.
+3. **The model cannot invent a citation.** It cites evidence by id; code attaches the URL or artifact, then re-fetches every quote and has a second model check that the quote supports the claim.
+4. **The public agent only reads public pages and probes public endpoints.** It never logs in. Things that need sign-in (creating apps, consent) were done by a human for GitHub and Slack, as end-to-end tests through Composio.
+5. **Curated gold guides plus a live agent for the long tail.** The eval showed the live agent is reliable but shallow, so the apps that matter most get curated sources and quote-verified human patches; live guides are labelled *unreviewed*.
+6. **Discovery crawls the provider's own site instead of web search.** Free search grounding wasn't available, and the provider's own docs (portal, `llms.txt`, sitemap) are better evidence anyway.
+7. **Cost is separate from difficulty.** Pay-per-use APIs (X) aren't "hard"; only partner/criteria-gated access (Spotify, restricted LinkedIn APIs) scores 5.
+8. **Built agent-first.** Markdown per guide, `/llms.txt` and an MCP endpoint, so a coding agent can check a guide before wiring the integration.
+
 ### Brief requirement → where it's met
 
 | Brief requirement | Where it's met |
