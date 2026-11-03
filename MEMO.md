@@ -20,7 +20,7 @@ The time isn't in engineering. It's in the **provider's review queue and its gat
 - **An evidence label on every claim:** `tested` (a probe response, console screenshot or Composio log id), `sourced` (URL + ≤200-character verbatim quote + date) or `uncertain` (with the reason). A verifier re-fetches every quote and a second model checks the quote supports the claim. Failures are downgraded, never hidden.
 - **Live generation for any app:** name or URL in, shareable guide out in 1–3 minutes, streamed step by step. The public agent only reads public pages and probes public OAuth endpoints. The model cites evidence by id, so it can't invent a URL.
 - **Agent-readable from day one:** `/guides/<app>.md`, `/llms.txt` and a small MCP server (`get_guide`, `generate_guide`), so Claude Code or Cursor can pull the guide while wiring the integration. Composio is agent-first; its docs should be too.
-- **Measured, not asserted:** an eval scores the live agent against hand-checked facts (fact recall and precision, citation validity, difficulty agreement). Results are on `/method` and in the README.
+- **Measured, not asserted:** an eval scores the live agent against 38 hand-checked, quote-verified facts across 8 apps. Result on the free fallback model: **what it says is reliable (97% of citations hold up, 6 of 7 checked statements correct) but shallow (16% fact recall; difficulty within one tier for 5 of 8 apps).** It underrates gated providers when it never reaches the gating page. That finding shaped the product: a curated gold library for the apps that matter, live generation for the long tail clearly labelled unreviewed, and a clear next investment (read more pages, use a stronger model).
 
 ## How it ships inside Composio
 
