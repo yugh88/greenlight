@@ -70,16 +70,16 @@ Free-tier constraints found while building (recorded in `docs/research-notes.md`
 
 | App | Difficulty | Time to production | Composio | Tested | Sourced | Uncertain | End-to-end |
 |---|---|---|---|---|---|---|---|
-| [GitHub](/guides/github) | 1 Self-serve | same day | managed | 2 (probe) | 21 | 1 | n/a |
-| [Slack](/guides/slack) | 2 Light review | <1–70 days | managed | 0 (n/a) | 19 | 0 | n/a |
-| [X (Twitter)](/guides/x) | 2 Light review | 1–7 days | BYO | 0 (n/a) | 16 | 3 | n/a |
-| [Microsoft Entra ID](/guides/microsoft-entra-id) | 3 Full review | 1–21 days | BYO | 0 (n/a) | 18 | 0 | n/a |
-| [Shopify](/guides/shopify) | 3 Full review | 3–14 days | BYO | 1 (probe) | 16 | 0 | n/a |
-| [Xero](/guides/xero) | 3 Full review | 1–14 days | BYO | 0 (n/a) | 24 | 0 | n/a |
-| [Gmail (Google)](/guides/gmail) | 4 Heavy review / verification | 2–13 weeks | managed | 1 (probe) | 24 | 5 | n/a |
-| [LinkedIn Ads (Marketing API)](/guides/linkedin-ads) | 4 Heavy review / verification | 7–30 days | BYO | 0 (n/a) | 23 | 1 | n/a |
-| [Meta Ads (Marketing API)](/guides/meta-ads) | 4 Heavy review / verification | 3–14 days | BYO | 0 (n/a) | 16 | 2 | n/a |
-| [Spotify](/guides/spotify) | 5 Partner-only or paid / gated | 4–26 weeks | BYO | 1 (probe) | 22 | 3 | n/a |
+| [GitHub](/guides/github) | 1 Self-serve | same day | managed | 10 (probe, Composio call, screenshot) | 21 | 1 | ✅ 2026-11-03 |
+| [Slack](/guides/slack) | 2 Light review | <1–70 days | managed | 1 (Composio call) | 19 | 0 | n/a |
+| [X (Twitter)](/guides/x) | 2 Light review | 1–7 days | BYO | 1 (Composio call) | 16 | 3 | n/a |
+| [Microsoft Entra ID](/guides/microsoft-entra-id) | 3 Full review | 1–21 days | BYO | 1 (Composio call) | 18 | 0 | n/a |
+| [Shopify](/guides/shopify) | 3 Full review | 3–14 days | BYO | 2 (probe, Composio call) | 16 | 0 | n/a |
+| [Xero](/guides/xero) | 3 Full review | 1–14 days | BYO | 1 (Composio call) | 24 | 0 | n/a |
+| [Gmail (Google)](/guides/gmail) | 4 Heavy review / verification | 2–13 weeks | managed | 2 (probe, Composio call) | 24 | 5 | n/a |
+| [LinkedIn Ads (Marketing API)](/guides/linkedin-ads) | 4 Heavy review / verification | 7–30 days | BYO | 1 (Composio call) | 23 | 1 | n/a |
+| [Meta Ads (Marketing API)](/guides/meta-ads) | 4 Heavy review / verification | 3–14 days | BYO | 1 (Composio call) | 16 | 2 | n/a |
+| [Spotify](/guides/spotify) | 5 Partner-only or paid / gated | 4–26 weeks | BYO | 2 (probe, Composio call) | 22 | 3 | n/a |
 
 Every sourced quote is re-checked against the live page (`pnpm verify`); curation edits live in `data/gold-patches/` and are applied by a script that rejects any quote it can't find.
 <!-- /GOLD_TABLE -->
