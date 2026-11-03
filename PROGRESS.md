@@ -7,7 +7,7 @@ Composio APM take-home. Plan: `../Composio APM Take-home — Build Plan (Greenli
 | Phase | State |
 |---|---|
 | 1. Setup | ✅ |
-| 2. Hello-world Composio (managed GitHub) | ⏳ script ready; **needs Yugh to open the Connect Link** (`pnpm tsx scripts/hello-composio.mts`) |
+| 2. Composio closed loop | ✅ GitHub + Slack end-to-end with OWN OAuth apps via SDK (custom auth config → Connect Link → tool call), 2026-11-03 |
 | 3. Live pipeline + streaming /generate | ✅ Strava, Linear, Pipedrive generated end-to-end (web flow: 131s) |
 | 4. Guide page (11 sections) + .md + llms.txt | ✅ plus OG images, /compare, /api/mcp |
 | 5–6. Gold guides | ✅ 10 gold guides (GitHub, Slack, Gmail, Spotify, Entra ID, Xero, Shopify, X, Meta Ads, LinkedIn Ads); 200/200 quotes verified live. 🟡 console screenshots + Composio e2e need Yugh signed in |
@@ -56,3 +56,10 @@ pnpm verify                                            # drift check of all gold
 pnpm eval                                              # live agent vs eval/ground-truth.json
 pnpm tsx scripts/readme-tables.mts                     # refresh README tables
 ```
+
+## Test resources to clean up (created 2026-11-03)
+
+- GitHub OAuth App "Greenlight test" (id 3988988), github.com/settings/developers. **Delete: its secret was pasted in chat.**
+- Slack app "Greenlight test" (A0CEBJERHV3) in workspace "greenlight", api.slack.com/apps → Basic Information → Delete App.
+- Composio auth configs `ac_zIzpVUS9sFC-` (github), `ac_wdjsafEfFeO8` (slack); connected accounts `ca_ez_Gg5l_sEgQ`, `ca_SXWHOYUGFtvr` (dashboard.composio.dev).
+- Rotate keys pasted in chat: Composio `ak_…`, Gemini, Neon password.

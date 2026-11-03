@@ -24,7 +24,7 @@ if (!looksRight) {
   console.log("✗ Clipboard does not contain a client secret in the expected format (nothing was printed). Copy it and re-run.");
   process.exit(2);
 }
-execSync("printf '' | pbcopy"); // clear clipboard
+execSync(`osascript -e 'set the clipboard to ""'`); // clear clipboard (pbcopy with empty input does not clear)
 const scrub = (s: string) => (secret ? s.split(secret).join("[REDACTED]") : s);
 const trace: { at: string; step: string; detail?: unknown }[] = [];
 const step = (s: string, detail?: unknown) => {

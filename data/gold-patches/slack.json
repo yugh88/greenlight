@@ -18,14 +18,67 @@
       "evidence": "tested",
       "artifact": "/evidence/slack/composio-toolkit.json",
       "checkedAt": "2026-11-03"
+    },
+    {
+      "id": "c-sl-e2e",
+      "text": "Tested end-to-end: our own Slack app \u2192 Composio custom auth config (ac_wdjsafEfFeO8) \u2192 Connect Link \u2192 connected account ACTIVE \u2192 SLACK_FETCH_TEAM_INFO returned the workspace (Composio log log_vWLRLhgETi4L).",
+      "evidence": "tested",
+      "artifact": "/evidence/slack/e2e-trace.json",
+      "checkedAt": "2026-11-03"
+    },
+    {
+      "id": "c-sl-instant",
+      "text": "Creating a Slack app is instant and needs no review for use in your own workspace; a manifest can set name, redirect URL and scopes in one step.",
+      "evidence": "tested",
+      "artifact": "/evidence/slack/02-manifest-review.jpg",
+      "checkedAt": "2026-11-03"
+    },
+    {
+      "id": "c-sl-ai-template",
+      "text": "Slack's Create-app dialog now offers an 'AI agent' template next to 'Starter app', 'From a manifest' and 'Blank app'.",
+      "evidence": "tested",
+      "artifact": "/evidence/slack/01-create-app-dialog.jpg",
+      "checkedAt": "2026-11-03"
+    },
+    {
+      "id": "c-sl-workspace-fixed",
+      "text": "The app's development workspace is chosen at creation and can't be changed later.",
+      "evidence": "tested",
+      "artifact": "/evidence/slack/02-manifest-review.jpg",
+      "checkedAt": "2026-11-03"
+    },
+    {
+      "id": "c-sl-consent-brand",
+      "text": "With a custom auth config Slack's consent screen reads 'Allow Greenlight test to access Slack' (your app, not Composio's).",
+      "evidence": "tested",
+      "artifact": "/evidence/slack/04-consent-allow-greenlight-test.jpg",
+      "checkedAt": "2026-11-03"
+    },
+    {
+      "id": "c-sl-user-scopes",
+      "text": "Composio's Slack auth config requested about 50 USER-token scopes by default (e.g. chat:write, files:write, search:read.*, users:write) and no bot scopes, so the agent acts as the user. Narrow scopes on the auth config if that's more than you need.",
+      "evidence": "tested",
+      "artifact": "/evidence/slack/04-consent-allow-greenlight-test.jpg",
+      "checkedAt": "2026-11-03"
+    },
+    {
+      "id": "c-sl-callback",
+      "text": "Composio's callback https://backend.composio.dev/api/v3/toolkits/auth/callback works as a Slack redirect URL (HTTPS).",
+      "evidence": "tested",
+      "artifact": "/evidence/slack/e2e-trace.json",
+      "checkedAt": "2026-11-03"
     }
   ],
   "attach": {
     "verdict": [
-      "c-slack-1rpm"
+      "c-slack-1rpm",
+      "c-sl-instant",
+      "c-sl-e2e"
     ],
     "composioFit": [
-      "c-composio-sdk"
+      "c-composio-sdk",
+      "c-sl-consent-brand",
+      "c-sl-user-scopes"
     ]
   },
   "verdict": {
@@ -70,6 +123,16 @@
       "claimIds": [
         "c-restricted-marketplace-scopes"
       ]
+    },
+    {
+      "scope": "Composio default: ~50 user scopes (calls, channels, chat:write, files, search:read.*, users:write \u2026)",
+      "purpose": "What the Slack auth config requested out of the box in our test (user token)",
+      "tier": "sensitive",
+      "reviewTrigger": false,
+      "alternative": "Set only the scopes your agent needs on the auth config; prefer bot scopes for workspace apps",
+      "claimIds": [
+        "c-sl-user-scopes"
+      ]
     }
   ],
   "addRequirements": [
@@ -91,5 +154,28 @@
     "authSchemes": [
       "OAUTH2"
     ]
-  }
+  },
+  "endToEnd": {
+    "testedAt": "2026-11-03",
+    "summary": "Own Slack app 'Greenlight test' (created from a manifest) \u2192 Composio custom auth config \u2192 Connect Link \u2192 user clicked Allow \u2192 SLACK_FETCH_TEAM_INFO succeeded. About 5 minutes of human time (sign-in, Allow).",
+    "composioLogId": "log_vWLRLhgETi4L",
+    "artifact": "/evidence/slack/e2e-trace.json"
+  },
+  "addRedirectRules": [
+    {
+      "rule": "Paste Composio's callback https://backend.composio.dev/api/v3/toolkits/auth/callback under OAuth & Permissions \u2192 Redirect URLs (tested).",
+      "claimIds": [
+        "c-sl-callback",
+        "c-sl-e2e"
+      ]
+    }
+  ],
+  "addArtefacts": [
+    {
+      "id": "a-sl-manifest",
+      "kind": "app-form",
+      "title": "Slack app manifest (tested)",
+      "body": "{\n  \"display_information\": {\n    \"name\": \"<Your app>\",\n    \"description\": \"<one line>\"\n  },\n  \"features\": {\n    \"bot_user\": {\n      \"display_name\": \"<Your app>\",\n      \"always_online\": false\n    }\n  },\n  \"oauth_config\": {\n    \"redirect_urls\": [\n      \"https://backend.composio.dev/api/v3/toolkits/auth/callback\"\n    ],\n    \"scopes\": {\n      \"bot\": [\n        \"users:read\",\n        \"team:read\",\n        \"channels:read\"\n      ]\n    }\n  },\n  \"settings\": {\n    \"org_deploy_enabled\": false,\n    \"socket_mode_enabled\": false,\n    \"token_rotation_enabled\": false\n  }\n}"
+    }
+  ]
 }

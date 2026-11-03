@@ -1,0 +1,83 @@
+{
+ "testedAt": "2026-11-03",
+ "sdk": "@composio/core 0.27.0",
+ "state": {
+  "toolkit": "slack",
+  "clientId": "12477523999575.12487626867989",
+  "callback": "https://backend.composio.dev/api/v3/toolkits/auth/callback",
+  "userId": "yugh-test",
+  "authConfigId": "ac_wdjsafEfFeO8",
+  "sessionId": "trs_pgAzPipq08Xv",
+  "connectedAccountId": "ca_SXWHOYUGFtvr",
+  "toolResult": {
+   "tool": "SLACK_FETCH_TEAM_INFO",
+   "successful": true,
+   "identity": "greenlight",
+   "logId": "log_vWLRLhgETi4L",
+   "error": null
+  }
+ },
+ "trace": [
+  {
+   "at": "2026-11-03T14:28:39.507Z",
+   "step": "composio.authConfigs.create (use_custom_auth, OAUTH2)",
+   "detail": {
+    "authConfigId": "ac_wdjsafEfFeO8",
+    "redirectUri": "https://backend.composio.dev/api/v3/toolkits/auth/callback"
+   }
+  },
+  {
+   "at": "2026-11-03T14:28:40.747Z",
+   "step": "session.authorize → Connect Link",
+   "detail": {
+    "sessionId": "trs_pgAzPipq08Xv",
+    "connectedAccountId": "ca_SXWHOYUGFtvr"
+   }
+  },
+  {
+   "at": "2026-11-03T14:29:07.765Z",
+   "step": "connected account ACTIVE",
+   "detail": {
+    "connectedAccountId": "ca_SXWHOYUGFtvr",
+    "status": "ACTIVE",
+    "authConfigId": "ac_wdjsafEfFeO8"
+   }
+  },
+  {
+   "at": "2026-11-03T14:29:08.638Z",
+   "step": "session.execute(SLACK_FETCH_TEAM_INFO)",
+   "detail": {
+    "tool": "SLACK_FETCH_TEAM_INFO",
+    "successful": true,
+    "identity": "greenlight",
+    "logId": "log_vWLRLhgETi4L",
+    "error": null
+   }
+  }
+ ],
+ "consoleSteps": [
+  {
+   "step": "api.slack.com/apps → Create new app: templates offered include \"AI agent\" and \"Starter app\"; chose From a manifest",
+   "screenshot": "/evidence/slack/01-create-app-dialog.jpg"
+  },
+  {
+   "step": "Manifest: name \"Greenlight test\", bot user, redirect_urls [Composio callback], bot scopes users:read team:read channels:read; workspace \"greenlight\"",
+   "screenshot": "/evidence/slack/02-manifest-review.jpg",
+   "observed": [
+    "Workspace choice \"can't be changed later\""
+   ]
+  },
+  {
+   "step": "App created instantly (App ID A0CEBJERHV3); Basic Information shows Client ID; Client Secret masked behind Show",
+   "screenshot": "/evidence/slack/03-app-created-credentials-masked.png"
+  },
+  {
+   "step": "Connect Link → Slack consent \"Allow Greenlight test to access Slack\". Composio default requested ~50 USER scopes (user_scope=calls:read … users:write) and no bot scopes",
+   "screenshot": "/evidence/slack/04-consent-allow-greenlight-test.jpg"
+  },
+  {
+   "step": "Owner clicked Allow → connected account ACTIVE; SLACK_FETCH_TEAM_INFO returned workspace \"greenlight\""
+  }
+ ],
+ "browser": "User's own Google Chrome via Claude in Chrome; human signed in to Slack and clicked Allow. Secret moved via clipboard into the script; never printed or saved."
+}
