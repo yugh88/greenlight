@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "attribution": { "commit": "", "pr": "" },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(pnpm:*)", "Bash(npx:*)", "Bash(node:*)", "Bash(tsx:*)",
+      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git add:*)",
+      "Bash(git commit:*)", "Bash(git branch:*)", "Bash(git checkout:*)", "Bash(git remote:*)",
+      "Bash(git push:*)", "Bash(gh:*)", "Bash(vercel:*)",
+      "Bash(ls:*)", "Bash(mkdir:*)", "Bash(cat:*)", "Bash(grep:*)", "Bash(find:*)",
+      "Bash(curl:*)", "Bash(jq:*)", "Bash(mv:*)", "Bash(cp:*)",
+      "WebFetch", "WebSearch", "Edit", "Write", "mcp__playwright"
+    ],
+    "ask": ["Bash(rm:*)", "Bash(vercel --prod:*)", "Bash(git reset:*)"],
+    "deny": [
+      "Bash(git push --force:*)", "Bash(git push -f:*)",
+      "Read(./.env.local)", "Read(./.env)"
+    ]
+  }
+}

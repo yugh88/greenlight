@@ -6,7 +6,7 @@ Composio APM take-home. Plan: `../Composio APM Take-home — Build Plan (Greenli
 
 | Phase | State |
 |---|---|
-| 1. Setup (docs, scaffold, env, DB schema, Zod) | **done (waiting on checkpoint)** |
+| 1. Setup (docs, scaffold, env, DB schema, Zod) | **done** (Composio key pending) |
 | 2. Hello-world Composio (managed GitHub via session) | next |
 | 3. Live pipeline v1 + streaming /generate | — |
 | 4. Guide page (11 sections) + .md + llms.txt | — |
@@ -29,13 +29,14 @@ Composio APM take-home. Plan: `../Composio APM Take-home — Build Plan (Greenli
 ## Decisions / deviations from the spec
 
 - **Ranges as `{min,max}`, not tuples; URLs as strings + post-check.** Gemini structured output handles tuples / `format: uri` poorly. `validateGuide()` restores the guarantees.
-- **Models:** agent `gemini-3.8-flash`, verifier `gemini-3.5-flash-lite`, Discover search `gemini-2.5-flash`. Search grounding is *not* free on Gemini 3.x (pricing page, 2026-11-03), only on 2.5 Flash / Flash-Lite (500 RPD).
+- **Models:** fallback chains in `lib/model.ts`: agent `3.8-flash → 3.6-flash → 3.5-flash-lite`, verifier `3.5-flash-lite → 3.1-flash-lite`. Live-tested 2026-11-03: 2.5 Flash is closed to new users (404) and Search grounding has 0 free quota (429) → **Discover does not use grounding**; it crawls the provider site + known developer-portal URL patterns + public probes.
 - **Schema additions:** `verdict.summary`, `composioFit`, `phase.waiting` (hatched bars), `requirement.required`, `checklist[].owner`, `reviewStatus`, `endToEnd`.
 
 ## Open questions / blocked on Yugh
 
-- `.claude/settings.json` (with `includeCoAuthoredBy: false`) **needs to be created by you**; Claude Code blocks itself from writing its own permission file. Contents are in the kickoff prompt §8.
-- Keys needed in `.env.local`: `COMPOSIO_API_KEY`, `COMPOSIO_TEST_USER_ID`, `GOOGLE_GENERATIVE_AI_API_KEY`, `DATABASE_URL`.
+- ✅ `.claude/settings.json` + `CLAUDE.md` created by Yugh.
+- ✅ `.env.local` written. Neon OK (tables `guides`, `jobs` pushed). Gemini OK via AI SDK (`scripts/check-gemini.mts`).
+- ❌ **Composio key is a `ck_` (Composio For You consumer key) → 401 `APIKey_InvalidAPIKey` on v3.1.** Need a **Platform project key (`ak_...`)**. Blocks Phase 2.
 - Deadline on the Ashby page? (Plan doc flags it as unknown.)
 - Read composio.dev/auth guides to sharpen differentiation.
 

@@ -47,7 +47,13 @@ All checked 2026-11-03 unless stated.
 
 - Free input/output: `gemini-3.8-flash`, `gemini-3.6-flash`, `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`, `gemini-2.5-flash`, `gemini-2.5-flash-lite`, `gemini-2.5-pro`.
 - **Google Search grounding on the free tier: "Not available" for every Gemini 3.x model.** Only `gemini-2.5-flash` /
-  `gemini-2.5-flash-lite` list it as "Free of charge, up to 500 RPD". → Discover step uses `gemini-2.5-flash` for
-  grounded search; agent loop uses `gemini-3.8-flash`; verifier uses `gemini-3.5-flash-lite`.
+  `gemini-2.5-flash-lite` list it as "Free of charge, up to 500 RPD". (but see live test below:
+  2.5 Flash is closed to new users).
 - Free tier: "Content used to improve our products: Yes". Only public docs / probe results go to the model.
-- Per-project rate limits are shown in AI Studio (not on the pricing page) → **TODO: read limits once key exists.**
+- **Live test with our key (2026-11-03) overrides the pricing page:**
+  - `gemini-2.5-flash` → 404 "This model models/gemini-2.5-flash is no longer available to new users."
+  - `gemini-3.5-flash-lite` → OK (~1s). `gemini-3.8-flash` / `gemini-flash-latest` → 503 "high demand" (transient).
+  - Google Search grounding on 3.5-flash-lite / 3.6-flash / 3.8-flash → 429 "You exceeded your current quota".
+  - ⇒ **No free search grounding for this project.** Discover uses site crawl + well-known URL heuristics + probes;
+    Composio search tools as an optional enhancement.
+- Per-project rate limits are shown in AI Studio (not on the pricing page).
