@@ -5,6 +5,9 @@
  * - gemini-3.8-flash: free, but frequently 503 "high demand" → fall back down the chain
  * - gemini-3.5-flash-lite: free, fast (~1s), reliable → verifier + last-resort agent
  * - gemini-2.5-flash: 404 "no longer available to new users"
+ * - Free tier cap: 20 generate requests/day/project/model on Flash models
+ *   (quotaId GenerateRequestsPerDayPerProjectPerModel-FreeTier); daily-cap 429s skip straight
+ *   to the next model. gemini-3.5-flash-lite is the workhorse fallback.
  * - Google Search grounding: 429 quota exceeded on every 3.x model (no free allowance),
  *   so Discover does NOT use grounding; see lib/agent/discover.ts (site crawl + probes).
  * Free tier: Google may use prompts/outputs to improve its products. Only send public
@@ -54,6 +57,13 @@ function chain(role: ModelRole) {
   return provider() === "google" ? GOOGLE_CHAINS[role] : [`${provider()}:${role}`];
 }
 
+/** Free tier: 20 requests/day/model on Flash models. Retrying a daily cap is pointless. */
+function isDailyQuota(err: unknown): boolean {
+  const e = err as { responseBody?: string; lastError?: unknown; message?: string };
+  const body = e?.responseBody ?? "";
+  return /PerDay|per day/i.test(body) || (e?.lastError ? isDailyQuota(e.lastError) : false);
+}
+
 function statusOf(err: unknown): number | undefined {
   const e = err as { statusCode?: number; status?: number; lastError?: unknown };
   return e?.statusCode ?? e?.status ?? (e?.lastError ? statusOf(e.lastError) : undefined);
@@ -87,7 +97,7 @@ export async function withModel<T>(
         const s = statusOf(err);
         const retryable = s === 429 || (s !== undefined && s >= 500);
         if (!retryable) throw err;
-        if (i === triesPerModel - 1) break; // move to next model
+        if (i === triesPerModel - 1 || isDailyQuota(err)) break; // move to next model
         const wait = delay + Math.random() * 1_000;
         console.warn(`[${label}] ${id} → ${s}; retry ${i + 1} in ${Math.round(wait)}ms`);
         await new Promise((r) => setTimeout(r, wait));

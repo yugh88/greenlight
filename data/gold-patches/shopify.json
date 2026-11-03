@@ -1,0 +1,18 @@
+{
+  "addClaims": [
+    { "id": "c-sh-custom-vs-public", "text": "Use custom distribution when building for a specific merchant and public distribution when building for many merchants.", "sourceUrl": "https://shopify.dev/docs/apps/launch/distribution", "quote": "Building for a specific merchant**: You'll typically use custom distribution." },
+    { "id": "c-sh-irreversible", "text": "You can't change the distribution method after you select it.", "sourceUrl": "https://shopify.dev/docs/apps/launch/distribution", "quote": "You can't change the distribution method after you select it." },
+    { "id": "c-sh-custom-scope", "text": "Custom-distribution apps install on a single store, on stores of the same Plus organization, or on development stores.", "sourceUrl": "https://shopify.dev/docs/apps/launch/distribution", "quote": "Installed on a single Shopify store, on multiple stores that belong to the same Plus organization" },
+    { "id": "c-sh-appstore-fee", "text": "Public distribution requires registering for the Shopify App Store, which has a one-time fee.", "sourceUrl": "https://shopify.dev/docs/apps/launch/distribution", "quote": "Public distribution also requires registering for the Shopify App Store, which has a one-time fee." },
+    { "id": "c-sh-review", "text": "Apps submitted for public distribution go through Shopify's app review process.", "sourceUrl": "https://shopify.dev/docs/apps/launch/app-store-review/review-process", "quote": "When you submit an app, it goes through an app review process" }
+  ],
+  "attach": { "verdict": ["c-sh-custom-vs-public", "c-sh-irreversible", "c-sh-review"] },
+  "addRequirements": [
+    { "kind": "other", "label": "Choose custom vs public distribution (irreversible)", "required": "yes", "when": "Before installing on merchant stores; can't be changed later", "claimIds": ["c-sh-irreversible", "c-sh-custom-vs-public"] },
+    { "kind": "paid-plan", "label": "Shopify App Store registration (one-time fee)", "required": "conditional", "when": "Only for public distribution", "claimIds": ["c-sh-appstore-fee"] }
+  ],
+  "addBlockers": [
+    { "id": "b-sh-distribution", "symptom": "A second merchant can't install your app", "cause": "The app was created with custom distribution, which is limited to one store (or one Plus organization) and can't be switched.", "fix": "Create a new app with public distribution for multi-merchant use and go through App Store review.", "fallback": "Create one custom-distribution app per merchant for a pilot.", "claimIds": ["c-sh-custom-scope", "c-sh-irreversible"] }
+  ],
+  "addUncertainties": ["Shopify's app review duration isn't stated on the cited review-process page."]
+}

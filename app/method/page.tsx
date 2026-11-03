@@ -34,7 +34,7 @@ const RUBRIC: Record<number, string> = {
   2: "Light, mostly-automatic gates: e.g. a listing/distribution toggle, a user cap lifted by a short form, or review only for a marketplace listing you can skip.",
   3: "A real human review before production (app review, publisher verification, quota extension), typically days to a couple of weeks.",
   4: "Heavy review: business verification, security assessment, demo videos, or restricted scopes; weeks, sometimes months.",
-  5: "You cannot self-serve production access: partner-only programs, or access gated behind a paid tier.",
+  5: "You cannot self-serve production access: partner-only programs, or access gated behind criteria most teams can't meet (e.g. organization-only, minimum user counts) or a sales process.",
 };
 
 export default async function MethodPage() {
@@ -80,6 +80,10 @@ export default async function MethodPage() {
           );
         })}
       </div>
+      <P>
+        <strong>Cost is shown separately.</strong> Pay-as-you-go API pricing (e.g. prepaid credits) does not raise difficulty on its own; it shows up in the
+        verdict&apos;s cost field and the <em>Paid</em> filter. It only counts toward a 5 when access itself is gated.
+      </P>
       <P>
         <strong>Two clocks.</strong> <em>Time to first token</em> is minutes until you can complete OAuth with your own account (development mode, test users).
         <em> Time to production</em> is days until arbitrary users can connect, including the provider&apos;s review queue. That queue, not engineering, is where

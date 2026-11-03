@@ -57,3 +57,10 @@ All checked 2026-11-03 unless stated.
   - ⇒ **No free search grounding for this project.** Discover uses site crawl + well-known URL heuristics + probes;
     Composio search tools as an optional enhancement.
 - Per-project rate limits are shown in AI Studio (not on the pricing page).
+
+## Free-tier daily cap (hit 2026-11-03 ~18:45)
+
+- `429 Generate content requests per day limit exceeded on Free Tier`, `quotaId: GenerateRequestsPerDayPerProjectPerModel-FreeTier`, `quotaValue: "20"` for gemini-3.6-flash (same for 3.8/3.7/3.5-flash). RetryInfo ≈ 18.7 h.
+- Each gold draft + verify ≈ 2 requests; live run ≈ 3–4 (rank, draft, verify). 503 retries also count.
+- `gemini-3.5-flash-lite` kept working after the Flash models were exhausted.
+- Implication for the deployed agent: ~5 high-quality live runs/day on Flash, then flash-lite. Paid tier (Flash $0.75/M input) would cost cents per guide; ask before enabling.

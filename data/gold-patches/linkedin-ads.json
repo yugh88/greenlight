@@ -1,0 +1,15 @@
+{
+  "addClaims": [
+    { "id": "c-li-open-approved", "text": "The Advertising API (and Community Management, Lead Sync, Conversions, Matched Audiences) is open to all approved developers via the standard application.", "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access", "quote": "Matched Audiences API are open to all approved developers — apply through the standard process." },
+    { "id": "c-li-restricted", "text": "Audience Insights and Media Planning APIs are restricted to developers who meet additional criteria evaluated by LinkedIn.", "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access", "quote": "Access to Audience Insights and Media Planning APIs is restricted to developers who meet additional qualification criteria evaluated by LinkedIn." },
+    { "id": "c-li-apply-products", "text": "You apply for an API under the Products tab of your app and complete an access form.", "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start", "quote": "Apply to the desired API under the Products tab of your app. - Complete the access form." },
+    { "id": "c-li-ads-scopes", "text": "Advertising API permissions include r_ads, rw_ads and r_ads_reporting, available once approved for Advertising API access.", "sourceUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access", "quote": "Available to all developers approved for Advertising API access. Apply to Advertising API." }
+  ],
+  "attach": { "verdict": ["c-li-open-approved", "c-li-apply-products"] },
+  "addRequirements": [
+    { "kind": "partner-application", "label": "Advertising API access application (Products tab → access form)", "required": "yes", "when": "Before any Marketing API scope (r_ads, rw_ads, r_ads_reporting) works", "claimIds": ["c-li-apply-products", "c-li-open-approved"] }
+  ],
+  "addUncertainties": [
+    "LinkedIn does not publish a review time for Advertising API applications; the production range is an estimate."
+  ]
+}

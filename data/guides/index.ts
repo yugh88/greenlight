@@ -2,6 +2,9 @@
 import type { Guide } from "@/lib/schema";
 import g0 from "./github.json";
 import g1 from "./gmail.json";
-import g2 from "./slack.json";
+import g2 from "./microsoft-entra-id.json";
+import g3 from "./slack.json";
+import g4 from "./spotify.json";
+import g5 from "./x.json";
 
-export const goldGuides = [g0, g1, g2] as unknown as Guide[];
+export const goldGuides = [g0, g1, g2, g3, g4, g5] as unknown as Guide[];

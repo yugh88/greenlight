@@ -1,0 +1,501 @@
+{
+ "slug": "x",
+ "app": {
+  "name": "X (Twitter)",
+  "website": "https://x.com",
+  "developerDocsUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/overview",
+  "composioSlug": "TWITTER",
+  "composioManaged": false,
+  "authSchemes": [
+   "OAUTH2"
+  ]
+ },
+ "verdict": {
+  "difficulty": 2,
+  "label": "Light review",
+  "summary": "Create an OAuth 2.0 Web App or Automated App/bot in the X Developer Console, configure PKCE and redirect URIs, and connect via Composio.",
+  "firstTokenMinutes": {
+   "min": 10,
+   "max": 20
+  },
+  "productionDays": {
+   "min": 1,
+   "max": 7
+  },
+  "cost": "Pay-per-use credits (per-endpoint pricing in the Developer Console)",
+  "claimIds": [
+   "c-oauth2-flow",
+   "c-x-ppu",
+   "c-x-credits"
+  ]
+ },
+ "composioFit": {
+  "summary": "X requires bringing your own OAuth app because Composio-managed OAuth is not available for Twitter/X.",
+  "whyOwnApp": [
+   "Composio-managed OAuth available? No",
+   "Brings dedicated quota instead of shared provider quotas",
+   "Allows custom branding, scopes, and direct API credential management"
+  ],
+  "claimIds": [
+   "c-composio-no-managed",
+   "c-composio-why-custom"
+  ]
+ },
+ "phases": [
+  {
+   "id": "create-app",
+   "name": "Create Developer App",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 5,
+    "max": 10
+   },
+   "steps": [
+    "Go to the X Developer Console.",
+    "Create a new App and choose OAuth 2.0 with a confidential client type (Web App or Automated App/bot)."
+   ],
+   "handoff": "Copy the Client ID and Client Secret into your secure configuration or Composio auth config.",
+   "claimIds": [
+    "c-app-types",
+    "c-confidential-client"
+   ]
+  },
+  {
+   "id": "configure-app",
+   "name": "Configure Redirect URIs and Scopes",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 5,
+    "max": 10
+   },
+   "steps": [
+    "Enable OAuth 2.0 in your App's authentication settings.",
+    "Add the exact callback URL provided by the Composio dashboard to your app's allowlist.",
+    "Select required fine-grained scopes such as tweet.read, users.read, and offline.access."
+   ],
+   "handoff": "Save settings in the Developer Console.",
+   "claimIds": [
+    "c-enable-oauth2",
+    "c-callback-rules",
+    "c-offline-access"
+   ]
+  },
+  {
+   "id": "test-integration",
+   "name": "Test Integration",
+   "owner": "agent",
+   "waiting": false,
+   "minutes": {
+    "min": 5,
+    "max": 15
+   },
+   "steps": [
+    "Initiate the OAuth flow using PKCE and your Client ID.",
+    "Exchange the authorization code within 30 seconds for an access token and refresh token.",
+    "Verify API connectivity using v2 endpoints."
+   ],
+   "handoff": "Verify successful account connection in Composio.",
+   "claimIds": [
+    "c-pkce-flow",
+    "c-auth-code-expiry",
+    "c-token-lifetime"
+   ]
+  }
+ ],
+ "artefacts": [
+  {
+   "id": "art-app-form",
+   "kind": "app-form",
+   "title": "X App Configuration Form Values",
+   "body": "App Name: My AI Agent X Integration\nApp Type: Web App or Automated App / Bot (Confidential Client)\nCallback URL: <Composio callback URL from your auth config>\nScopes Needed: tweet.read, tweet.write, users.read, offline.access"
+  },
+  {
+   "id": "art-scope-justification",
+   "kind": "scope-justification",
+   "title": "Scope Justification",
+   "body": "The AI agent requires tweet.read and users.read to retrieve public context and user timeline information, tweet.write to publish agent responses on behalf of the user, and offline.access to maintain a persistent connection via refresh tokens without requiring repeated user re-authentication."
+  },
+  {
+   "id": "art-privacy-checklist",
+   "kind": "privacy-checklist",
+   "title": "Privacy Policy & Terms Requirements",
+   "body": "- Publish a public Privacy Policy URL detailing data collection and token handling.\n- Publish Developer Terms acceptance.\n- Ensure exact match validation on all registered callback URIs."
+  }
+ ],
+ "requirements": [
+  {
+   "kind": "privacy-policy",
+   "label": "Privacy Policy",
+   "required": "yes",
+   "when": "Required for application compliance and developer terms.",
+   "claimIds": [
+    "c-terms-privacy"
+   ]
+  },
+  {
+   "kind": "domain-verification",
+   "label": "Callback URL Validation",
+   "required": "yes",
+   "when": "Mandatory exact match validation for callback URLs.",
+   "claimIds": [
+    "c-callback-rules"
+   ]
+  },
+  {
+   "kind": "paid-plan",
+   "label": "Prepaid API credits",
+   "required": "yes",
+   "when": "Before your agent can make API calls beyond any free credits",
+   "claimIds": [
+    "c-x-ppu",
+    "c-x-credits"
+   ]
+  }
+ ],
+ "scopes": [
+  {
+   "scope": "tweet.read",
+   "purpose": "Read tweets and timelines",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-scopes-list"
+   ]
+  },
+  {
+   "scope": "tweet.write",
+   "purpose": "Create posts and replies",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-scopes-list"
+   ]
+  },
+  {
+   "scope": "users.read",
+   "purpose": "Read user account details and profile information",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-scopes-list"
+   ]
+  },
+  {
+   "scope": "offline.access",
+   "purpose": "Issue a refresh token to obtain new access tokens without prompting the user",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-offline-access"
+   ]
+  }
+ ],
+ "redirectRules": [
+  {
+   "rule": "Must use exact match validation for callback URLs",
+   "claimIds": [
+    "c-callback-rules"
+   ]
+  },
+  {
+   "rule": "Maximum of 10 callback URLs per app",
+   "claimIds": [
+    "c-max-callbacks"
+   ]
+  },
+  {
+   "rule": "For local development, use http://127.0.0.1 instead of localhost",
+   "claimIds": [
+    "c-local-dev-url"
+   ]
+  }
+ ],
+ "blockers": [
+  {
+   "id": "b-x-credits",
+   "symptom": "Calls fail once the app is live although OAuth succeeded",
+   "cause": "X API is pay-per-use; requests deduct prepaid credits.",
+   "fix": "Buy credits and set a spending limit / auto-recharge in the Developer Console; budget per endpoint.",
+   "fallback": "Cache aggressively and call fewer, cheaper endpoints.",
+   "claimIds": [
+    "c-x-credits",
+    "c-x-per-endpoint"
+   ]
+  },
+  {
+   "id": "blocker-callback-error",
+   "symptom": "\"message\" : \"Callback URL not approved for this client application.\"",
+   "cause": "The redirect URI passed in the authorization request does not exactly match the callback URL registered in the Developer Console, including protocols and trailing slashes.",
+   "fix": "Ensure your callback URL is exactly as registered in the Developer Console and properly HTTP-encoded when passing as a query parameter.",
+   "fallback": "Re-verify allowed callback URLs in the App settings.",
+   "claimIds": [
+    "c-callback-error-msg"
+   ]
+  },
+  {
+   "id": "blocker-auth-code-expired",
+   "symptom": "Authorization code invalid or expired error during token exchange.",
+   "cause": "The auth_code has a time limit of 30 seconds once the App owner receives an approved auth_code from the user.",
+   "fix": "Exchange the authorization code for an access token immediately within 30 seconds.",
+   "fallback": "Restart the OAuth authorization flow to generate a fresh authorization code.",
+   "claimIds": [
+    "c-auth-code-expiry"
+   ]
+  },
+  {
+   "id": "blocker-localhost-mismatch",
+   "symptom": "Redirect fails when testing locally using localhost.",
+   "cause": "Using 'localhost' can cause validation failures with X callback rules.",
+   "fix": "Use http://127.0.0.1 instead of localhost for local development.",
+   "fallback": "Register http://127.0.0.1 explicitly in the allowed callback URLs.",
+   "claimIds": [
+    "c-local-dev-url"
+   ]
+  }
+ ],
+ "checklist": [
+  {
+   "id": "chk-1",
+   "text": "Sign in to the X Developer Console and create a new App.",
+   "owner": "you",
+   "phaseId": "create-app"
+  },
+  {
+   "id": "chk-2",
+   "text": "Select a confidential client app type such as Web App or Automated App/bot.",
+   "owner": "you",
+   "phaseId": "create-app"
+  },
+  {
+   "id": "chk-3",
+   "text": "Copy the Client ID and Client Secret.",
+   "owner": "you",
+   "phaseId": "create-app"
+  },
+  {
+   "id": "chk-4",
+   "text": "Enable OAuth 2.0 in the App's authentication settings.",
+   "owner": "you",
+   "phaseId": "configure-app"
+  },
+  {
+   "id": "chk-5",
+   "text": "Add the Composio redirect URI to your app's allowlist using exact match validation.",
+   "owner": "you",
+   "phaseId": "configure-app"
+  },
+  {
+   "id": "chk-6",
+   "text": "Configure fine-grained scopes including tweet.read, users.read, and offline.access.",
+   "owner": "you",
+   "phaseId": "configure-app"
+  },
+  {
+   "id": "chk-7",
+   "text": "Initiate the OAuth 2.0 authorization code flow with PKCE.",
+   "owner": "agent",
+   "phaseId": "test-integration"
+  },
+  {
+   "id": "chk-8",
+   "text": "Exchange the authorization code for tokens within the 30-second window.",
+   "owner": "agent",
+   "phaseId": "test-integration"
+  },
+  {
+   "id": "chk-9",
+   "text": "Verify successful connection in the Composio dashboard.",
+   "owner": "you",
+   "phaseId": "test-integration"
+  }
+ ],
+ "claims": [
+  {
+   "id": "c-oauth2-flow",
+   "text": "OAuth 2.0 Authorization Code Flow with PKCE allows authentication on behalf of another user with fine-grained scopes.",
+   "evidence": "uncertain",
+   "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+   "quote": "OAuth 2.0 Authorization Code Flow with PKCE allows you to authenticate on behalf of another user with more control over an application’s scopes",
+   "reason": "Quote not found on the cited page when re-checked (match 0.542).",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-no-managed",
+   "text": "Composio-managed OAuth is not available for Twitter/X, requiring a custom auth app config.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/toolkits/twitter",
+   "quote": "Composio-managed OAuth available? No",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-why-custom",
+   "text": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+   "quote": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-app-types",
+   "text": "App options include Native App, Single page App, Web App, Automated App, or bot.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+   "quote": "Your options are Native App, Single page App, Web App, Automated App, or bot.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-confidential-client",
+   "text": "Web App and Automated App or bots are confidential clients that provide a client secret.",
+   "evidence": "uncertain",
+   "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+   "quote": "Web App and Automated App or bots are confidential clients. If you select a type of App that is a confidential client, you will be provided with a client secret.",
+   "reason": "Quote not found on the cited page when re-checked (match 0.733).",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-enable-oauth2",
+   "text": "To enable OAuth 2.0 in your App, you must enable it in your App's authentication settings.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+   "quote": "To enable OAuth 2.0 in your App, you must enable it in your App’s authentication settings found in the App settings section of the Developer Console.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-callback-rules",
+   "text": "Callback URLs require exact match validation for OAuth 2.0.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+   "quote": "Your callback URL. You will need to have exact match validation .",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-offline-access",
+   "text": "If the scope offline.access is applied, an OAuth 2.0 refresh token will be issued.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+   "quote": "If the scope offline.access is applied an OAuth 2.0 refresh token will be issued.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-pkce-flow",
+   "text": "OAuth 2.0 uses authorization code with PKCE for user authorization.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+   "quote": "We support authorization code with PKCE and refresh token as grant types for user authorization.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-auth-code-expiry",
+   "text": "The auth_code has a time limit of 30 seconds once the App owner receives an approved auth_code from the user.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+   "quote": "The auth_code has a time limit of 30 seconds once the App owner receives an approved auth_code from the user.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-token-lifetime",
+   "text": "By default, the access token created through Authorization Code Flow with PKCE stays valid for two hours.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+   "quote": "By default, the access token you create through the Authorization Code Flow with PKCE will only stay valid for two hours unless you’ve used the offline.access scope.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-terms-privacy",
+   "text": "Terms of Service, Privacy Policy, Cookies, and Developer Terms apply.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/overview",
+   "quote": "Terms of Service Privacy Policy Cookies Developer Terms",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-scopes-list",
+   "text": "Scopes include tweet.read, tweet.write, users.read, and others for granular access.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+   "quote": "Scopes allow you to set granular access for your App so that your App only has the permissions that it needs.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-max-callbacks",
+   "text": "There is a maximum of 10 callback URLs per app.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/fundamentals/developer-apps",
+   "quote": "Maximum of 10 callback URLs per app",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-local-dev-url",
+   "text": "For local development, use http://127.0.0.1 and not localhost.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/fundamentals/developer-apps",
+   "quote": "For local development, use http://127.0.0.1 (not localhost )",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-callback-error-msg",
+   "text": "Callback URL not approved error returns message 'Callback URL not approved for this client application.'",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/fundamentals/developer-apps",
+   "quote": "\"message\" : \"Callback URL not approved for this client application.\"",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-x-ppu",
+   "text": "The X API uses pay-per-usage pricing with no subscriptions.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing",
+   "quote": "The X API uses pay-per-usage pricing with no subscriptions.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-x-credits",
+   "text": "You purchase credits upfront in the Developer Console; they are deducted per API request.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing",
+   "quote": "Purchase credits upfront in the Developer Console. Credits are deducted as you make API requests.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-x-per-endpoint",
+   "text": "Different endpoints cost different amounts; current rates are shown in the Developer Console.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing",
+   "quote": "Different endpoints have different costs. View current rates in the Developer Console.",
+   "checkedAt": "2026-11-03"
+  }
+ ],
+ "uncertainties": [
+  "Exact enterprise review queue waiting days beyond standard developer sign-up are not explicitly quantified in the public documentation.",
+  "The exact error code returned when credits run out is not documented on the pricing page; the blocker describes the behaviour, not the error string."
+ ],
+ "generatedBy": "gold",
+ "reviewStatus": "unreviewed",
+ "lastVerified": "2026-11-03",
+ "probes": [
+  {
+   "id": "p-oauth-metadata-11",
+   "kind": "oauth-metadata",
+   "url": "https://api.x.com/.well-known/oauth-authorization-server",
+   "status": 200,
+   "bodySnippet": "{\"authorization_endpoint\":\"https://x.com/i/oauth2/authorize\",\"code_challenge_methods_supported\":[\"S256\"],\"grant_types_supported\":[\"authorization_code\",\"refresh_token\"],\"issuer\":\"https://api.x.com\",\"response_types_supported\":[\"code\"],\"scopes_supported\":[\"tweet.read\",\"tweet.write\",\"users.read\",\"follows.read\",\"space.read\",\"mute.read\",\"like.read\",\"list.read\",\"list.write\",\"block.read\",\"block.write\",\"bo",
+   "at": "2026-11-03T13:15:48.131Z"
+  },
+  {
+   "id": "p-authorize-x.com",
+   "kind": "authorize-dummy-client",
+   "url": "https://x.com/i/oauth2/authorize?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe",
+   "status": 200,
+   "bodySnippet": "<!DOCTYPE html><html lang=\"en\" dir=\"ltr\" data-app-env=\"prod\" data-app-version=\"3bdc53e4dacb3d8593a0d7aa75d225face7e2fd5\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0,viewport-fit=cover\"/><meta name=\"color-scheme\" content=\"light dark\"/><meta name=\"theme-color\" media=\"(prefers-color-scheme: light)\" content=\"#FFFFFF\"/><",
+   "at": "2026-11-03T13:15:48.766Z"
+  }
+ ],
+ "generation": {
+  "draftModel": "gemini-3.5-flash-lite",
+  "verifierModel": "gemini-3.5-flash-lite",
+  "ms": 29319,
+  "sources": 6
+ }
+}

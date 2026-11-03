@@ -1,34 +1,155 @@
 {
   "addClaims": [
-    { "id": "c-sp-dev-5", "text": "New apps start in development mode, usable by at most 5 authenticated Spotify users.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes", "quote": "Up to 5 authenticated Spotify users can use an app that is in development mode" },
-    { "id": "c-sp-allowlist", "text": "Each development-mode user must be added to the app's allowlist first.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes", "quote": "Each Spotify user who installs your app will need to be added to your app's allowlist before they can use it." },
-    { "id": "c-sp-premium", "text": "The app owner needs a Spotify Premium account for development-mode apps to work.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes", "quote": "The app owner must have a Spotify Premium account for apps in development mode to function." },
-    { "id": "c-sp-orgs-only", "text": "Since May 15, 2025 Spotify only accepts extended-quota applications from organizations, not individuals.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes", "quote": "as of May 15th 2025, Spotify only accepts applications from organizations (not individuals)" },
-    { "id": "c-sp-250k", "text": "Extended quota requires an established business, a launched service and at least 250k monthly active users.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes", "quote": "Maintaining a minimum of active users (at least 250k MAUs)" },
-    { "id": "c-sp-extended-unlimited", "text": "Extended quota mode removes the allowlist and user limit and raises rate limits.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes", "quote": "Apps in this category can be installed by an unlimited number of users and the allowlist in development mode no longer applies." },
-    { "id": "c-sp-95pct", "text": "Spotify says over 95% of extended-access applications fell short of its security, privacy and licensing standards.", "sourceUrl": "https://developer.spotify.com/blog/2025-04-15-updating-the-criteria-for-web-api-extended-access", "quote": "over 95% of the applications we receive for extended Web API access fall short of basic security, privacy, and licensing standards" },
-    { "id": "c-sp-no-localhost", "text": "localhost is not allowed as a redirect URI; use HTTPS, or an explicit loopback IP like http://127.0.0.1:PORT.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/redirect_uri", "quote": "localhost is not allowed as redirect URI." },
-    { "id": "c-sp-https", "text": "Redirect URIs must use HTTPS unless they are a loopback address.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/redirect_uri", "quote": "Use HTTPS for your redirect URI, unless you are using a loopback address, when HTTP is permitted." },
-    { "id": "c-sp-403", "text": "Requests for users not on the allowlist return a 403 error.", "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes", "quote": "will receive a 403 status code error" }
+    {
+      "id": "c-sp-dev-5",
+      "text": "New apps start in development mode, usable by at most 5 authenticated Spotify users.",
+      "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+      "quote": "Up to 5 authenticated Spotify users can use an app that is in development mode"
+    },
+    {
+      "id": "c-sp-allowlist",
+      "text": "Each development-mode user must be added to the app's allowlist first.",
+      "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+      "quote": "Each Spotify user who installs your app will need to be added to your app's allowlist before they can use it."
+    },
+    {
+      "id": "c-sp-premium",
+      "text": "The app owner needs a Spotify Premium account for development-mode apps to work.",
+      "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+      "quote": "The app owner must have a Spotify Premium account for apps in development mode to function."
+    },
+    {
+      "id": "c-sp-orgs-only",
+      "text": "Since May 15, 2025 Spotify only accepts extended-quota applications from organizations, not individuals.",
+      "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+      "quote": "as of May 15th 2025, Spotify only accepts applications from organizations (not individuals)"
+    },
+    {
+      "id": "c-sp-250k",
+      "text": "Extended quota requires an established business, a launched service and at least 250k monthly active users.",
+      "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+      "quote": "Maintaining a minimum of active users (at least 250k MAUs)"
+    },
+    {
+      "id": "c-sp-extended-unlimited",
+      "text": "Extended quota mode removes the allowlist and user limit and raises rate limits.",
+      "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+      "quote": "Apps in this category can be installed by an unlimited number of users and the allowlist in development mode no longer applies."
+    },
+    {
+      "id": "c-sp-95pct",
+      "text": "Spotify says over 95% of extended-access applications fell short of its security, privacy and licensing standards.",
+      "sourceUrl": "https://developer.spotify.com/blog/2025-04-15-updating-the-criteria-for-web-api-extended-access",
+      "quote": "over 95% of the applications we receive for extended Web API access fall short of basic security, privacy, and licensing standards"
+    },
+    {
+      "id": "c-sp-no-localhost",
+      "text": "localhost is not allowed as a redirect URI; use HTTPS, or an explicit loopback IP like http://127.0.0.1:PORT.",
+      "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/redirect_uri",
+      "quote": "localhost is not allowed as redirect URI."
+    },
+    {
+      "id": "c-sp-https",
+      "text": "Redirect URIs must use HTTPS unless they are a loopback address.",
+      "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/redirect_uri",
+      "quote": "Use HTTPS for your redirect URI, unless you are using a loopback address, when HTTP is permitted."
+    },
+    {
+      "id": "c-sp-403",
+      "text": "Requests for users not on the allowlist return a 403 error.",
+      "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+      "quote": "will receive a 403 status code error"
+    }
   ],
   "verdict": {
     "difficulty": 5,
     "label": "Partner-only or paid / gated",
     "summary": "Building and testing is self-serve, but development mode caps you at 5 allowlisted users, and production (extended quota) is only for registered organizations with 250k+ monthly active users. For most agent builders, Spotify is effectively partner-only.",
-    "productionDays": { "min": 30, "max": 180 },
+    "productionDays": {
+      "min": 30,
+      "max": 180
+    },
     "cost": "Free API; app owner needs Spotify Premium"
   },
-  "attach": { "verdict": ["c-sp-dev-5", "c-sp-orgs-only", "c-sp-250k", "c-sp-premium"] },
-  "addRequirements": [
-    { "kind": "user-cap-before-review", "label": "5 allowlisted users in development mode", "required": "yes", "when": "Until Spotify moves the app to extended quota mode", "claimIds": ["c-sp-dev-5", "c-sp-allowlist"] },
-    { "kind": "partner-application", "label": "Extended quota application (organizations only, 250k+ MAU)", "required": "conditional", "when": "To serve more than 5 users", "claimIds": ["c-sp-orgs-only", "c-sp-250k"] },
-    { "kind": "paid-plan", "label": "Spotify Premium on the app owner's account", "required": "yes", "when": "For development-mode apps to function", "claimIds": ["c-sp-premium"] }
-  ],
+  "attach": {
+    "verdict": [
+      "c-sp-dev-5",
+      "c-sp-orgs-only",
+      "c-sp-250k",
+      "c-sp-premium"
+    ]
+  },
   "addRedirectRules": [
-    { "rule": "Use HTTPS, or an explicit loopback IP (http://127.0.0.1:PORT or http://[::1]:PORT). The hostname localhost is rejected.", "claimIds": ["c-sp-no-localhost", "c-sp-https"] }
+    {
+      "rule": "Use HTTPS, or an explicit loopback IP (http://127.0.0.1:PORT or http://[::1]:PORT). The hostname localhost is rejected.",
+      "claimIds": [
+        "c-sp-no-localhost",
+        "c-sp-https"
+      ]
+    }
   ],
   "addBlockers": [
-    { "id": "b-sp-403", "symptom": "A 6th user (or anyone not allowlisted) gets 403 errors after connecting", "cause": "The app is in development mode: max 5 users, each on the allowlist.", "fix": "Add the user to the allowlist in the Developer Dashboard (if you have fewer than 5).", "fallback": "Apply for extended quota as an organization meeting the criteria; otherwise scope your product to single-user / personal use.", "claimIds": ["c-sp-dev-5", "c-sp-403"] },
-    { "id": "b-sp-localhost", "symptom": "Dashboard rejects http://localhost:3000/callback as a redirect URI", "cause": "Spotify no longer allows the localhost hostname.", "fix": "Use http://127.0.0.1:3000/callback for local testing, and Composio's HTTPS callback for real connections.", "fallback": "n/a", "claimIds": ["c-sp-no-localhost"] }
+    {
+      "id": "b-sp-403",
+      "symptom": "A 6th user (or anyone not allowlisted) gets 403 errors after connecting",
+      "cause": "The app is in development mode: max 5 users, each on the allowlist.",
+      "fix": "Add the user to the allowlist in the Developer Dashboard (if you have fewer than 5).",
+      "fallback": "Apply for extended quota as an organization meeting the criteria; otherwise scope your product to single-user / personal use.",
+      "claimIds": [
+        "c-sp-dev-5",
+        "c-sp-403"
+      ]
+    },
+    {
+      "id": "b-sp-localhost",
+      "symptom": "Dashboard rejects http://localhost:3000/callback as a redirect URI",
+      "cause": "Spotify no longer allows the localhost hostname.",
+      "fix": "Use http://127.0.0.1:3000/callback for local testing, and Composio's HTTPS callback for real connections.",
+      "fallback": "n/a",
+      "claimIds": [
+        "c-sp-no-localhost"
+      ]
+    }
+  ],
+  "removeClaims": [
+    "c-verdict-difficulty",
+    "c-dev-mode-limits"
+  ],
+  "replaceRequirements": [
+    {
+      "kind": "user-cap-before-review",
+      "label": "5 allowlisted users in development mode",
+      "required": "yes",
+      "when": "Until Spotify moves the app to extended quota mode",
+      "claimIds": [
+        "c-sp-dev-5",
+        "c-sp-allowlist"
+      ]
+    },
+    {
+      "kind": "partner-application",
+      "label": "Extended quota application (organizations only, 250k+ MAU)",
+      "required": "conditional",
+      "when": "To serve more than 5 users",
+      "claimIds": [
+        "c-sp-orgs-only",
+        "c-sp-250k"
+      ]
+    },
+    {
+      "kind": "paid-plan",
+      "label": "Spotify Premium on the app owner's account",
+      "required": "yes",
+      "when": "For development-mode apps to function",
+      "claimIds": [
+        "c-sp-premium"
+      ]
+    }
+  ],
+  "addUncertainties": [
+    "Spotify does not publish a turnaround time for extended-quota applications; the production range is an estimate, and most individual developers will not qualify at all."
+  ],
+  "removeUncertainties": [
+    0
   ]
 }

@@ -1,6 +1,193 @@
 [
  {
-  "at": "2026-11-03T12:30:56.449Z",
+  "at": "2026-11-03T12:42:53.891Z",
+  "tool": "COMPOSIO_SEARCH_TOOLS",
+  "args": {
+   "queries": [
+    {
+     "use_case": "get the authenticated GitHub user"
+    }
+   ],
+   "session": {
+    "generate_id": true
+   }
+  },
+  "isError": false,
+  "data": {
+   "successful": true,
+   "data": {
+    "results": [
+     {
+      "index": 1,
+      "use_case": "get the authenticated GitHub user",
+      "execution_guidance": "IMPORTANT: Follow the recommended plan below. Extract steps before execution, adapt to your current context, execute sequentially with current_step parameter, and check known pitfalls to avoid errors.",
+      "recommended_plan_steps": [
+       "[Required] [Step]: Retrieve the connected account profile using GITHUB_GET_THE_AUTHENTICATED_USER (treat the returned handle as canonical; return only a small allowlist of non-sensitive fields).",
+       "[Fallback (if authenticated access fails or only public data is allowed)] [Fallback]: Fetch the public profile using GITHUB_GET_A_USER (requires a confirmed public handle; use public fields only).",
+       "[Optional (if you need a smaller/shaped response)] [Prerequisite]: Check remaining GraphQL budget using GITHUB_GET_GRAPHQL_RATE_LIMIT (avoid shaping calls when quota is low).",
+       "[Optional (if you need a smaller/shaped response)] [Step]: Request only required fields using GITHUB_RUN_GRAPH_QL_QUERY (paginate any connections via pageInfo.hasNextPage/endCursor).",
+       "[Optional (if repository context is needed)] [Next Step]: List repositories using GITHUB_LIST_REPOSITORIES_FOR_THE_AUTHENTICATED_USER (paginate with per_page up to 100; summarize key fields rather than returning full payload).",
+       "[Optional (if organization context matters)] [Next Step]: List organizations using GITHUB_LIST_ORGANIZATIONS_FOR_THE_AUTHENTICATED_USER (paginate to completion; handle empty lists and summarize)."
+      ],
+      "known_pitfalls": [
+       "[GITHUB_GET_THE_AUTHENTICATED_USER] Can fail with HTTP 401 when auth is invalid or the connection is inactive/unavailable.",
+       "[GITHUB_GET_THE_AUTHENTICATED_USER] Many fields may be null due to privacy/settings/scopes; null-safe formatting is required.",
+       "[GITHUB_GET_A_USER] Can return HTTP 404 when the provided public handle is invalid or does not exist.",
+       "[GITHUB_LIST_REPOSITORIES_FOR_THE_AUTHENTICATED_USER] per_page max 100; some responses may be nested under response.data.repositories rather than a bare array.",
+       "[GITHUB_RUN_GRAPH_QL_QUERY] Query cost limits can trigger 403; responses may include errors and partial nulls even on success."
+      ],
+      "reference_workbench_snippets": [
+       {
+        "description": "Compute repository rollups from a potentially nested repositories payload without assuming a bare array response.",
+        "code": "```python\nimport json\nfrom collections import Counter\n\nd=json.load(open(INPUT))\ndata=(d.get('response',{}) or {}).get('data',d.get('data',d))\nrepos=(data or {}).get('repositories',[]) or []\nlang=Counter((r.get('language') or '(unknown)') for r in repos)\n{'repo_count':len(repos),'stars_total':sum(int(r.get('stargazers_count') or 0) for r in repos),'forks_total':sum(int(r.get('forks_count') or 0) for r in repos),'top_languages':lang.most_common(10)}\n```"
+       }
+      ],
+      "difficulty": "easy",
+      "primary_tool_slugs": [
+       "GITHUB_GET_THE_AUTHENTICATED_USER"
+      ],
+      "related_tool_slugs": [
+       "GITHUB_GET_A_USER",
+       "GITHUB_GET_GRAPHQL_RATE_LIMIT",
+       "GITHUB_RUN_GRAPH_QL_QUERY",
+       "GITHUB_LIST_REPOSITORIES_FOR_THE_AUTHENTICATED_USER",
+       "GITHUB_LIST_ORGANIZATIONS_FOR_THE_AUTHENTICATED_USER"
+      ],
+      "toolkits": [
+       "github"
+      ],
+      "plan_id": "883e5d2c2c34419ab4d3438df3677f8a",
+      "cached_plan_usecase": "usecase: get github user profile information. known: None. apps: github"
+     }
+    ],
+    "toolkit_connection_statuses": [
+     {
+      "toolkit": "github",
+      "description": "GitHub is a code hosting platform for version control and collaboration, offering Git-based repository management, issue tracking, and continuous integration features",
+      "has_active_connection": false,
+      "status_message": "No Active connection for toolkit=github. You MUST call COMPOSIO_MANAGE_CONNECTIONS (toolkit=\"github\") to create a connection BEFORE executing any github tools."
+     }
+    ],
+    "tool_schemas": {
+     "GITHUB_GET_THE_AUTHENTICATED_USER": {
+      "toolkit": "GITHUB",
+      "tool_slug": "GITHUB_GET_THE_AUTHENTICATED_USER",
+      "description": "Gets the profile information for the currently authenticated GitHub user, including potentially private details based on user settings.",
+      "input_schema": {
+       "type": "object",
+       "properties": {}
+      },
+      "hasFullSchema": true
+     },
+     "GITHUB_GET_A_USER": {
+      "toolkit": "GITHUB",
+      "tool_slug": "GITHUB_GET_A_USER",
+      "description": "Retrieves the public profile information for an existing GitHub user, specified by their username.",
+      "input_schema": {
+       "type": "object",
+       "required": [
+        "username"
+       ],
+       "properties": {
+        "username": {
+         "type": "string",
+         "examples": [
+          "octocat",
+          "torvalds",
+          "defunkt"
+         ],
+         "description": "The GitHub username (handle) of the user to retrieve. This is case-sensitive."
+        }
+       }
+      },
+      "hasFullSchema": true
+     },
+     "GITHUB_GET_GRAPHQL_RATE_LIMIT": {
+      "toolkit": "GITHUB",
+      "tool_slug": "GITHUB_GET_GRAPHQL_RATE_LIMIT",
+      "description": "Tool to retrieve the authenticated client's GitHub GraphQL API rate limit information. Use when you need to check remaining quota, current usage, or reset time for GraphQL requests.",
+      "input_schema": {
+       "type": "object",
+       "properties": {
+        "dry_run": {
+         "type": "boolean",
+         "default": false,
+         "examples": [
+          false,
+          true
+         ],
+         "description": "If true, calculate the cost for the query without evaluating it. Use this to estimate query costs without consuming actual quota."
+        }
+       }
+      },
+      "hasFullSchema": true
+     },
+     "GITHUB_RUN_GRAPH_QL_QUERY": {
+      "toolkit": "GITHUB",
+      "tool_slug": "GITHUB_RUN_GRAPH_QL_QUERY",
+      "description": "Tool to run an arbitrary GitHub GraphQL v4 query or mutation. Use when fetching multiple datasets in...",
+      "hasFullSchema": false,
+      "schemaRef": {
+       "tool": "COMPOSIO_GET_TOOL_SCHEMAS",
+       "args": {
+        "tool_slugs": [
+         "GITHUB_RUN_GRAPH_QL_QUERY"
+        ]
+       }
+      }
+     },
+     "GITHUB_LIST_REPOSITORIES_FOR_THE_AUTHENTICATED_USER": {
+      "toolkit": "GITHUB",
+      "tool_slug": "GITHUB_LIST_REPOSITORIES_FOR_THE_AUTHENTICATED_USER",
+      "description": "Lists repositories for the authenticated user; using 'type' with 'visibility' or 'affiliation' API p...",
+      "hasFullSchema": false,
+      "schemaRef": {
+       "tool": "COMPOSIO_GET_TOOL_SCHEMAS",
+       "args": {
+        "tool_slugs": [
+         "GITHUB_LIST_REPOSITORIES_FOR_THE_AUTHENTICATED_USER"
+        ]
+       }
+      }
+     },
+     "GITHUB_LIST_ORGANIZATIONS_FOR_THE_AUTHENTICATED_USER": {
+      "toolkit": "GITHUB",
+      "tool_slug": "GITHUB_LIST_ORGANIZATIONS_FOR_THE_AUTHENTICATED_USER",
+      "description": "Lists organizations the authenticated GitHub user is a member of, returning details for each organiz...",
+      "hasFullSchema": false,
+      "schemaRef": {
+       "tool": "COMPOSIO_GET_TOOL_SCHEMAS",
+       "args": {
+        "tool_slugs": [
+         "GITHUB_LIST_ORGANIZATIONS_FOR_THE_AUTHENTICATED_USER"
+        ]
+       }
+      }
+     }
+    },
+    "time_info": {
+     "current_time_utc": "2026-11-03T12:42:53.761Z",
+     "current_time_utc_epoch_seconds": 1793709773,
+     "message": "\n          - This is time in UTC timezone. Get timezone from user if you needed.\n          - Always use this time info to construct parameters for tool calls appropriately even when the tool call requires relative times like 'last week', 'last 24 hours', 'today', 'tomorrow' etc.\n          - Do not hallucinate the time or timezone by yourself.\n        "
+    },
+    "session": {
+     "id": "feed",
+     "generate_id": true,
+     "instructions": "REQUIRED: Pass session_id \"feed\" in ALL subsequent meta tool calls for this workflow."
+    },
+    "next_steps_guidance": [
+     "1) CALL COMPOSIO_MANAGE_CONNECTIONS: Use manage connections to initiate connections for toolkits that are not active",
+     "2) Extract validated plan steps returned above, acknowledge each step, then execute sequentially updating current_step parameter. Check pitfalls during execution."
+    ],
+    "success": true,
+    "error": null
+   },
+   "error": null,
+   "log_id": "log_coFwXIYZ2pLW"
+  }
+ },
+ {
+  "at": "2026-11-03T12:42:54.455Z",
   "tool": "COMPOSIO_MANAGE_CONNECTIONS",
   "args": {
    "toolkits": [
@@ -8,7 +195,8 @@
      "name": "github",
      "action": "list"
     }
-   ]
+   ],
+   "session_id": "feed"
   },
   "isError": false,
   "data": {
@@ -19,14 +207,7 @@
      "github": {
       "toolkit": "github",
       "status": "initiated",
-      "accounts": [
-       {
-        "id": "github_leat-yarrow",
-        "status": "initializing",
-        "is_default": false,
-        "account_type": "PRIVATE"
-       }
-      ]
+      "accounts": []
      }
     },
     "summary": {
@@ -34,14 +215,18 @@
      "active_connections": 0,
      "initiated_connections": 1,
      "failed_connections": 0
+    },
+    "session": {
+     "id": "feed",
+     "instructions": "REQUIRED: Pass session_id \"feed\" in ALL subsequent meta tool calls for this workflow."
     }
    },
    "error": null,
-   "log_id": "log_cl1j2kW_6Qni"
+   "log_id": "log_8OBfLItMtuRb"
   }
  },
  {
-  "at": "2026-11-03T12:30:57.321Z",
+  "at": "2026-11-03T12:42:55.345Z",
   "tool": "COMPOSIO_MANAGE_CONNECTIONS",
   "args": {
    "toolkits": [
@@ -49,7 +234,8 @@
      "name": "github",
      "action": "add"
     }
-   ]
+   ],
+   "session_id": "feed"
   },
   "isError": false,
   "data": {
@@ -60,18 +246,58 @@
      "github": {
       "toolkit": "github",
       "status": "initiated",
-      "redirect_url": "https://connect.composio.dev/link/lk_3TBeV3yQTxNN",
-      "instruction": "Action required: Share the following authentication link with the user to complete setup for 'github'.\n\nAuthentication Link (render clickable):\nhttps://connect.composio.dev/link/lk_3TBeV3yQTxNN\n\nWhat happens next:\n1) User opens the link in their browser. They will see a Composio branded authentication UI.\n2) For OAuth: user authorizes with the provider.\n3) For API/Token auth: User enters the required credentials in the form.\n4) The connection becomes Active automatically once completed.\n\nImportant Notes:\n- Always show the returned redirect_url as a FORMATTED MARKDOWN LINK in your final response for this turn as intermediate messages may be hidden or summarized by the chat interface, so the user may not see the link there. Ask the user to click on the link to finish authentication and reply when done.\n- DO NOT execute any github tools until an Active connection is confirmed.\n- After the user replies, call COMPOSIO_MANAGE_CONNECTIONS with action=\"list\" and check that the newly added account is active before continuing.\n- Render as clickable link: [Connect github](https://connect.composio.dev/link/lk_3TBeV3yQTxNN).\n- The above link expires in 10 minutes.\n",
+      "redirect_url": "https://connect.composio.dev/link/lk_8w1hZN3byN6q",
+      "instruction": "Action required: Share the following authentication link with the user to complete setup for 'github'.\n\nAuthentication Link (render clickable):\nhttps://connect.composio.dev/link/lk_8w1hZN3byN6q\n\nWhat happens next:\n1) User opens the link in their browser. They will see a Composio branded authentication UI.\n2) For OAuth: user authorizes with the provider.\n3) For API/Token auth: User enters the required credentials in the form.\n4) The connection becomes Active automatically once completed.\n\nImportant Notes:\n- Always show the returned redirect_url as a FORMATTED MARKDOWN LINK in your final response for this turn as intermediate messages may be hidden or summarized by the chat interface, so the user may not see the link there. Ask the user to click on the link to finish authentication and reply when done.\n- DO NOT execute any github tools until an Active connection is confirmed.\n- After the user replies, call COMPOSIO_MANAGE_CONNECTIONS with action=\"list\" and check that the newly added account is active before continuing.\n- Render as clickable link: [Connect github](https://connect.composio.dev/link/lk_8w1hZN3byN6q).\n- The above link expires in 10 minutes.\n",
       "accounts": [
        {
-        "id": "github_leat-yarrow",
-        "status": "initializing",
-        "is_default": false,
-        "account_type": "PRIVATE"
-       },
-       {
-        "id": "github_unnigh-basoga",
+        "id": "github_tche-adlay",
         "status": "initiated",
+        "is_default": true,
+        "account_type": "PRIVATE"
+       }
+      ]
+     }
+    },
+    "summary": {
+     "total_toolkits": 1,
+     "active_connections": 0,
+     "initiated_connections": 1,
+     "failed_connections": 0
+    },
+    "session": {
+     "id": "feed",
+     "instructions": "REQUIRED: Pass session_id \"feed\" in ALL subsequent meta tool calls for this workflow."
+    }
+   },
+   "error": null,
+   "log_id": "log_eWXUPJsCJVsb"
+  }
+ },
+ {
+  "at": "2026-11-03T12:43:06.258Z",
+  "tool": "COMPOSIO_MANAGE_CONNECTIONS",
+  "args": {
+   "toolkits": [
+    {
+     "name": "github",
+     "action": "list"
+    }
+   ],
+   "session_id": "feed"
+  },
+  "isError": false,
+  "data": {
+   "successful": true,
+   "data": {
+    "message": "All connections have been initiated and are pending completion",
+    "results": {
+     "github": {
+      "toolkit": "github",
+      "status": "initiated",
+      "accounts": [
+       {
+        "id": "github_tche-adlay",
+        "status": "initializing",
         "is_default": false,
         "account_type": "PRIVATE"
        }
@@ -83,170 +309,57 @@
      "active_connections": 0,
      "initiated_connections": 1,
      "failed_connections": 0
+    },
+    "session": {
+     "id": "feed",
+     "instructions": "REQUIRED: Pass session_id \"feed\" in ALL subsequent meta tool calls for this workflow."
     }
    },
    "error": null,
-   "log_id": "log_8DjW2sY_JE-0"
+   "log_id": "log_q8WM0kZt5KqM"
   }
  },
  {
-  "at": "2026-11-03T12:41:00.084Z",
-  "tool": "COMPOSIO_WAIT_FOR_CONNECTIONS",
+  "at": "2026-11-03T13:15:39.564Z",
+  "tool": "COMPOSIO_MANAGE_CONNECTIONS",
   "args": {
    "toolkits": [
-    "github"
+    {
+     "name": "github",
+     "action": "list"
+    }
    ],
-   "mode": "any"
+   "session_id": "feed"
   },
   "isError": false,
   "data": {
    "successful": true,
    "data": {
-    "message": "Not initiated: github - use COMPOSIO_MANAGE_CONNECTIONS to start.",
+    "message": "All connections have been initiated and are pending completion",
     "results": {
      "github": {
       "toolkit": "github",
-      "status": "NOT_FOUND",
-      "error_message": "No connection found - use COMPOSIO_MANAGE_CONNECTIONS to initiate"
+      "status": "initiated",
+      "accounts": []
      }
+    },
+    "summary": {
+     "total_toolkits": 1,
+     "active_connections": 0,
+     "initiated_connections": 1,
+     "failed_connections": 0
+    },
+    "session": {
+     "id": "feed",
+     "instructions": "REQUIRED: Pass session_id \"feed\" in ALL subsequent meta tool calls for this workflow."
     }
    },
    "error": null,
-   "log_id": "log_nY5-z7XMrJce"
+   "log_id": "log_qcIeMsZuez5h"
   }
  },
  {
-  "at": "2026-11-03T12:41:02.049Z",
-  "tool": "COMPOSIO_WAIT_FOR_CONNECTIONS",
-  "args": {
-   "toolkits": [
-    "github"
-   ],
-   "mode": "any"
-  },
-  "isError": false,
-  "data": {
-   "successful": true,
-   "data": {
-    "message": "Not initiated: github - use COMPOSIO_MANAGE_CONNECTIONS to start.",
-    "results": {
-     "github": {
-      "toolkit": "github",
-      "status": "NOT_FOUND",
-      "error_message": "No connection found - use COMPOSIO_MANAGE_CONNECTIONS to initiate"
-     }
-    }
-   },
-   "error": null,
-   "log_id": "log_uzdH8Www7kdx"
-  }
- },
- {
-  "at": "2026-11-03T12:41:02.678Z",
-  "tool": "COMPOSIO_WAIT_FOR_CONNECTIONS",
-  "args": {
-   "toolkits": [
-    "github"
-   ],
-   "mode": "any"
-  },
-  "isError": false,
-  "data": {
-   "successful": true,
-   "data": {
-    "message": "Failed: github - verify credentials and use COMPOSIO_MANAGE_CONNECTIONS to retry.",
-    "results": {
-     "github": {
-      "toolkit": "github",
-      "status": "FAILED",
-      "error_message": "Connection expired - verify credentials and use COMPOSIO_MANAGE_CONNECTIONS to retry"
-     }
-    }
-   },
-   "error": null,
-   "log_id": "log_4XaJpVRB9JYK"
-  }
- },
- {
-  "at": "2026-11-03T12:41:03.230Z",
-  "tool": "COMPOSIO_WAIT_FOR_CONNECTIONS",
-  "args": {
-   "toolkits": [
-    "github"
-   ],
-   "mode": "any"
-  },
-  "isError": false,
-  "data": {
-   "successful": true,
-   "data": {
-    "message": "Failed: github - verify credentials and use COMPOSIO_MANAGE_CONNECTIONS to retry.",
-    "results": {
-     "github": {
-      "toolkit": "github",
-      "status": "FAILED",
-      "error_message": "Connection expired - verify credentials and use COMPOSIO_MANAGE_CONNECTIONS to retry"
-     }
-    }
-   },
-   "error": null,
-   "log_id": "log_WqpUZjqbGiXx"
-  }
- },
- {
-  "at": "2026-11-03T12:41:03.973Z",
-  "tool": "COMPOSIO_WAIT_FOR_CONNECTIONS",
-  "args": {
-   "toolkits": [
-    "github"
-   ],
-   "mode": "any"
-  },
-  "isError": false,
-  "data": {
-   "successful": true,
-   "data": {
-    "message": "Failed: github - verify credentials and use COMPOSIO_MANAGE_CONNECTIONS to retry.",
-    "results": {
-     "github": {
-      "toolkit": "github",
-      "status": "FAILED",
-      "error_message": "Connection expired - verify credentials and use COMPOSIO_MANAGE_CONNECTIONS to retry"
-     }
-    }
-   },
-   "error": null,
-   "log_id": "log_y90OdZd6FbFx"
-  }
- },
- {
-  "at": "2026-11-03T12:41:04.497Z",
-  "tool": "COMPOSIO_WAIT_FOR_CONNECTIONS",
-  "args": {
-   "toolkits": [
-    "github"
-   ],
-   "mode": "any"
-  },
-  "isError": false,
-  "data": {
-   "successful": true,
-   "data": {
-    "message": "Failed: github - verify credentials and use COMPOSIO_MANAGE_CONNECTIONS to retry.",
-    "results": {
-     "github": {
-      "toolkit": "github",
-      "status": "FAILED",
-      "error_message": "Connection expired - verify credentials and use COMPOSIO_MANAGE_CONNECTIONS to retry"
-     }
-    }
-   },
-   "error": null,
-   "log_id": "log_Q2jw18_9JyuX"
-  }
- },
- {
-  "at": "2026-11-03T12:41:05.063Z",
+  "at": "2026-11-03T13:15:40.414Z",
   "tool": "COMPOSIO_MULTI_EXECUTE_TOOL",
   "args": {
    "tools": [
@@ -255,6 +368,7 @@
      "arguments": {}
     }
    ],
+   "session_id": "feed",
    "thought": "Greenlight hello-world: read-only identity check",
    "current_step": "VERIFY_CONNECTION"
   },
@@ -271,10 +385,14 @@
     ],
     "total_count": 1,
     "success_count": 0,
-    "error_count": 1
+    "error_count": 1,
+    "session": {
+     "id": "feed",
+     "instructions": "REQUIRED: Pass session_id \"feed\" in ALL subsequent meta tool calls for this workflow."
+    }
    },
    "error": "1 out of 1 tools failed",
-   "log_id": "log_8_j7Q0uuQEM6"
+   "log_id": "log_MUfIoKJzUDis"
   }
  }
 ]
