@@ -180,6 +180,23 @@ export const Guide = z.object({
     })
     .optional()
     .describe("Present only when the Composio closed loop was actually run"),
+  probes: z
+    .array(
+      z.object({
+        id: z.string(),
+        kind: z.string(),
+        url: z.string(),
+        status: z.number().nullable(),
+        location: z.string().optional(),
+        bodySnippet: z.string().optional(),
+        at: z.string(),
+      }),
+    )
+    .optional()
+    .describe("Raw public probe responses backing `tested` claims with artifact 'probe:<id>'"),
+  generation: z
+    .object({ draftModel: z.string(), verifierModel: z.string().optional(), ms: z.number(), sources: z.number() })
+    .optional(),
 });
 export type Guide = z.infer<typeof Guide>;
 

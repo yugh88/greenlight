@@ -1,0 +1,58 @@
+[
+ {
+  "id": "p-oidc-discovery-0",
+  "kind": "oidc-discovery",
+  "url": "https://strava.com/.well-known/openid-configuration",
+  "status": 301,
+  "location": "https://www.strava.com/.well-known/openid-configuration",
+  "bodySnippet": "",
+  "at": "2026-11-03T12:37:47.726Z"
+ },
+ {
+  "id": "p-oauth-metadata-1",
+  "kind": "oauth-metadata",
+  "url": "https://strava.com/.well-known/oauth-authorization-server",
+  "status": 301,
+  "location": "https://www.strava.com/.well-known/oauth-authorization-server",
+  "bodySnippet": "",
+  "at": "2026-11-03T12:37:47.728Z"
+ },
+ {
+  "id": "p-authorize-www.strava.com",
+  "kind": "authorize-dummy-client",
+  "url": "https://www.strava.com/oauth/authorize?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe",
+  "status": 400,
+  "contentType": "application/json; charset=utf-8",
+  "bodySnippet": "{\"message\":\"Bad Request\",\"errors\":[{\"resource\":\"Application\",\"field\":\"client_id\",\"code\":\"invalid\"}]}",
+  "json": {
+   "message": "Bad Request",
+   "errors": [
+    {
+     "resource": "Application",
+     "field": "client_id",
+     "code": "invalid"
+    }
+   ]
+  },
+  "at": "2026-11-03T12:37:48.453Z"
+ },
+ {
+  "id": "p-authorize-www.strava.com",
+  "kind": "authorize-dummy-client",
+  "url": "https://www.strava.com/oauth/mobile/authorize?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe",
+  "status": 400,
+  "contentType": "application/json; charset=utf-8",
+  "bodySnippet": "{\"message\":\"Bad Request\",\"errors\":[{\"resource\":\"Application\",\"field\":\"client_id\",\"code\":\"invalid\"}]}",
+  "json": {
+   "message": "Bad Request",
+   "errors": [
+    {
+     "resource": "Application",
+     "field": "client_id",
+     "code": "invalid"
+    }
+   ]
+  },
+  "at": "2026-11-03T12:37:48.706Z"
+ }
+]

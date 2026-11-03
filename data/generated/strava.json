@@ -1,0 +1,391 @@
+{
+ "verdict": {
+  "difficulty": 2,
+  "label": "Light review",
+  "summary": "Strava API app setup is self-serve up to 10 users but requires an active Strava subscription, with manual approval required for higher rate limits or capacity.",
+  "firstTokenMinutes": {
+   "min": 10,
+   "max": 25
+  },
+  "productionDays": {
+   "min": 1,
+   "max": 14
+  },
+  "cost": "Requires active Strava subscription",
+  "claimIds": [
+   "c-subscription-required",
+   "c-user-tiers",
+   "c-review-sla"
+  ]
+ },
+ "composioFit": {
+  "summary": "Strava is not available as a Composio managed app, so developers must register their own app on Strava and configure custom OAuth credentials in Composio.",
+  "whyOwnApp": [
+   "Strava is not included in Composio's catalog of managed OAuth toolkits.",
+   "Custom OAuth app is required to define callback domains and receive dedicated rate limit quotas.",
+   "Granular control over activity read and write scopes is required for your specific application."
+  ],
+  "claimIds": [
+   "c-composio-not-catalog",
+   "c-composio-custom-auth"
+  ]
+ },
+ "phases": [
+  {
+   "id": "p-register-app",
+   "name": "Register Strava Application",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 5,
+    "max": 10
+   },
+   "steps": [
+    "Sign up or log in at https://www.strava.com/register with an active subscription.",
+    "Navigate to https://www.strava.com/settings/api.",
+    "Fill in Application Name, Category, Club, Website, and Authorization Callback Domain.",
+    "Save and retrieve your Client ID and Client Secret."
+   ],
+   "handoff": "Obtain Client ID and Client Secret to configure Composio auth.",
+   "claimIds": [
+    "c-register-app",
+    "c-subscription-required",
+    "c-callback-domain"
+   ]
+  },
+  {
+   "id": "p-configure-composio",
+   "name": "Configure Auth Config in Composio",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 3,
+    "max": 5
+   },
+   "steps": [
+    "Open Composio Dashboard and navigate to Auth Configs.",
+    "Select Create Auth Config and choose OAuth2.",
+    "Enter the Strava Client ID and Client Secret.",
+    "Ensure the callback URI from Composio matches the Authorization Callback Domain in Strava."
+   ],
+   "handoff": "Auth config created; ready to initiate OAuth login flow for dev users.",
+   "claimIds": [
+    "c-composio-custom-auth"
+   ]
+  },
+  {
+   "id": "p-test-oauth",
+   "name": "Test Developer Integration",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 5,
+    "max": 10
+   },
+   "steps": [
+    "Initiate authorization via GET https://www.strava.com/oauth/authorize with your client_id and required scopes.",
+    "Authorize the app with your own athlete account.",
+    "Exchange authorization code for refresh and access tokens via POST https://www.strava.com/oauth/token."
+   ],
+   "handoff": "Initial authorization successful for dev testing up to 10 users.",
+   "claimIds": [
+    "c-token-exchange",
+    "c-user-tiers"
+   ]
+  },
+  {
+   "id": "p-review-wait",
+   "name": "Request Capacity Increase & App Review",
+   "owner": "provider",
+   "waiting": true,
+   "minutes": {
+    "min": 1440,
+    "max": 20160
+   },
+   "steps": [
+    "Submit request to increase rate limits or athlete capacity beyond 10 registered users.",
+    "Wait for Strava developer support review."
+   ],
+   "handoff": "Strava notifies developer upon approval for expanded tier.",
+   "claimIds": [
+    "c-review-sla",
+    "c-user-tier-9999"
+   ]
+  }
+ ],
+ "artefacts": [
+  {
+   "id": "art-app-form",
+   "kind": "app-form",
+   "title": "Strava API Application Registration Values",
+   "body": "Application Name: AI Agent Assistant\nCategory: Mobile App / Helper Agent\nClub: N/A\nWebsite: https://yourapp.example.com\nApplication Description: AI agent integration for tracking athlete activity data and workouts via Composio.\nAuthorization Callback Domain: <Composio callback URL host from your auth config>"
+  },
+  {
+   "id": "art-scope-justification",
+   "kind": "scope-justification",
+   "title": "Strava OAuth Scopes Justification",
+   "body": "Requested Scopes:\n- activity:read: Required to fetch public and follower activity data for the athlete.\n- activity:read_all: Required to access athlete private activities and privacy zone details for complete context.\n- activity:write: Required to create manual workout activities and upload fitness metrics on behalf of the athlete."
+  }
+ ],
+ "requirements": [
+  {
+   "kind": "paid-plan",
+   "label": "Active Strava Subscription",
+   "required": "yes",
+   "when": "Required when creating an API app at https://www.strava.com/settings/api",
+   "claimIds": [
+    "c-subscription-required"
+   ]
+  },
+  {
+   "kind": "user-cap-before-review",
+   "label": "10-Athlete Limit for Standard Early Development",
+   "required": "yes",
+   "when": "Standard Tier apps are limited to 10 registered users initially until expanded or reviewed",
+   "claimIds": [
+    "c-user-tiers"
+   ]
+  }
+ ],
+ "scopes": [
+  {
+   "scope": "activity:read",
+   "purpose": "Read user activity data visible to Everyone and Followers, excluding privacy zones",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-activity-read"
+   ]
+  },
+  {
+   "scope": "activity:read_all",
+   "purpose": "Read user activity data including privacy zones and 'Only You' visibility activities",
+   "tier": "sensitive",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-activity-read-all"
+   ]
+  },
+  {
+   "scope": "activity:write",
+   "purpose": "Create manual activities/uploads and edit activities visible to the app",
+   "tier": "sensitive",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-activity-write"
+   ]
+  }
+ ],
+ "redirectRules": [
+  {
+   "rule": "The Authorization Callback Domain in Strava settings must match the hostname of the redirect_uri supplied in OAuth requests (e.g., localhost for development or your custom app domain).",
+   "claimIds": [
+    "c-callback-domain"
+   ]
+  }
+ ],
+ "blockers": [
+  {
+   "id": "b-invalid-client",
+   "symptom": "HTTP 400 Bad Request: {\"message\":\"Bad Request\",\"errors\":[{\"resource\":\"Application\",\"field\":\"client_id\",\"code\":\"invalid\"}]}",
+   "cause": "The client_id provided in the authorization request URL does not exist or is invalid.",
+   "fix": "Copy the exact Client ID generated on https://www.strava.com/settings/api into your auth config.",
+   "fallback": "Verify app creation status at https://www.strava.com/settings/api.",
+   "claimIds": [
+    "c-invalid-client-error"
+   ]
+  },
+  {
+   "id": "b-subscription-missing",
+   "symptom": "Unable to create API application at https://www.strava.com/settings/api",
+   "cause": "Strava requires an active paid Strava subscription to register and manage API apps.",
+   "fix": "Ensure the account creating the application has an active Strava subscription.",
+   "fallback": "Subscribe to Strava before setting up the API application.",
+   "claimIds": [
+    "c-subscription-required"
+   ]
+  }
+ ],
+ "checklist": [
+  {
+   "id": "chk-sub",
+   "text": "Ensure account has an active Strava subscription.",
+   "owner": "you"
+  },
+  {
+   "id": "chk-create",
+   "text": "Register an application at https://www.strava.com/settings/api.",
+   "owner": "you"
+  },
+  {
+   "id": "chk-keys",
+   "text": "Copy Client ID and Client Secret from Strava settings page.",
+   "owner": "you"
+  },
+  {
+   "id": "chk-domain",
+   "text": "Set Authorization Callback Domain in Strava settings to match Composio callback domain.",
+   "owner": "you"
+  },
+  {
+   "id": "chk-composio",
+   "text": "Create custom OAuth2 auth config in Composio Dashboard using Strava credentials.",
+   "owner": "you"
+  },
+  {
+   "id": "chk-test",
+   "text": "Execute initial user authorization test and exchange code via POST https://www.strava.com/oauth/token.",
+   "owner": "you"
+  },
+  {
+   "id": "chk-webhooks",
+   "text": "Implement webhooks for handling athlete deauthorization events as required by API terms.",
+   "owner": "you"
+  }
+ ],
+ "uncertainties": [
+  "Exact processing time for athlete capacity increase requests, as Strava explicitly does not provide a fixed SLA."
+ ],
+ "claims": [
+  {
+   "id": "c-register-app",
+   "text": "All developers must register an application to receive a client ID and client secret before initiating OAuth.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.strava.com/docs/authentication/",
+   "quote": "All developers need to register their application before getting started. A registered application will be assigned a client ID and client secret.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-subscription-required",
+   "text": "Creating an API application on Strava requires an active Strava subscription.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.strava.com/docs/getting-started/",
+   "quote": "After you are logged in, go to https://www.strava.com/settings/api and create an app. Note: A Strava subscription is required.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-callback-domain",
+   "text": "Strava apps require specifying an Authorization Callback Domain, set to localhost or a domain.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.strava.com/docs/getting-started/",
+   "quote": "Authorization Callback Domain: When building your app, change “Authorization Callback Domain” to localhost or any domain. When taking your app live, change “Authorization Callback Domain” to a real do",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-rate-limits",
+   "text": "Default Strava API rate limits allow 200 requests every 15 minutes up to 2,000 requests per day.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.strava.com/docs/getting-started/",
+   "quote": "The default rate limit allows 200 requests every 15 minutes, with up to 2,000 requests per day.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-activity-read",
+   "text": "Scope activity:read allows reading user activity data visible to Everyone and Followers.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.strava.com/docs/authentication/",
+   "quote": "- activity:read : read the user's activity data for activities that are visible to Everyone and Followers, excluding privacy zone data",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-activity-read-all",
+   "text": "Scope activity:read_all grants access to activity:read plus privacy zone data and 'Only You' activities.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.strava.com/docs/authentication/",
+   "quote": "- activity:read_all : the same access as activity:read , plus privacy zone data and access to read the user's activities with visibility set to Only You",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-activity-write",
+   "text": "Scope activity:write grants access to create manual activities and uploads, and edit visible activities.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.strava.com/docs/authentication/",
+   "quote": "- activity:write : access to create manual activities and uploads, and access to edit any activities that are visible to the app, based on activity read access level",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-user-tiers",
+   "text": "Standard Tier apps are initially limited to 10 registered Strava users for hobbyists and early development.",
+   "evidence": "sourced",
+   "sourceUrl": "https://www.strava.com/legal/api_policy",
+   "quote": "(a) Standard Tier (“Standard Tier Applications”), inclusive of two levels: - Developer Applications limited to 10 registered Strava users (generally intended for hobbyists, side projects, and early de",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-user-tier-9999",
+   "text": "Standard Tier applications can be limited to 9,999 registered Strava users for growing apps.",
+   "evidence": "sourced",
+   "sourceUrl": "https://www.strava.com/legal/api_policy",
+   "quote": "Developer Applications limited to 9,999 registered Strava users (generally intended for growing apps with a substantial user base);",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-review-sla",
+   "text": "Strava does not commit to a fixed review-time SLA for developer admission or capacity increase requests.",
+   "evidence": "sourced",
+   "sourceUrl": "https://www.strava.com/legal/api_policy",
+   "quote": "Strava does not commit to a fixed review-time service-level agreement; you will hear from Strava if you are admitted, or if Strava requires additional information.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-token-exchange",
+   "text": "Applications exchange authorization codes for access and refresh tokens via POST https://www.strava.com/oauth/token.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.strava.com/docs/authentication/",
+   "quote": "The application must now call the POST https://www.strava.com/oauth/token with its client ID and client secret to exchange the authorization code for a refresh token and short-lived access token.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-webhooks-deauth",
+   "text": "Developers are required to implement webhooks to handle athlete deauthorization events.",
+   "evidence": "sourced",
+   "sourceUrl": "https://developers.strava.com/docs/getting-started/",
+   "quote": "Per our API terms, you need to implement webhooks to know when an athlete has deauthorized your API application",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-not-catalog",
+   "text": "Strava is not present in Composio's managed toolkit catalog, requiring custom auth configuration.",
+   "evidence": "tested",
+   "artifact": "lookup:composio-directory (Strava not among 387 OAuth toolkits on docs.composio.dev/toolkits/managed-auth)",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-custom-auth",
+   "text": "For custom OAuth toolkits, developers register an app in the provider portal and add credentials to Composio.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+   "quote": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the Client ID and Client Secret back into Composio.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-mcp-agent-restriction",
+   "text": "Strava MCP is the official interface for personal AI use and cannot be used for third-party access.",
+   "evidence": "sourced",
+   "sourceUrl": "https://www.strava.com/legal/api_policy",
+   "quote": "The Strava MCP is not authorized for, and may not be used to enable, any commercial or third-party access to the Strava API Materials or Strava Data outside the developer's own personal use.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-invalid-client-error",
+   "text": "Requesting authorization with an invalid client_id returns HTTP 400 Bad Request with field client_id code invalid.",
+   "evidence": "tested",
+   "artifact": "probe:p-authorize-www.strava.com",
+   "checkedAt": "2026-11-03"
+  }
+ ],
+ "slug": "strava",
+ "app": {
+  "name": "Strava",
+  "website": "https://strava.com",
+  "developerDocsUrl": "https://developers.strava.com/docs/authentication/",
+  "composioSlug": null,
+  "composioManaged": null,
+  "authSchemes": [
+   "OAUTH2"
+  ]
+ },
+ "generatedBy": "agent",
+ "reviewStatus": "unreviewed",
+ "lastVerified": "2026-11-03"
+}

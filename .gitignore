@@ -45,3 +45,4 @@ next-env.d.ts
 /scratch
 /evidence/**/raw-private/
 playwright/.auth/
+scratch-*.log

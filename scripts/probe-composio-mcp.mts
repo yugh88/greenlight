@@ -1,0 +1,10 @@
+import { config } from "dotenv";
+config({ path: ".env.local", quiet: true });
+const { callTool } = await import("../lib/composio-mcp.ts");
+const q = process.argv[2]!;
+const r = await callTool("COMPOSIO_SEARCH_TOOLS", { queries: [{ use_case: q }], session: { generate_id: true } });
+const d = r.data?.data ?? r.data;
+console.log("keys:", Object.keys(d));
+for (const res of d.results ?? []) console.log("primary:", res.primary_tool_slugs, "related:", res.related_tool_slugs?.slice(0,8), "toolkits:", res.toolkits);
+console.log("toolkit_connection_statuses:", JSON.stringify(d.toolkit_connection_statuses ?? d.connection_statuses ?? "").slice(0, 1500));
+console.log("session:", JSON.stringify(d.session ?? "").slice(0, 200));

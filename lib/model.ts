@@ -100,3 +100,28 @@ export function queued<T>(fn: () => Promise<T>): Promise<T> {
   queue = next.catch(() => undefined);
   return next;
 }
+
+import { generateText, Output } from "ai";
+import type { z } from "zod";
+
+/** Structured output (AI SDK v7: generateText + Output.object), with role fallback + serial queue. */
+export async function structured<S extends z.ZodType>(
+  role: ModelRole,
+  schema: S,
+  prompt: string,
+  timeoutMs = 180_000,
+): Promise<{ object: z.infer<S>; modelId: string }> {
+  const { result, modelId } = await queued(() =>
+    withModel(role, async (model) => {
+      const r = await generateText({
+        model,
+        output: Output.object({ schema }),
+        prompt,
+        maxRetries: 0,
+        abortSignal: AbortSignal.timeout(timeoutMs),
+      });
+      return r.output as z.infer<S>;
+    }),
+  );
+  return { object: result, modelId };
+}

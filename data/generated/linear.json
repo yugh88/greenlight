@@ -1,0 +1,387 @@
+{
+ "verdict": {
+  "difficulty": 1,
+  "label": "Self-serve",
+  "summary": "Linear OAuth2 apps are created instantly in your settings with no review process required.",
+  "firstTokenMinutes": {
+   "min": 5,
+   "max": 15
+  },
+  "productionDays": {
+   "min": 0,
+   "max": 1
+  },
+  "cost": "Free",
+  "claimIds": [
+   "c-linear-create-app",
+   "c-linear-no-review-documented"
+  ]
+ },
+ "composioFit": {
+  "summary": "Composio offers a managed OAuth app for Linear out of the box. You only need a custom app if you require your own branding, dedicated rate limits, or custom scopes.",
+  "whyOwnApp": [
+   "Custom branding on the Linear consent screen",
+   "Dedicated provider rate limit quota",
+   "Custom scope configuration for targeted access permissions"
+  ],
+  "claimIds": [
+   "c-composio-managed-linear",
+   "c-composio-why-custom"
+  ]
+ },
+ "phases": [
+  {
+   "id": "p-create-app",
+   "name": "Create OAuth Application in Linear",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 2,
+    "max": 5
+   },
+   "steps": [
+    "Log into Linear (preferably using a workspace created for application management).",
+    "Navigate to Settings > API > Applications > New (https://linear.app/settings/api/applications/new).",
+    "Enter your application name, description, and developer URL."
+   ],
+   "handoff": "App creation yields Client ID and Client Secret immediately.",
+   "claimIds": [
+    "c-linear-create-app",
+    "c-linear-workspace-recommendation"
+   ]
+  },
+  {
+   "id": "p-configure-composio",
+   "name": "Configure Auth Config in Composio",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 3,
+    "max": 7
+   },
+   "steps": [
+    "Create a new Auth Config for Linear in the Composio dashboard.",
+    "Copy the redirect URI provided by Composio.",
+    "Paste the redirect URI into the callback URLs setting of your Linear OAuth application.",
+    "Copy the Client ID and Client Secret from Linear back into Composio."
+   ],
+   "handoff": "Composio is now configured to execute OAuth flows with Linear.",
+   "claimIds": [
+    "c-composio-dashboard-steps",
+    "c-linear-create-app"
+   ]
+  },
+  {
+   "id": "p-test-oauth",
+   "name": "Test OAuth Authorization Flow",
+   "owner": "you",
+   "waiting": false,
+   "minutes": {
+    "min": 2,
+    "max": 5
+   },
+   "steps": [
+    "Initiate authorization via Composio.",
+    "Verify user consent flow and token exchange.",
+    "Confirm access token and refresh token generation."
+   ],
+   "handoff": "Ready for production usage.",
+   "claimIds": [
+    "c-linear-authorize-endpoint",
+    "c-linear-token-endpoint",
+    "c-linear-token-expiration"
+   ]
+  }
+ ],
+ "artefacts": [
+  {
+   "id": "art-app-form",
+   "kind": "app-form",
+   "title": "Linear OAuth Application Configuration",
+   "body": "Application Name: My Agent Integration\nDeveloper URL: https://yourdomain.com\nCallback URLs: <Composio callback URL from your auth config>"
+  },
+  {
+   "id": "art-privacy-checklist",
+   "kind": "privacy-checklist",
+   "title": "Linear Security & Privacy Guidelines",
+   "body": "1. Store Client Secret securely within Composio.\n2. Request minimal necessary scopes (e.g. read, write, or specific targeted scopes like issues:create).\n3. Manage the application within a dedicated administrative workspace."
+  }
+ ],
+ "requirements": [
+  {
+   "kind": "domain-verification",
+   "label": "Configured Callback URL",
+   "required": "yes",
+   "when": "Required when setting up the OAuth application in Linear settings.",
+   "claimIds": [
+    "c-linear-create-app"
+   ]
+  },
+  {
+   "kind": "privacy-policy",
+   "label": "Privacy Policy",
+   "required": "no",
+   "when": "Not strictly enforced for app creation, but standard for production applications.",
+   "claimIds": [
+    "c-linear-create-app"
+   ]
+  }
+ ],
+ "scopes": [
+  {
+   "scope": "read",
+   "purpose": "Read access for the user's account (always present by default).",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-linear-scopes"
+   ]
+  },
+  {
+   "scope": "write",
+   "purpose": "Write access for the user's account.",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-linear-scopes"
+   ]
+  },
+  {
+   "scope": "issues:create",
+   "purpose": "Allows creating and updating issues, and creating their attachments.",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-linear-scopes"
+   ]
+  },
+  {
+   "scope": "comments:create",
+   "purpose": "Allows creating new issue comments.",
+   "tier": "basic",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-linear-scopes"
+   ]
+  },
+  {
+   "scope": "admin",
+   "purpose": "Full access to admin level endpoints.",
+   "tier": "sensitive",
+   "reviewTrigger": false,
+   "claimIds": [
+    "c-linear-scopes"
+   ]
+  }
+ ],
+ "redirectRules": [
+  {
+   "rule": "The redirect_uri passed to GET /oauth/authorize must match the callback URL configured in Linear application settings.",
+   "claimIds": [
+    "c-linear-create-app",
+    "c-linear-authorize-endpoint"
+   ]
+  }
+ ],
+ "blockers": [
+  {
+   "id": "b-invalid-content-type",
+   "symptom": "HTTP 400 or failed token exchange when requesting tokens.",
+   "cause": "Sending the POST body to https://api.linear.app/oauth/token as JSON rather than form-urlencoded.",
+   "fix": "Set Content-Type header to application/x-www-form-urlencoded.",
+   "fallback": "Use Composio managed authentication.",
+   "claimIds": [
+    "c-linear-content-type",
+    "c-linear-token-endpoint"
+   ]
+  },
+  {
+   "id": "b-mismatched-redirect-uri",
+   "symptom": "Authorization failure or redirect mismatch error during OAuth flow.",
+   "cause": "The redirect_uri query parameter does not exactly match the callback URL configured in Linear.",
+   "fix": "Ensure the Composio callback URL is added verbatim to the Linear application callback URLs.",
+   "fallback": "Check for protocol, domain, or slash mismatches in settings.",
+   "claimIds": [
+    "c-linear-create-app",
+    "c-linear-authorize-endpoint"
+   ]
+  }
+ ],
+ "checklist": [
+  {
+   "id": "chk-1",
+   "text": "Open Linear API settings at https://linear.app/settings/api/applications/new",
+   "owner": "you",
+   "phaseId": "p-create-app"
+  },
+  {
+   "id": "chk-2",
+   "text": "Create new OAuth application and enter details",
+   "owner": "you",
+   "phaseId": "p-create-app"
+  },
+  {
+   "id": "chk-3",
+   "text": "Open Composio dashboard and create Linear custom auth config",
+   "owner": "you",
+   "phaseId": "p-configure-composio"
+  },
+  {
+   "id": "chk-4",
+   "text": "Copy Composio redirect URI to Linear application callback URLs",
+   "owner": "you",
+   "phaseId": "p-configure-composio"
+  },
+  {
+   "id": "chk-5",
+   "text": "Copy Client ID and Client Secret into Composio",
+   "owner": "you",
+   "phaseId": "p-configure-composio"
+  },
+  {
+   "id": "chk-6",
+   "text": "Test OAuth integration flow and confirm token generation",
+   "owner": "you",
+   "phaseId": "p-test-oauth"
+  }
+ ],
+ "uncertainties": [
+  "Linear documentation does not specify any app review queue, user limits, or mandatory approval processes for production OAuth applications."
+ ],
+ "claims": [
+  {
+   "id": "c-linear-oauth-support",
+   "text": "Linear supports OAuth2 authentication for integrations.",
+   "evidence": "sourced",
+   "sourceUrl": "https://linear.app/developers/oauth-2-0-authentication.md",
+   "quote": "Linear supports OAuth2 authentication, which is recommended if you’re building applications to integrate with Linear.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-linear-create-app",
+   "text": "OAuth applications can be created in Linear under API applications settings.",
+   "evidence": "sourced",
+   "sourceUrl": "https://linear.app/developers/oauth-2-0-authentication.md",
+   "quote": "Create a new [OAuth2 Application](https://linear.app/settings/api/applications/new) and configure the redirect callback URLs to your application.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-linear-workspace-recommendation",
+   "text": "It is recommended to manage the OAuth application in a dedicated workspace.",
+   "evidence": "sourced",
+   "sourceUrl": "https://linear.app/developers/oauth-2-0-authentication.md",
+   "quote": "It is **highly recommended** you create a workspace for the purpose of managing the OAuth2 Application, as each admin user will have access.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-linear-authorize-endpoint",
+   "text": "Linear authorization endpoint is GET https://linear.app/oauth/authorize.",
+   "evidence": "sourced",
+   "sourceUrl": "https://linear.app/developers/oauth-2-0-authentication.md",
+   "quote": "GET https://linear.app/oauth/authorize HTTP/1.1",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-linear-token-endpoint",
+   "text": "Linear token endpoint is POST https://api.linear.app/oauth/token.",
+   "evidence": "sourced",
+   "sourceUrl": "https://linear.app/developers/oauth-2-0-authentication.md",
+   "quote": "POST https://api.linear.app/oauth/token HTTP/1.1",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-linear-scopes",
+   "text": "Linear supports scopes including read, write, issues:create, comments:create, and admin.",
+   "evidence": "sourced",
+   "sourceUrl": "https://linear.app/developers/oauth-2-0-authentication.md",
+   "quote": "* `read` - (Default) Read access for the user's account. This scope will always be present.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-linear-actor-param",
+   "text": "The actor parameter configures whether resources are created as the authorizing user or the application.",
+   "evidence": "sourced",
+   "sourceUrl": "https://linear.app/developers/oauth-2-0-authentication.md",
+   "quote": "* `user` - (Default) Resources are created as the user who authorized the application. This option should be used if you want each user to do their own authentication",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-linear-actor-app",
+   "text": "Actor app should be used for service accounts or agents.",
+   "evidence": "sourced",
+   "sourceUrl": "https://linear.app/developers/oauth-2-0-authentication.md",
+   "quote": "* `app` - Resources are created as the application. This option should be used for agents and service accounts or agents.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-linear-pkce-support",
+   "text": "Linear supports the PKCE flow with code_challenge and code_challenge_method.",
+   "evidence": "sourced",
+   "sourceUrl": "https://linear.app/developers/oauth-2-0-authentication.md",
+   "quote": "Linear supports the [PKCE flow](https://www.oauth.com/oauth2-servers/pkce/authorization-request/).",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-linear-token-expiration",
+   "text": "Linear access tokens are valid for 24 hours and must be refreshed using refresh tokens.",
+   "evidence": "sourced",
+   "sourceUrl": "https://linear.app/developers/oauth-2-0-authentication.md",
+   "quote": "The access token is valid for 24 hours and will need to be refreshed when it expires.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-linear-content-type",
+   "text": "Token exchange requests must use application/x-www-form-urlencoded format.",
+   "evidence": "sourced",
+   "sourceUrl": "https://linear.app/developers/oauth-2-0-authentication.md",
+   "quote": "Pass parameters in body as [URL-encoded form submission](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST#url-encoded_form_submission), where the `Content-Type` header must be `applicati",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-managed-linear",
+   "text": "Composio provides a managed OAuth application for Linear.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/toolkits/linear",
+   "quote": "Composio-managed OAuth available? Yes",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-why-custom",
+   "text": "Custom auth configs can be created for custom branding, specific scopes, rate limits, or custom instances.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+   "quote": "You can still create a custom auth config for branding, scopes, rate limits, polling intervals, or custom instances.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-composio-dashboard-steps",
+   "text": "Connecting a custom OAuth app requires copying the Composio redirect URI to the provider portal and copying Client ID and Secret back to Composio.",
+   "evidence": "sourced",
+   "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+   "quote": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the **Client ID** and **Client Secret** back into Composio.",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-linear-no-review-documented",
+   "text": "Linear documentation does not define a mandatory app review or approval submission before production use.",
+   "evidence": "uncertain",
+   "reason": "Linear developer documentation provides instant application creation without mentioning a review process.",
+   "checkedAt": "2026-11-03"
+  }
+ ],
+ "slug": "linear",
+ "app": {
+  "name": "Linear",
+  "website": "https://linear.app",
+  "developerDocsUrl": "https://linear.app/developers/oauth-2-0-authentication.md",
+  "composioSlug": "LINEAR",
+  "composioManaged": true,
+  "authSchemes": [
+   "OAUTH2",
+   "API_KEY"
+  ]
+ },
+ "generatedBy": "agent",
+ "reviewStatus": "unreviewed",
+ "lastVerified": "2026-11-03"
+}
