@@ -34,7 +34,7 @@ export function Library({ guides }: { guides: GuideSummary[] }) {
   );
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-2">
+      <div data-tour="filters" className="flex flex-wrap items-center gap-2">
         {FILTERS.map((x) => (
           <Pill key={x.id} on={f === x.id} onClick={() => setF(x.id)}>
             {x.label}
@@ -49,10 +49,10 @@ export function Library({ guides }: { guides: GuideSummary[] }) {
         <span className="ml-auto text-xs text-muted-foreground">{shown.length} guides</span>
       </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {shown.map((g) => {
+        {shown.map((g, idx) => {
           const d = DIFFICULTY_STYLE[g.difficulty];
           return (
-            <Link key={g.slug} href={`/guides/${g.slug}`} className="group flex flex-col rounded-2xl border border-border bg-white/[0.02] p-4 transition hover:border-white/20 hover:bg-white/[0.04]">
+            <Link key={g.slug} href={`/guides/${g.slug}`} data-tour={idx === 0 ? "card" : undefined} className="glow-card group flex flex-col rounded-2xl border border-border bg-white/[0.02] p-4 hover:bg-white/[0.04]">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-medium">{g.name}</p>

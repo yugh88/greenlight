@@ -29,7 +29,7 @@ export default async function Compare({ searchParams }: { searchParams: Promise<
           const d = DIFFICULTY_STYLE[g.verdict.difficulty];
           const mix = evidenceMix(g);
           return (
-            <Link key={g.slug} href={`/guides/${g.slug}`} className={cn("rounded-2xl p-4 ring-1 ring-inset", d.bg, d.ring)}>
+            <Link key={g.slug} href={`/guides/${g.slug}`} className={cn("glow-card rounded-2xl p-4 ring-1 ring-inset", d.bg, d.ring)}>
               <p className="text-lg font-semibold">{g.app.name}</p>
               <p className={cn("mt-1 text-3xl font-semibold", d.text)}>
                 {g.verdict.difficulty} <span className="text-base">{g.verdict.label}</span>

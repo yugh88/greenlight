@@ -41,6 +41,7 @@ export function GuideView({ guide: g }: { guide: Guide }) {
         <div className="flex flex-wrap items-center gap-2">
           {g.endToEnd ? (
             <a
+              data-tour="e2e"
               href={g.endToEnd.artifact ?? "#evidence"}
               title={g.endToEnd.summary}
               className="inline-flex items-center gap-1.5 rounded-md bg-emerald-500/20 px-2.5 py-1.5 text-xs font-semibold text-emerald-200 ring-1 ring-inset ring-emerald-400/60 hover:bg-emerald-500/30"
@@ -49,7 +50,7 @@ export function GuideView({ guide: g }: { guide: Guide }) {
             </a>
           ) : null}
           <ProvenanceBadge g={g} />
-          <a href={`/guides/${g.slug}.md`} className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs text-muted-foreground hover:bg-white/5 hover:text-foreground">
+          <a href={`/guides/${g.slug}.md`} data-tour="markdown" className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs text-muted-foreground hover:bg-white/5 hover:text-foreground">
             <FileText className="size-3.5" /> Markdown
           </a>
           {g.generatedBy === "agent" ? (
@@ -62,7 +63,7 @@ export function GuideView({ guide: g }: { guide: Guide }) {
 
       {/* 1. verdict */}
       <section className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <div className={cn("rounded-2xl p-5 ring-1 ring-inset", d.bg, d.ring)}>
+        <div data-tour="verdict" className={cn("glow-card rounded-2xl p-5 ring-1 ring-inset", d.bg, d.ring)}>
           <div className="flex items-center gap-4">
             <div className={cn("grid size-16 shrink-0 place-items-center rounded-xl bg-black/30 text-4xl font-semibold", d.text)}>
               {g.verdict.difficulty}
@@ -95,8 +96,10 @@ export function GuideView({ guide: g }: { guide: Guide }) {
         </div>
         {/* 2. start here */}
         <div className="flex flex-col gap-4">
-          <NextStep items={g.checklist} />
-          <div className="rounded-xl border border-border p-4 text-sm">
+          <div data-tour="next-step">
+            <NextStep items={g.checklist} />
+          </div>
+          <div data-tour="evidence-bar" className="glow-card rounded-xl border border-border p-4 text-sm">
             <p className="text-xs uppercase tracking-wider text-muted-foreground">Evidence on this page</p>
             <EvidenceBar mix={mix} />
             <p className="mt-2 text-xs text-muted-foreground">
@@ -124,7 +127,7 @@ export function GuideView({ guide: g }: { guide: Guide }) {
             <h3 className="text-sm font-medium">What the agent hands you</h3>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
               {g.artefacts.map((a) => (
-                <div key={a.id} className="flex flex-col rounded-xl border border-violet-500/25 bg-violet-500/[0.04] p-4">
+                <div key={a.id} className="glow-card flex flex-col rounded-xl border border-violet-500/25 bg-violet-500/[0.04] p-4">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-sm font-medium">{a.title}</p>
                     <CopyButton text={a.body} />
@@ -260,7 +263,7 @@ export function GuideView({ guide: g }: { guide: Guide }) {
 
 function Section({ id, title, sub, children }: { id: string; title: string; sub?: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="mt-12 scroll-mt-20">
+    <section id={id} data-tour={id} className="mt-12 scroll-mt-20">
       <h2 className="text-xl font-semibold tracking-tight">
         <a href={`#${id}`} className="hover:underline">{title}</a>
       </h2>
@@ -444,7 +447,7 @@ function Swimlane({ g, claims }: { g: Guide; claims: Map<string, Claim> }) {
         {g.phases.map((p) => (
           <div key={p.id} className="contents">
             {lanes.map((l) => (
-              <div key={l} className={cn("rounded-xl p-3", l === p.owner ? "border border-border bg-white/[0.03]" : "border border-dashed border-white/5")}>
+              <div key={l} className={cn("rounded-xl p-3", l === p.owner ? "glow-card border border-border bg-white/[0.03]" : "border border-dashed border-white/5")}>
                 {l === p.owner ? (
                   <>
                     <div className="flex items-start justify-between gap-2">
@@ -476,7 +479,7 @@ function ReqBadge({ v }: { v: "yes" | "no" | "conditional" }) {
 function ClaimRow({ c, probes }: { c: Claim; probes?: Guide["probes"] }) {
   const probe = c.artifact?.startsWith("probe:") ? probes?.find((p) => `probe:${p.id}` === c.artifact) : undefined;
   return (
-    <li id={`claim-${c.id}`} className="scroll-mt-24 rounded-lg border border-border p-3 text-sm target:border-emerald-500/60 target:bg-emerald-500/[0.04]">
+    <li id={`claim-${c.id}`} className="glow-card scroll-mt-24 rounded-lg border border-border p-3 text-sm target:border-emerald-500/60 target:bg-emerald-500/[0.04]">
       <div className="flex items-start gap-2">
         <EvidenceChip claim={c} />
         <div className="min-w-0 flex-1">

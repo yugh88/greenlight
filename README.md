@@ -7,7 +7,7 @@
 | **Live app** | https://greenlight-blue-ten.vercel.app |
 | **PM memo (1 page)** | [MEMO.md](MEMO.md) |
 | **How scoring and evidence work** | https://greenlight-blue-ten.vercel.app/method |
-| **For agents** | [`/llms.txt`](https://greenlight-blue-ten.vercel.app/llms.txt) · `/guides/<app>.md` · MCP endpoint `/api/mcp` |
+| **For agents** | [/agents](https://greenlight-blue-ten.vercel.app/agents) explains [`/llms.txt`](https://greenlight-blue-ten.vercel.app/llms.txt), `/guides/<app>.md` and the MCP endpoint `/api/mcp` |
 | **Loom walkthrough** | _link added at submission_ |
 
 ---
@@ -30,6 +30,8 @@
 4. **Proof instead of prose**: every claim has an evidence label; quotes are re-verified against the live page; GitHub and Slack were **tested end-to-end through Composio** with our own OAuth apps.
 
 ## 3. Try it in two minutes
+
+New here? Click **Take the tour** (top right). A guided walkthrough spotlights every feature on the home page and on each guide page, and starts automatically on your first visit.
 
 1. Open the **[Gmail guide](https://greenlight-blue-ten.vercel.app/guides/gmail)**: difficulty 4, *10–30 min* to first token vs *2–13 weeks* to production. Hover any coloured chip to see the quote, source and date.
 2. In the **Blockers** box, type `invalid_grant`: it jumps to *"Testing-mode tokens expire after 7 days"*, the issue that silently breaks always-on agents.

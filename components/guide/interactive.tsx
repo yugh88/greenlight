@@ -40,7 +40,7 @@ export function NextStep({ items }: { items: Item[] }) {
   const next = items.find((i) => !done.has(i.id));
   const pct = Math.round((done.size / Math.max(1, items.length)) * 100);
   return (
-    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
+    <div className="glow-card rounded-xl border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs font-medium uppercase tracking-wider text-emerald-300">
           {done.size === 0 ? "Start here" : next ? "Your next step" : "All done"}
@@ -155,7 +155,7 @@ export function BlockerSearch({ blockers }: { blockers: Blocker[] }) {
           </p>
         ) : (
           scored.map(({ b }) => (
-            <div key={b.id} id={`blocker-${b.id}`} className="scroll-mt-24 rounded-lg border border-border bg-white/[0.02] p-4">
+            <div key={b.id} id={`blocker-${b.id}`} className="glow-card scroll-mt-24 rounded-lg border border-border bg-white/[0.02] p-4">
               <p className="font-mono text-[13px] text-rose-300">{b.symptom}</p>
               <dl className="mt-2 grid gap-1.5 text-sm sm:grid-cols-[90px_1fr]">
                 <dt className="text-muted-foreground">Cause</dt>

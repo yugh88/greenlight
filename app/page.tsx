@@ -4,6 +4,7 @@ import { listGuides } from "@/lib/store";
 import { SearchBox } from "@/components/home/search-box";
 import { Library } from "@/components/home/library";
 import directory from "@/data/composio-directory.json";
+import { HeroTitle } from "@/components/brand/hero-title";
 
 export const revalidate = 60;
 
@@ -13,12 +14,16 @@ export default async function Home() {
   const total = d.counts.managed + d.counts.bringYourOwn;
   return (
     <div>
-      <section className="mx-auto max-w-3xl pt-16 text-center sm:pt-24">
-        <p className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+      <section className="mx-auto max-w-3xl pt-12 text-center sm:pt-16">
+        <div data-tour="hero" className="mb-6 inline-block">
+          <HeroTitle />
+        </div>
+        <br />
+        <p data-tour="stat" className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-1 text-xs text-muted-foreground">
           <span className="size-1.5 rounded-full bg-emerald-400" />
           {d.counts.bringYourOwn} of {total} OAuth toolkits on Composio need you to bring your own OAuth app
         </p>
-        <h1 className="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl">
+        <h1 className="mt-6 text-3xl font-semibold tracking-tight sm:text-5xl">
           Will your OAuth app get the green light?
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
@@ -26,20 +31,20 @@ export default async function Home() {
           Every claim is <span className="text-emerald-300">tested</span>, <span className="text-sky-300">sourced</span> or honestly marked{" "}
           <span className="text-amber-300">uncertain</span>.
         </p>
-        <div className="mx-auto mt-8 max-w-2xl text-left">
+        <div data-tour="search" className="mx-auto mt-8 max-w-2xl text-left">
           <Suspense>
             <SearchBox known={guides.map((g) => ({ slug: g.slug, name: g.name }))} />
           </Suspense>
         </div>
       </section>
 
-      <section className="mt-16 grid gap-3 text-sm sm:grid-cols-3">
+      <section data-tour="pillars" className="mt-16 grid gap-3 text-sm sm:grid-cols-3">
         {[
           ["Two clocks", "Time to first token (minutes, your own account) vs. time to production (days to weeks, after review)."],
           ["Agent vs. you", "Every step has an owner. The agent hands you pre-filled forms, scope justifications and reviewer emails."],
           ["Proof, not prose", "Quotes are re-fetched and checked. Public endpoints are probed. Gold guides are tested end-to-end through Composio."],
         ].map(([t, b]) => (
-          <div key={t} className="rounded-2xl border border-border bg-white/[0.02] p-4">
+          <div key={t} className="glow-card rounded-2xl border border-border bg-white/[0.02] p-4">
             <p className="font-medium">{t}</p>
             <p className="mt-1 text-muted-foreground">{b}</p>
           </div>
