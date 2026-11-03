@@ -39,7 +39,9 @@ export function RunView({ jobId }: { jobId: string }) {
     };
   }, [jobId, router]);
 
-  useEffect(() => endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }), [job?.steps.length]);
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [job?.steps.length]);
 
   if (missing) return <p className="pt-16 text-muted-foreground">This run does not exist. <Link href="/" className="underline">Start a new one</Link>.</p>;
 
