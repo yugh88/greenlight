@@ -2,6 +2,8 @@
 
 Before a developer's users can connect an app through Composio, the developer often has to register an OAuth app with the provider and get it approved. Composio manages the OAuth app for only 125 of its 387 OAuth toolkits; for the other 262 you bring your own. Greenlight tells you how hard that is, how long it really takes (including the review queue), what will block you, and what an agent can do for you. It has 10 curated guides and a live agent that investigates any app. Every claim is labelled **tested**, **sourced** or **uncertain**.
 
+**Scope:** the register-and-get-approved step for the provider's OAuth app, the part Composio can't do for you. Deliberately out: automating form submissions (needs the developer's logins) and shipping all 100 guides before the pipeline proved precise.
+
 **Live app:** https://greenlight-blue-ten.vercel.app · **Video:** https://youtu.be/xdIdEFDCvdc · **Memo:** [MEMO.md](MEMO.md) · **Full details:** [docs/DETAILS.md](docs/DETAILS.md)
 
 ## Try it
@@ -16,6 +18,7 @@ Before a developer's users can connect an app through Composio, the developer of
 **Prerequisites:** Node 20+, pnpm 10, a [Neon](https://neon.tech) Postgres database, a free [Google AI Studio](https://aistudio.google.com) key, and a Composio Platform project key (`ak_…`) for the SDK scripts.
 
 ```bash
+git clone https://github.com/yugh88/greenlight && cd greenlight
 pnpm install
 cp .env.example .env.local   # fill in the variables below
 pnpm db:push                 # create the guides + jobs tables
@@ -31,6 +34,14 @@ pnpm dev                     # http://localhost:3000
 | `NEXT_PUBLIC_BASE_URL` | absolute links in Markdown, `llms.txt` and share images |
 
 Scripts for gold guides, verification, the eval and the end-to-end test are listed in [docs/DETAILS.md](docs/DETAILS.md#12-run-it-locally).
+
+## What testing corrected
+
+- **Spotify is tier 5:** 5 development users; production only for organisations with 250k+ MAU.
+- **Gmail Testing-mode authorizations expire after 7 days.**
+- **Composio's default Slack config requests ~50 user scopes, no bot scopes.**
+
+Full list: [DETAILS §10](docs/DETAILS.md#10-assumptions-the-evidence-corrected); what we couldn't verify: [§14](docs/DETAILS.md#14-known-limits).
 
 ## Key decisions
 
