@@ -46,6 +46,16 @@ Free-tier constraints found while building (recorded in `docs/research-notes.md`
 `pnpm verify` re-fetches every gold quote and reports drift (`--write` downgrades misses).
 
 <!-- GOLD_TABLE -->
+## Gold guides: what was tested vs. sourced
+
+| App | Difficulty | Time to production | Composio | Tested | Sourced | Uncertain | End-to-end |
+|---|---|---|---|---|---|---|---|
+| [GitHub](/guides/github) | 1 Self-serve | same day | managed | 2 (probe) | 21 | 1 | n/a |
+| [Slack](/guides/slack) | 2 Light review | <1–70 days | managed | 0 (n/a) | 19 | 0 | n/a |
+| [Gmail (Google)](/guides/gmail) | 4 Heavy review / verification | 2–13 weeks | managed | 1 (probe) | 24 | 5 | n/a |
+
+Every sourced quote is re-checked against the live page (`pnpm verify`); curation edits live in `data/gold-patches/` and are applied by a script that rejects any quote it can't find.
+<!-- /GOLD_TABLE -->
 
 ## Run locally
 

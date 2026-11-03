@@ -355,7 +355,7 @@ function Primer({ g, claims }: { g: Guide; claims: Map<string, Claim> }) {
 function FlowDiagram({ name, managed }: { name: string; managed: boolean | null }) {
   const box = "rounded-xl border px-3 py-3 text-center text-sm";
   return (
-    <div className="flex flex-col items-stretch justify-center gap-2 rounded-2xl border border-border bg-white/[0.015] p-4 sm:flex-row sm:items-center">
+    <div className="flex flex-col items-stretch justify-center gap-2 self-start rounded-2xl border border-border bg-white/[0.015] p-4 sm:flex-row sm:items-center">
       <div className={cn(box, "border-sky-500/40 bg-sky-500/[0.06]")}>
         <p className="text-[10px] uppercase tracking-wider text-sky-300">You create once</p>
         <p className="mt-1 font-medium">{name} OAuth app</p>

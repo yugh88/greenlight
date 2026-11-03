@@ -1,0 +1,20 @@
+{
+  "addClaims": [
+    { "id": "c-xe-starter-5", "text": "New Xero apps default to the Starter tier with 5 connections.", "sourceUrl": "https://developer.xero.com/documentation/guides/oauth2/limits/", "quote": "New apps default to the starter tier with 5 connections." },
+    { "id": "c-xe-core-50", "text": "Moving to the Core tier allows up to 50 connections.", "sourceUrl": "https://developer.xero.com/documentation/guides/oauth2/limits/", "quote": "Moving up to Core will give you up to 50 connections." },
+    { "id": "c-xe-appstore-plus", "text": "Listing on the Xero App Store requires the Plus tier or above.", "sourceUrl": "https://developer.xero.com/documentation/guides/oauth2/limits/", "quote": "To be listed on the App Store, you will need to be in the Plus tier or above." },
+    { "id": "c-xe-fees", "text": "Monthly tier fees: Starter no charge, Core $35 AUD, Plus $245 AUD, Advanced $1445 AUD, Enterprise price on application.", "sourceUrl": "https://developer.xero.com/pricing", "quote": "Monthly Tier Fee No charge $35 AUD $245 AUD $1445 AUD Price on Application" },
+    { "id": "c-xe-conn-max", "text": "Maximum connections per tier: 5 / 50 / 1000 / 10,000 / no limit.", "sourceUrl": "https://developer.xero.com/pricing", "quote": "Connections (maximum) 5 50 1000 10,000" },
+    { "id": "c-xe-cert", "text": "The higher tiers list App Certification (and a security assessment) as prerequisites.", "sourceUrl": "https://developer.xero.com/pricing", "quote": "Prerequisites App Certification App Certification App Certification" }
+  ],
+  "verdict": { "difficulty": 3, "label": "Full review", "cost": "Free for 5 connections; $35 AUD/mo for 50; certification + $245+ AUD/mo beyond" },
+  "attach": { "verdict": ["c-xe-starter-5", "c-xe-core-50", "c-xe-cert", "c-xe-fees"] },
+  "addRequirements": [
+    { "kind": "user-cap-before-review", "label": "5-connection cap on the free Starter tier", "required": "yes", "when": "Until you move to a paid tier", "claimIds": ["c-xe-starter-5"] },
+    { "kind": "paid-plan", "label": "Paid tier for more than 5 connections", "required": "conditional", "when": "Core ($35 AUD/mo) up to 50 connections; Plus and above for more and for the App Store", "claimIds": ["c-xe-core-50", "c-xe-fees"] },
+    { "kind": "security-assessment", "label": "App certification (and security assessment) for higher tiers", "required": "conditional", "when": "Plus tier and above (1,000+ connections, App Store listing)", "claimIds": ["c-xe-cert", "c-xe-appstore-plus"] }
+  ],
+  "addBlockers": [
+    { "id": "b-xe-cap", "symptom": "The 6th customer can't connect their Xero organisation", "cause": "Starter tier allows 5 connections.", "fix": "Upgrade the app to Core (up to 50 connections) in the Xero developer portal.", "fallback": "Disconnect unused/test tenants to free connections while you upgrade.", "claimIds": ["c-xe-starter-5", "c-xe-core-50"] }
+  ]
+}

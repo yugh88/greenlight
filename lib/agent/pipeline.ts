@@ -99,7 +99,7 @@ export async function runPipeline(input: string, emit: Emit, opts: PipelineOptio
     composio: { ...comp, ref: "C1" },
   };
   emit("draft", `Drafting guide from ${pack.sources.length} pages and ${pack.probes.length} probes`);
-  const { draft, modelId } = await draftGuide(pack, { depth: Boolean(opts.seedUrls) || opts.depth });
+  const { draft, modelId } = await draftGuide(pack, { depth: opts.depth ?? true });
   emit("draft", `Draft ready (${draft.claims.length} claims) via ${modelId}`);
 
   // map refs → evidence

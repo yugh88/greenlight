@@ -1,0 +1,18 @@
+{
+  "addClaims": [
+    { "id": "c-x-ppu", "text": "The X API uses pay-per-usage pricing with no subscriptions.", "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing", "quote": "The X API uses pay-per-usage pricing with no subscriptions." },
+    { "id": "c-x-credits", "text": "You purchase credits upfront in the Developer Console; they are deducted per API request.", "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing", "quote": "Purchase credits upfront in the Developer Console. Credits are deducted as you make API requests." },
+    { "id": "c-x-per-endpoint", "text": "Different endpoints cost different amounts; current rates are shown in the Developer Console.", "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing", "quote": "Different endpoints have different costs. View current rates in the Developer Console." }
+  ],
+  "verdict": { "difficulty": 2, "label": "Light review", "cost": "Pay-per-use credits (per-endpoint pricing in the Developer Console)" },
+  "attach": { "verdict": ["c-x-ppu", "c-x-credits"] },
+  "addRequirements": [
+    { "kind": "paid-plan", "label": "Prepaid API credits", "required": "yes", "when": "Before your agent can make API calls beyond any free credits", "claimIds": ["c-x-ppu", "c-x-credits"] }
+  ],
+  "addBlockers": [
+    { "id": "b-x-credits", "symptom": "Calls fail once the app is live although OAuth succeeded", "cause": "X API is pay-per-use; requests deduct prepaid credits.", "fix": "Buy credits and set a spending limit / auto-recharge in the Developer Console; budget per endpoint.", "fallback": "Cache aggressively and call fewer, cheaper endpoints.", "claimIds": ["c-x-credits", "c-x-per-endpoint"] }
+  ],
+  "addUncertainties": [
+    "The exact error code returned when credits run out is not documented on the pricing page; the blocker describes the behaviour, not the error string."
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "addClaims": [
+    { "id": "c-en-unverified-block", "text": "With risk-based step-up consent, users can't consent to most newly registered multitenant apps that aren't publisher verified.", "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview", "quote": "users can't consent to most newly registered multitenant apps that aren't publisher verified" },
+    { "id": "c-en-cpp", "text": "Publisher verification needs a Partner One ID for a verified Microsoft AI Cloud Partner Program account.", "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview", "quote": "The developer must have a Partner One ID for a valid Microsoft AI Cloud Partner Program account that has completed the verification process." },
+    { "id": "c-en-blue-badge", "text": "Verified publishers get a blue verified badge on the Entra consent prompt.", "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview", "quote": "a blue verified badge appears in the Microsoft Entra consent prompt for the app" },
+    { "id": "c-en-https", "text": "Redirect URIs must use https, with exceptions for some localhost URIs.", "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/reply-url", "quote": "Redirect URIs must begin with the scheme https , with exceptions for some localhost redirect URIs." },
+    { "id": "c-en-case", "text": "Redirect URIs are case-sensitive.", "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/reply-url", "quote": "Redirect URIs are case-sensitive and must match the case of the URL path of your running application." },
+    { "id": "c-en-verified-only-policy", "text": "Tenant admins can allow user consent only for apps from verified publishers (and apps registered in their tenant), so unverified apps may need admin consent.", "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/configure-user-consent", "quote": "Allow limited user consent only for apps from verified publishers and apps that are registered in your tenant" },
+    { "id": "c-en-admin-perms", "text": "By default users can consent to low-risk permissions (e.g. their own mailbox) but not to org-wide permissions, which need an administrator.", "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/configure-user-consent", "quote": "by default, a user can consent to allow an app to access their mailbox but can't consent to allow an app unfettered access to read and write to all files in your organization" }
+  ],
+  "verdict": { "difficulty": 3, "label": "Full review" },
+  "attach": { "verdict": ["c-en-unverified-block", "c-en-cpp", "c-en-verified-only-policy"] },
+  "addRequirements": [
+    { "kind": "business-verification", "label": "Publisher verification via a verified Microsoft AI Cloud Partner Program account", "required": "conditional", "when": "For multitenant apps whose users are in other organizations' tenants (otherwise consent may be blocked)", "claimIds": ["c-en-cpp", "c-en-unverified-block"] },
+    { "kind": "admin-consent", "label": "Tenant admin consent", "required": "conditional", "when": "For org-wide (admin-only) permissions, or tenants that restrict user consent to verified publishers", "claimIds": ["c-en-admin-perms", "c-en-verified-only-policy"] }
+  ],
+  "addRedirectRules": [
+    { "rule": "HTTPS only (some localhost exceptions); case-sensitive match on the path.", "claimIds": ["c-en-https", "c-en-case"] }
+  ],
+  "addBlockers": [
+    { "id": "b-en-unverified", "symptom": "Users in a customer tenant see 'Need admin approval' / cannot consent to your app", "cause": "Your multitenant app isn't publisher verified and the tenant restricts user consent (risk-based step-up or verified-publishers-only policy), or you requested admin-only permissions.", "fix": "Complete publisher verification (CPP account + Partner One ID), request only user-consentable delegated permissions, or ask the tenant admin to grant admin consent.", "fallback": "Single-tenant app registration inside each customer's tenant for enterprise pilots.", "claimIds": ["c-en-unverified-block", "c-en-verified-only-policy", "c-en-admin-perms"] }
+  ],
+  "addUncertainties": [
+    "Exact AADSTS error codes shown to blocked users vary by tenant policy; the blocker's symptom text is paraphrased."
+  ]
+}

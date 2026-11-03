@@ -12,7 +12,7 @@ An agent builder picks Composio so their users can connect apps in one line. For
 
 ## Insight
 
-The time isn't in engineering. It's in the **provider's review queue and its gates**: Google's restricted-scope security assessment, Meta's business verification, LinkedIn's partner-only Marketing API, Spotify's 25-user development mode, Xero's connection cap until certification. So a guide must answer with **two clocks**: *time to first token* (minutes, your own account) versus *time to production* (days to months). It must also be honest about which parts are proven. A confident wrong answer about an approval process costs a launch.
+The time isn't in engineering. It's in the **provider's review queue and its gates**: Google's restricted-scope security assessment (and Testing-mode tokens that expire after 7 days), Slack's up-to-10-week Marketplace review (unlisted apps get history APIs throttled to 1 request/minute), Spotify's 5-user development mode with production access now only for organizations with 250k+ MAU, Xero's 5-connection Starter tier, Meta's business verification. So a guide must answer with **two clocks**: *time to first token* (minutes, your own account) versus *time to production* (days to months). It must also be honest about which parts are proven. A confident wrong answer about an approval process costs a launch.
 
 ## What I built and why
 
