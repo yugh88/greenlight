@@ -28,7 +28,9 @@
    "c-composio-auth-config",
    "c-review-process",
    "c-gh-app-preferred",
-   "c-managed-available"
+   "c-managed-available",
+   "c-gh-instant",
+   "c-gh-e2e"
   ]
  },
  "composioFit": {
@@ -43,7 +45,8 @@
    "c-why-own-app",
    "c-rate-limit-authenticated",
    "c-composio-gh-app-byo",
-   "c-composio-sdk"
+   "c-composio-sdk",
+   "c-gh-consent-brand"
   ]
  },
  "phases": [
@@ -168,6 +171,16 @@
     "c-offline-access",
     "c-token-expiration"
    ]
+  },
+  {
+   "scope": "Composio default: repo user gist notifications project workflow codespace",
+   "purpose": "What the GitHub auth config requested out of the box in our test",
+   "tier": "sensitive",
+   "reviewTrigger": false,
+   "alternative": "Set only the scopes your agent needs on the auth config (e.g. read:user, public_repo)",
+   "claimIds": [
+    "c-gh-default-scopes"
+   ]
   }
  ],
  "redirectRules": [
@@ -182,6 +195,13 @@
    "claimIds": [
     "c-callback-url-limit"
    ]
+  },
+  {
+   "rule": "Paste Composio's callback https://backend.composio.dev/api/v3/toolkits/auth/callback as the Redirect URI (tested). Up to 10 redirect URIs; leave wildcard matching off.",
+   "claimIds": [
+    "c-gh-redirect-form",
+    "c-gh-e2e"
+   ]
   }
  ],
  "blockers": [
@@ -193,6 +213,16 @@
    "fallback": "Use an OAuth app with the repo scope (broader access, no installation step), or Composio's managed GitHub app while prototyping.",
    "claimIds": [
     "c-composio-gh-install"
+   ]
+  },
+  {
+   "id": "b-gh-sudo",
+   "symptom": "'Confirm access' page appears when you click 'Generate a new client secret'",
+   "cause": "GitHub sudo mode: sensitive settings need the owner to re-authenticate.",
+   "fix": "Confirm with password, passkey or 2FA; the secret is shown once, so copy it straight into the Composio auth config.",
+   "fallback": "If you lose the secret, generate a new one and update the auth config.",
+   "claimIds": [
+    "c-gh-sudo"
    ]
   },
   {
@@ -476,6 +506,55 @@
    "evidence": "tested",
    "artifact": "/evidence/github/composio-toolkit.json",
    "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-gh-e2e",
+   "text": "Tested end-to-end: our own OAuth App \u2192 Composio custom auth config (ac_zIzpVUS9sFC-) \u2192 Connect Link \u2192 connected account ACTIVE \u2192 GITHUB_GET_THE_AUTHENTICATED_USER returned the user (Composio log log_dLtTw8mgVQ_M).",
+   "evidence": "tested",
+   "artifact": "/evidence/github/e2e-trace.json",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-gh-instant",
+   "text": "Registering an OAuth App is instant: GitHub shows 'Application created successfully' with 0 users and no review step.",
+   "evidence": "tested",
+   "artifact": "/evidence/github/02-app-registered-no-review.jpg",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-gh-sudo",
+   "text": "Generating a client secret requires the account owner to re-confirm access (GitHub sudo mode), so a human must be present for this step.",
+   "evidence": "tested",
+   "artifact": "/evidence/github/e2e-trace.json",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-gh-expire-default",
+   "text": "New OAuth Apps have 'Expire user access tokens' checked by default, so GitHub issues refresh tokens (Composio refreshes them).",
+   "evidence": "tested",
+   "artifact": "/evidence/github/01-new-oauth-app-form.jpg",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-gh-redirect-form",
+   "text": "The registration form accepts up to 10 redirect URIs, with optional wildcard matching; Composio's callback https://backend.composio.dev/api/v3/toolkits/auth/callback worked as-is.",
+   "evidence": "tested",
+   "artifact": "/evidence/github/01-new-oauth-app-form.jpg",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-gh-consent-brand",
+   "text": "With a custom auth config the GitHub consent screen shows your own app name ('Authorize Greenlight test') instead of Composio's.",
+   "evidence": "tested",
+   "artifact": "/evidence/github/03-consent-authorize-greenlight-test.jpg",
+   "checkedAt": "2026-11-03"
+  },
+  {
+   "id": "c-gh-default-scopes",
+   "text": "The Composio GitHub auth config requested broad scopes by default (repo user gist notifications project workflow codespace) with PKCE S256; set narrower scopes on the auth config if you don't need them.",
+   "evidence": "tested",
+   "artifact": "/evidence/github/03-consent-authorize-greenlight-test.jpg",
+   "checkedAt": "2026-11-03"
   }
  ],
  "uncertainties": [
@@ -485,6 +564,12 @@
  "generatedBy": "gold",
  "reviewStatus": "unreviewed",
  "lastVerified": "2026-11-03",
+ "endToEnd": {
+  "testedAt": "2026-11-03",
+  "summary": "Own GitHub OAuth App 'Greenlight test' \u2192 Composio custom auth config \u2192 Connect Link \u2192 user authorized \u2192 GITHUB_GET_THE_AUTHENTICATED_USER succeeded. About 5 minutes of human time (sign-in, sudo confirm, Authorize).",
+  "composioLogId": "log_dLtTw8mgVQ_M",
+  "artifact": "/evidence/github/e2e-trace.json"
+ },
  "probes": [
   {
    "id": "p-oidc-discovery-0",

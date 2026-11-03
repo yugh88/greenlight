@@ -20,6 +20,11 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
         <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 28, color: "#a1a1aa" }}>
           <div style={{ width: 18, height: 18, borderRadius: 9, background: "#34d399" }} />
           Greenlight · OAuth app setup guide
+          {g?.endToEnd ? (
+            <div style={{ display: "flex", marginLeft: "auto", fontSize: 24, color: "#6ee7b7", border: "2px solid #34d399", borderRadius: 12, padding: "6px 14px" }}>
+              ✓ Tested end-to-end via Composio
+            </div>
+          ) : null}
         </div>
         <div style={{ display: "flex", fontSize: 88, fontWeight: 700, marginTop: 36, letterSpacing: -2 }}>{name}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 28, marginTop: 28 }}>

@@ -39,6 +39,15 @@ export function GuideView({ guide: g }: { guide: Guide }) {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {g.endToEnd ? (
+            <a
+              href={g.endToEnd.artifact ?? "#evidence"}
+              title={g.endToEnd.summary}
+              className="inline-flex items-center gap-1.5 rounded-md bg-emerald-500/20 px-2.5 py-1.5 text-xs font-semibold text-emerald-200 ring-1 ring-inset ring-emerald-400/60 hover:bg-emerald-500/30"
+            >
+              <ShieldCheck className="size-3.5" /> Tested end-to-end through Composio · {g.endToEnd.testedAt}
+            </a>
+          ) : null}
           <ProvenanceBadge g={g} />
           <a href={`/guides/${g.slug}.md`} className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs text-muted-foreground hover:bg-white/5 hover:text-foreground">
             <FileText className="size-3.5" /> Markdown
@@ -72,9 +81,16 @@ export function GuideView({ guide: g }: { guide: Guide }) {
             <Clock label="Cost" hint="provider-side" value={g.verdict.cost} small />
           </dl>
           {g.endToEnd ? (
-            <p className="mt-4 inline-flex items-center gap-2 rounded-lg bg-emerald-500/15 px-3 py-1.5 text-sm text-emerald-300 ring-1 ring-inset ring-emerald-500/40">
-              <ShieldCheck className="size-4" /> Tested end-to-end through Composio on {g.endToEnd.testedAt}
-            </p>
+            <div className="mt-4 rounded-lg bg-emerald-500/15 px-3 py-2 text-sm text-emerald-200 ring-1 ring-inset ring-emerald-500/40">
+              <p className="flex items-center gap-2 font-medium">
+                <ShieldCheck className="size-4" /> Tested end-to-end through Composio on {g.endToEnd.testedAt}
+              </p>
+              <p className="mt-1 text-xs text-emerald-200/80">
+                {g.endToEnd.summary}
+                {g.endToEnd.composioLogId ? <> Composio log <code className="font-mono">{g.endToEnd.composioLogId}</code>.</> : null}{" "}
+                {g.endToEnd.artifact ? <a className="underline" href={g.endToEnd.artifact}>Trace</a> : null}
+              </p>
+            </div>
           ) : null}
         </div>
         {/* 2. start here */}
@@ -475,6 +491,12 @@ function ClaimRow({ c, probes }: { c: Claim; probes?: Guide["probes"] }) {
             {" · "}
             {c.checkedAt} · #{c.id}
           </p>
+          {c.artifact && /\.(png|jpe?g)$/i.test(c.artifact) ? (
+            <a href={c.artifact} className="mt-2 block w-fit">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={c.artifact} alt={c.text} className="max-h-40 rounded border border-border" loading="lazy" />
+            </a>
+          ) : null}
           {probe ? (
             <details className="mt-1">
               <summary className="cursor-pointer text-[11px] text-muted-foreground">raw probe response</summary>
