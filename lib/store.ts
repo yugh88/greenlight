@@ -51,8 +51,23 @@ export async function getGuide(slug: string): Promise<Guide | null> {
   const gold = goldGuides.find((g) => g.slug === slug);
   if (gold) return gold;
   if (!hasDb()) return null;
-  const rows = await db().select().from(schema.guides).where(eq(schema.guides.slug, slug)).limit(1);
-  return rows[0]?.body ?? null;
+  try {
+    const rows = await db().select().from(schema.guides).where(eq(schema.guides.slug, slug)).limit(1);
+    return rows[0]?.body ?? null;
+  } catch (e) {
+    // A DB outage (e.g. Neon quota exceeded) should not take down guide pages or search.
+    console.warn("getGuide db error", (e as Error).message);
+    return null;
+  }
+}
+
+/** User-facing message for a failed DB call in the live-agent path. */
+export function dbErrorMessage(e: unknown): string {
+  const text = `${(e as Error)?.message ?? ""} ${String((e as { cause?: unknown })?.cause ?? "")}`;
+  if (/exceeded the quota|HTTP status 402/i.test(text))
+    return "The live agent is temporarily unavailable (database quota exceeded). Browse the library in the meantime.";
+  if (/DATABASE_URL is not set/.test(text)) return "The live agent is not configured on this deployment (no database).";
+  return "The live agent is temporarily unavailable. Please try again in a minute.";
 }
 
 export async function listGuides(): Promise<GuideSummary[]> {

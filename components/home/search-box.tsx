@@ -19,8 +19,8 @@ export function SearchBox({ known }: { known: { slug: string; name: string }[] }
     setErr(null);
     try {
       const r = await fetch("/api/generate", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ input: v, regenerate }) });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j.error ?? "Request failed");
+      const j = (await r.json().catch(() => ({}))) as { error?: string; slug?: string; jobId?: string };
+      if (!r.ok) throw new Error(j.error ?? `Something went wrong (HTTP ${r.status}). Please try again.`);
       router.push(j.slug ? `/guides/${j.slug}` : `/generate/${j.jobId}`);
     } catch (e) {
       setErr((e as Error).message);

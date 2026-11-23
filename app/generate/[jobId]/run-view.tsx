@@ -19,16 +19,33 @@ const STAGES = [
 export function RunView({ jobId }: { jobId: string }) {
   const [job, setJob] = useState<Job | null>(null);
   const [missing, setMissing] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const router = useRouter();
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let stop = false;
+    let failures = 0;
     const tick = async () => {
-      const r = await fetch(`/api/jobs/${jobId}`, { cache: "no-store" });
-      if (r.status === 404) return setMissing(true);
-      const j: Job = await r.json();
+      let j: (Job & { error?: string | null }) | null = null;
+      let status = 0;
+      try {
+        const r = await fetch(`/api/jobs/${jobId}`, { cache: "no-store" });
+        status = r.status;
+        j = await r.json().catch(() => null);
+      } catch {
+        // network error: treated as a transient failure below
+      }
       if (stop) return;
+      if (status === 404) return setMissing(true);
+      if (status !== 200 || !j || !Array.isArray(j.steps)) {
+        // Back off on transient failures; give up after a few so we don't hammer a broken backend.
+        failures += 1;
+        if (failures >= 5) return setFetchError(j?.error ?? "Lost contact with the live agent. Please try again later.");
+        return void setTimeout(tick, 1200 * 2 ** failures);
+      }
+      failures = 0;
+      setFetchError(null);
       setJob(j);
       if (j.status === "done" && j.slug) setTimeout(() => router.push(`/guides/${j.slug}`), 1500);
       else if (j.status !== "error") setTimeout(tick, 1200);
@@ -97,6 +114,18 @@ export function RunView({ jobId }: { jobId: string }) {
             <p className="font-medium">The run failed.</p>
             <p className="mt-1 text-muted-foreground">{job.error}</p>
             <p className="mt-2">Free-tier model capacity is the usual cause. <Link href={`/?regenerate=${encodeURIComponent(job.input)}`} className="underline">Try again</Link>.</p>
+          </div>
+        </div>
+      ) : null}
+      {fetchError && job?.status !== "error" ? (
+        <div className="mt-4 flex items-start gap-2 rounded-xl border border-rose-500/40 bg-rose-500/[0.06] p-4 text-sm">
+          <CircleAlert className="mt-0.5 size-4 text-rose-300" />
+          <div>
+            <p className="font-medium">Can&apos;t reach the live agent.</p>
+            <p className="mt-1 text-muted-foreground">{fetchError}</p>
+            <p className="mt-2">
+              <Link href="/" className="underline">Back to the library</Link>
+            </p>
           </div>
         </div>
       ) : null}
