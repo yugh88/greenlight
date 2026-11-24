@@ -21,17 +21,20 @@ Before a developer's users can connect an app through Composio, the developer of
 git clone https://github.com/yugh88/greenlight && cd greenlight
 pnpm install
 cp .env.example .env.local   # fill in the variables below
-pnpm db:push                 # create the guides + jobs tables
+pnpm db:migrate              # create the guides + jobs tables (idempotent)
 pnpm dev                     # http://localhost:3000
 ```
 
 | Variable | Used for |
 |---|---|
 | `DATABASE_URL` | Neon connection string (agent guides, live jobs) |
+| `DATABASE_URL_FALLBACK` | optional second Postgres, used automatically if the primary is down or over quota |
 | `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini free tier; only public docs and probe results are sent |
 | `AI_PROVIDER` | `google` (default), `anthropic` or `openai` |
 | `COMPOSIO_API_KEY` | `ak_…` key for `toolkits.get()` and the end-to-end scripts (not needed to run the site) |
 | `NEXT_PUBLIC_BASE_URL` | absolute links in Markdown, `llms.txt` and share images |
+
+**Database failover:** queries try `DATABASE_URL`, then `DATABASE_URL_FALLBACK`, then an embedded Postgres (PGlite, in-process), migrating each on first use. With no database configured the site and live agent still run locally. `/api/health` shows which one is serving; `pnpm db:migrate --from <old> --to <new>` copies guides and jobs between databases.
 
 Scripts for gold guides, verification, the eval and the end-to-end test are listed in [docs/DETAILS.md](docs/DETAILS.md#12-run-it-locally).
 

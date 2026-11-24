@@ -24,7 +24,7 @@ const { db, schema } = await import("../lib/db/index.ts");
 const { slugify } = await import("../lib/agent/discover.ts");
 const existing = new Set([
   ...readdirSync("data/guides").filter((f) => f.endsWith(".json")).map((f) => f.replace(".json", "")),
-  ...(await db().select({ slug: schema.guides.slug }).from(schema.guides)).map((r) => r.slug),
+  ...(await (await db()).select({ slug: schema.guides.slug }).from(schema.guides)).map((r) => r.slug),
 ]);
 // skip MCP-only variants; one guide per provider
 const queue = dir.toolkits
@@ -45,7 +45,7 @@ for (const [i, t] of queue.slice(0, n).entries()) {
     const r = await runPipeline(t.name, (stage, msg) => stage === "error" && console.log(`  ${msg}`), { composioSlug: t.slug });
     const g = r.guide;
     const row = { slug: g.slug, name: g.app.name, difficulty: g.verdict.difficulty, composioManaged: g.app.composioManaged, generatedBy: g.generatedBy, body: g, lastVerified: g.lastVerified };
-    await db().insert(schema.guides).values(row).onConflictDoUpdate({ target: schema.guides.slug, set: { ...row, updatedAt: new Date() } });
+    await (await db()).insert(schema.guides).values(row).onConflictDoUpdate({ target: schema.guides.slug, set: { ...row, updatedAt: new Date() } });
     console.log(`✓ ${i + 1}/${n} ${t.name}: difficulty ${g.verdict.difficulty}, ${g.claims.length} claims, ${Math.round((Date.now() - t0) / 1000)}s`);
   } catch (e) {
     console.log(`✗ ${i + 1}/${n} ${t.name}: ${(e as Error).message.slice(0, 160)}`);

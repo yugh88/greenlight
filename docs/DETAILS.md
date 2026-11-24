@@ -205,13 +205,15 @@ Free-tier facts found while building (details in `docs/research-notes.md`): Gemi
 git clone https://github.com/yugh88/greenlight && cd greenlight
 pnpm install
 cp .env.example .env.local      # fill in the variables below
-pnpm db:push                    # create the guides + jobs tables
+pnpm db:migrate                 # create the guides + jobs tables (idempotent)
 pnpm dev                        # http://localhost:3000
 ```
 
 | Variable | Used for |
 |---|---|
 | `DATABASE_URL` | Neon connection string (agent guides + live jobs) |
+| `DATABASE_URL_FALLBACK` | optional second Postgres used when the primary fails (quota, outage, auth) |
+| `DB_EMBEDDED_FALLBACK` | set to `0` to disable the embedded PGlite last-resort tier |
 | `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini (free tier); only public docs and probe results are sent |
 | `AI_PROVIDER` | `google` (default) · `anthropic` · `openai` |
 | `COMPOSIO_API_KEY` | `ak_…` project key (SDK lookups, end-to-end scripts); not needed in production |

@@ -55,6 +55,8 @@ pnpm guides:index                                      # re-index gold guides af
 pnpm verify                                            # drift check of all gold quotes
 pnpm eval                                              # live agent vs eval/ground-truth.json
 pnpm tsx scripts/readme-tables.mts                     # refresh README tables
+pnpm db:migrate [--from <url>] [--to <url|embedded>] [--seed]  # migrate / copy / seed a database
+pnpm db:status                                         # which DB backend is serving
 ```
 
 ## Test resources to clean up (created 2026-11-03)
@@ -63,3 +65,7 @@ pnpm tsx scripts/readme-tables.mts                     # refresh README tables
 - Slack app "Greenlight test" (A0CEBJERHV3) in workspace "greenlight", api.slack.com/apps → Basic Information → Delete App.
 - Composio auth configs `ac_zIzpVUS9sFC-` (github), `ac_wdjsafEfFeO8` (slack); connected accounts `ca_ez_Gg5l_sEgQ`, `ca_SXWHOYUGFtvr` (dashboard.composio.dev).
 - Rotate keys pasted in chat: Composio `ak_…`, Gemini, Neon password.
+
+## 2026-11-24: database failover
+
+Neon hit its free-tier quota (HTTP 402), which disabled the live agent. Added `lib/db` failover: DATABASE_URL → DATABASE_URL_FALLBACK → embedded PGlite, each auto-migrated on first use; `/api/health`; `pnpm db:migrate`. Verified locally with a broken primary: home, guides and a live job all served from the embedded DB.

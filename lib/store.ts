@@ -1,7 +1,7 @@
 import "server-only";
 import { desc, eq, sql } from "drizzle-orm";
 import { goldGuides } from "@/data/guides";
-import { db, schema } from "@/lib/db";
+import { schema, withDb } from "@/lib/db";
 import type { JobStep } from "@/lib/db/schema";
 import { Guide } from "@/lib/schema";
 
@@ -24,7 +24,8 @@ export type GuideSummary = {
   endToEnd: boolean;
 };
 
-const hasDb = () => Boolean(process.env.DATABASE_URL);
+// The embedded fallback means a database is always available unless explicitly disabled.
+const hasDb = () => Boolean(process.env.DATABASE_URL || process.env.DATABASE_URL_FALLBACK || process.env.FALLBACK_DATABASE_URL || process.env.DB_EMBEDDED_FALLBACK !== "0");
 
 export function summarize(g: Guide): GuideSummary {
   return {
@@ -52,7 +53,7 @@ export async function getGuide(slug: string): Promise<Guide | null> {
   if (gold) return gold;
   if (!hasDb()) return null;
   try {
-    const rows = await db().select().from(schema.guides).where(eq(schema.guides.slug, slug)).limit(1);
+    const rows = await withDb((db) => db.select().from(schema.guides).where(eq(schema.guides.slug, slug)).limit(1));
     return rows[0]?.body ?? null;
   } catch (e) {
     // A DB outage (e.g. Neon quota exceeded) should not take down guide pages or search.
@@ -74,7 +75,7 @@ export async function listGuides(): Promise<GuideSummary[]> {
   const out = new Map<string, GuideSummary>();
   if (hasDb()) {
     try {
-      const rows = await db().select().from(schema.guides).orderBy(desc(schema.guides.updatedAt)).limit(500);
+      const rows = await withDb((db) => db.select().from(schema.guides).orderBy(desc(schema.guides.updatedAt)).limit(500));
       for (const r of rows) out.set(r.slug, summarize(r.body));
     } catch (e) {
       console.warn("listGuides db error", (e as Error).message);
@@ -91,75 +92,85 @@ export async function listGuides(): Promise<GuideSummary[]> {
 
 export async function saveGuide(g: Guide) {
   const parsed = Guide.parse(g);
-  await db()
-    .insert(schema.guides)
-    .values({
-      slug: parsed.slug,
-      name: parsed.app.name,
-      difficulty: parsed.verdict.difficulty,
-      composioManaged: parsed.app.composioManaged,
-      generatedBy: parsed.generatedBy,
-      body: parsed,
-      lastVerified: parsed.lastVerified,
-    })
-    .onConflictDoUpdate({
-      target: schema.guides.slug,
-      set: {
+  await withDb((db) =>
+    db
+      .insert(schema.guides)
+      .values({
+        slug: parsed.slug,
         name: parsed.app.name,
         difficulty: parsed.verdict.difficulty,
         composioManaged: parsed.app.composioManaged,
         generatedBy: parsed.generatedBy,
         body: parsed,
         lastVerified: parsed.lastVerified,
-        updatedAt: new Date(),
-      },
-    });
+      })
+      .onConflictDoUpdate({
+        target: schema.guides.slug,
+        set: {
+          name: parsed.app.name,
+          difficulty: parsed.verdict.difficulty,
+          composioManaged: parsed.app.composioManaged,
+          generatedBy: parsed.generatedBy,
+          body: parsed,
+          lastVerified: parsed.lastVerified,
+          updatedAt: new Date(),
+        },
+      }),
+  );
 }
 
 // ---------- jobs ----------
 
 export async function createJob(id: string, input: string) {
-  await db().insert(schema.jobs).values({ id, input, status: "queued", steps: [] });
+  await withDb((db) => db.insert(schema.jobs).values({ id, input, status: "queued", steps: [] }));
 }
 
 export async function appendStep(id: string, step: JobStep) {
-  await db()
-    .update(schema.jobs)
-    .set({
-      steps: sql`${schema.jobs.steps} || ${JSON.stringify([step])}::jsonb`,
-      status: "running",
-      updatedAt: new Date(),
-    })
-    .where(eq(schema.jobs.id, id));
+  await withDb((db) =>
+    db
+      .update(schema.jobs)
+      .set({
+        steps: sql`${schema.jobs.steps} || ${JSON.stringify([step])}::jsonb`,
+        status: "running",
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.jobs.id, id)),
+  );
 }
 
 export async function finishJob(id: string, patch: { status: "done" | "error"; slug?: string; error?: string }) {
-  await db()
-    .update(schema.jobs)
-    .set({ ...patch, updatedAt: new Date() })
-    .where(eq(schema.jobs.id, id));
+  await withDb((db) =>
+    db
+      .update(schema.jobs)
+      .set({ ...patch, updatedAt: new Date() })
+      .where(eq(schema.jobs.id, id)),
+  );
 }
 
 export async function getJob(id: string) {
-  const rows = await db().select().from(schema.jobs).where(eq(schema.jobs.id, id)).limit(1);
+  const rows = await withDb((db) => db.select().from(schema.jobs).where(eq(schema.jobs.id, id)).limit(1));
   return rows[0] ?? null;
 }
 
 /** A job for this input that is still running (dedupe concurrent requests). */
 export async function findRunningJob(input: string) {
-  const rows = await db()
-    .select()
-    .from(schema.jobs)
-    .where(sql`lower(${schema.jobs.input}) = lower(${input}) and ${schema.jobs.status} in ('queued','running') and ${schema.jobs.updatedAt} > now() - interval '6 minutes'`)
-    .limit(1);
+  const rows = await withDb((db) =>
+    db
+      .select()
+      .from(schema.jobs)
+      .where(sql`lower(${schema.jobs.input}) = lower(${input}) and ${schema.jobs.status} in ('queued','running') and ${schema.jobs.updatedAt} > now() - interval '6 minutes'`)
+      .limit(1),
+  );
   return rows[0] ?? null;
 }
 
 /** Global throttle for the public live agent (free-tier model quota). */
 export async function recentJobCount(minutes = 60) {
-  const rows = await db()
-    .select({ n: sql<number>`count(*)::int` })
-    .from(schema.jobs)
-    .where(sql`${schema.jobs.createdAt} > now() - make_interval(mins => ${minutes})`);
+  const rows = await withDb((db) =>
+    db
+      .select({ n: sql<number>`count(*)::int` })
+      .from(schema.jobs)
+      .where(sql`${schema.jobs.createdAt} > now() - make_interval(mins => ${minutes})`),
+  );
   return rows[0]?.n ?? 0;
 }

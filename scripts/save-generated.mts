@@ -8,6 +8,6 @@ const files = process.argv.slice(2).length ? process.argv.slice(2) : readdirSync
 for (const f of files) {
   const g = Guide.parse(JSON.parse(readFileSync(f, "utf8")));
   const row = { slug: g.slug, name: g.app.name, difficulty: g.verdict.difficulty, composioManaged: g.app.composioManaged, generatedBy: g.generatedBy, body: g, lastVerified: g.lastVerified };
-  await db().insert(schema.guides).values(row).onConflictDoUpdate({ target: schema.guides.slug, set: { ...row, updatedAt: new Date() } });
+  await (await db()).insert(schema.guides).values(row).onConflictDoUpdate({ target: schema.guides.slug, set: { ...row, updatedAt: new Date() } });
   console.log("saved", g.slug);
 }

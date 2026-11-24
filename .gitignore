@@ -46,3 +46,6 @@ next-env.d.ts
 /evidence/**/raw-private/
 playwright/.auth/
 scratch-*.log
+
+# embedded fallback database (PGlite)
+/.data/
