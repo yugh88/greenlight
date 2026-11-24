@@ -5,7 +5,7 @@
   "website": "https://facebook.com",
   "developerDocsUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authorization",
   "composioSlug": "METAADS",
-  "composioManaged": false,
+  "composioManaged": true,
   "authSchemes": [
    "OAUTH2",
    "API_KEY"
@@ -32,11 +32,11 @@
   ]
  },
  "composioFit": {
-  "summary": "Meta Ads does not have a Composio-managed OAuth app, so you must bring your own custom OAuth app and wire your Client ID and Client Secret into Composio.",
+  "summary": "Composio now offers a managed OAuth app for Meta Ads (it did not on 2026-11-03), so you can connect a test account without registering anything. Bring your own app when you need your own branding, scopes outside Composio's set, or dedicated Marketing API quota; Meta's Business Verification and App Review then apply to your app.",
   "whyOwnApp": [
-   "Composio-managed OAuth available? No",
-   "Required for custom scopes and dedicated provider quota",
-   "Allows custom OAuth branding and redirect URIs"
+   "Your app name on Meta's consent screen",
+   "Scopes outside what Composio's managed app requests",
+   "Dedicated Marketing API quota instead of a shared one"
   ],
   "claimIds": [
    "c-comp-1",
@@ -263,11 +263,11 @@
   },
   {
    "id": "c-comp-1",
-   "text": "Composio-managed OAuth available? No",
+   "text": "Composio now lists a managed OAuth app for Meta Ads (its toolkit page said No on 2026-11-03).",
    "evidence": "sourced",
    "sourceUrl": "https://docs.composio.dev/toolkits/metaads",
-   "quote": "Composio-managed OAuth available? No",
-   "checkedAt": "2026-11-03"
+   "quote": "Composio-managed OAuth available? Yes",
+   "checkedAt": "2026-11-24"
   },
   {
    "id": "c-comp-2",
@@ -392,7 +392,7 @@
   },
   {
    "id": "c-composio-sdk",
-   "text": "Composio does not manage an OAuth app for Meta Ads: toolkits.get(\"metaads\") returns composioManagedAuthSchemes [] (auth modes: OAUTH2, API_KEY), so you bring your own.",
+   "text": "On 2026-11-03 Composio did not manage an OAuth app for Meta Ads: toolkits.get(\"metaads\") returned composioManagedAuthSchemes [] (auth modes: OAUTH2, API_KEY). Superseded by the 2026-11-24 toolkit page (see c-comp-1).",
    "evidence": "tested",
    "artifact": "/evidence/meta-ads/composio-toolkit.json",
    "checkedAt": "2026-11-03"
@@ -404,7 +404,7 @@
  ],
  "generatedBy": "gold",
  "reviewStatus": "unreviewed",
- "lastVerified": "2026-11-03",
+ "lastVerified": "2026-11-24",
  "probes": [
   {
    "id": "p-oidc-discovery-0",

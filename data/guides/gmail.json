@@ -405,16 +405,16 @@
    "text": "Composio provides a managed OAuth app for Gmail so developers do not need to register their own app initially.",
    "evidence": "sourced",
    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
-   "quote": "Composio registers and maintains OAuth apps for popular toolkits such as GitHub, Gmail, and Slack. You do not need to register your own OAuth app.",
-   "checkedAt": "2026-11-03"
+   "quote": "Composio registers and maintains OAuth apps for popular toolkits such as GitHub, Gmail, and Slack. You don't register an OAuth app.",
+   "checkedAt": "2026-11-24"
   },
   {
    "id": "c-custom-reasons",
-   "text": "Developers can supply their own OAuth app for Gmail to customize consent screen branding, request custom scopes, or avoid shared quotas.",
+   "text": "Supplying your own OAuth app for Gmail changes consent-screen branding, available scopes, and provider quota (no shared quota).",
    "evidence": "sourced",
    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
-   "quote": "You can still create a custom auth config for branding, scopes, rate limits, polling intervals, or custom instances.",
-   "checkedAt": "2026-11-03"
+   "quote": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota",
+   "checkedAt": "2026-11-24"
   },
   {
    "id": "c-auth-endpoint-p1",

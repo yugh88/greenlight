@@ -495,19 +495,19 @@
   },
   {
    "id": "c-composio-why-custom-app",
-   "text": "Custom auth configs are needed when custom branding, custom scopes, or dedicated rate limit quotas are required.",
+   "text": "Your own OAuth app is what you need for custom branding, custom scopes, or dedicated provider quota.",
    "evidence": "sourced",
    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
-   "quote": "You can still create a custom auth config for branding, scopes, rate limits, polling intervals, or custom instances.",
-   "checkedAt": "2026-11-03"
+   "quote": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota",
+   "checkedAt": "2026-11-24"
   },
   {
    "id": "c-composio-managed-default",
    "text": "Composio managed OAuth apps require no app registration or credential management to start testing immediately.",
    "evidence": "sourced",
    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
-   "quote": "Managed apps are the default when they are available. Keep them in production when their consent branding, scopes, and shared provider quotas fit your product.",
-   "checkedAt": "2026-11-03"
+   "quote": "You skip the provider's developer portal, client credentials, redirect URIs, and app review.",
+   "checkedAt": "2026-11-24"
   },
   {
    "id": "c-locked-marketplace-app",

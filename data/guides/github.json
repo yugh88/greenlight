@@ -321,11 +321,11 @@
   },
   {
    "id": "c-why-own-app",
-   "text": "Custom auth configs allow configuring custom branding, scopes, rate limits, or custom instances.",
+   "text": "Your own OAuth app changes app ownership, consent-screen branding, scopes, and provider quota.",
    "evidence": "sourced",
    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
-   "quote": "You can still create a custom auth config for branding, scopes, rate limits, polling intervals, or custom instances.",
-   "checkedAt": "2026-11-03"
+   "quote": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota",
+   "checkedAt": "2026-11-24"
   },
   {
    "id": "c-app-limit",
