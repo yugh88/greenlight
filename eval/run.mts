@@ -39,6 +39,7 @@ for (const app of gt.apps) {
       writeFileSync(path, JSON.stringify(run, null, 1));
     }
   } catch (e) {
+    console.log(`${app.slug}: FAILED ${(e as Error).message?.slice(0, 300)}`);
     perApp.push({ slug: app.slug, gold: app.goldDifficulty, agent: null, covered: 0, contradicted: 0, total: app.facts.length, citations: "n/a", error: (e as Error).message.slice(0, 80) });
     total += app.facts.length;
     continue;

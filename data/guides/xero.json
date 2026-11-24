@@ -301,11 +301,11 @@
   },
   {
    "id": "c-pricing-tiers",
-   "text": "Xero offers plans including Starter, Core, Plus, Advanced, and Enterprise based on connections and data egress volume.",
+   "text": "Xero's developer plans are Starter (no charge), Core ($35 AUD/month), Plus ($245 AUD), Advanced ($1445 AUD) and Enterprise (price on application).",
    "evidence": "sourced",
    "sourceUrl": "https://developer.xero.com/pricing",
-   "quote": "introducing five plans: Starter, Core, Plus, Advanced, Enterprise.",
-   "checkedAt": "2026-11-03"
+   "quote": "Monthly Tier Fee No charge $35 AUD $245 AUD $1445 AUD Price on Application",
+   "checkedAt": "2026-11-24"
   },
   {
    "id": "c-composio-no-managed",

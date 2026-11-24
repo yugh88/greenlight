@@ -1,0 +1,354 @@
+{
+ "guide": {
+  "verdict": {
+   "difficulty": 2,
+   "label": "Light review",
+   "summary": "You must bring your own OAuth app to connect Xero with Composio, configure granular or broad scopes, and abide by rate limits.",
+   "firstTokenMinutes": {
+    "min": 10,
+    "max": 30
+   },
+   "productionDays": {
+    "min": 1,
+    "max": 7
+   },
+   "cost": "Free",
+   "claimIds": [
+    "c-composio-managed",
+    "c-rate-limits"
+   ]
+  },
+  "composioFit": {
+   "summary": "Composio does not provide a managed Xero app, so you must create a custom auth config using your own registered Xero OAuth app credentials.",
+   "whyOwnApp": [
+    "Composio does not maintain a managed OAuth app for Xero.",
+    "You need custom scopes or your own app branding on consent screens.",
+    "Dedicated rate limits per connection."
+   ],
+   "claimIds": [
+    "c-composio-managed",
+    "c-custom-auth-reasons"
+   ]
+  },
+  "phases": [
+   {
+    "id": "create-app",
+    "name": "Register Xero App",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 15
+    },
+    "steps": [
+     "Go to the Xero Developer Portal and register as a developer.",
+     "Create a new app and obtain your Client ID and Client Secret."
+    ],
+    "handoff": "Copy your Client ID and Client Secret from the Xero Developer Portal.",
+    "claimIds": [
+     "c-dev-portal",
+     "c-create-test-app"
+    ]
+   },
+   {
+    "id": "configure-auth",
+    "name": "Configure Auth in Composio",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 10
+    },
+    "steps": [
+     "Open the Composio dashboard and create a new custom auth config for Xero.",
+     "Retrieve the redirect URI from Composio and add it to your Xero app settings.",
+     "Paste the Client ID and Client Secret into the Composio dashboard."
+    ],
+    "handoff": "Test the authentication flow using your own Xero account.",
+    "claimIds": [
+     "c-composio-config"
+    ]
+   }
+  ],
+  "artefacts": [
+   {
+    "id": "art-app-form",
+    "kind": "app-form",
+    "title": "Xero App Registration Details",
+    "body": "App Name: My AI Agent Integration\nCompany URL: https://example.com\nRedirect URI: <Composio callback URL from your auth config>"
+   },
+   {
+    "id": "art-scope-justification",
+    "kind": "scope-justification",
+    "title": "Scope Justification for Granular Scopes",
+    "body": "We request granular accounting scopes (such as accounting.invoices) solely to allow our AI agent users to automate accounting workflows and retrieve invoice summaries upon explicit request."
+   }
+  ],
+  "requirements": [
+   {
+    "kind": "privacy-policy",
+    "label": "Privacy Policy and Terms of Use",
+    "required": "yes",
+    "when": "Required for all developer apps as specified in Xero platform terms.",
+    "claimIds": [
+     "c-terms-privacy"
+    ]
+   },
+   {
+    "kind": "business-verification",
+    "label": "Terms and Conditions Agreement",
+    "required": "yes",
+    "when": "Must accept Developer Platform Terms and Conditions.",
+    "claimIds": [
+     "c-terms-acceptance"
+    ]
+   }
+  ],
+  "scopes": [
+   {
+    "scope": "accounting.invoices",
+    "purpose": "Read and manage invoices within Xero organisations.",
+    "tier": "sensitive",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-granular-scopes"
+    ]
+   },
+   {
+    "scope": "accounting.transactions",
+    "purpose": "Broad access to accounting transactions.",
+    "tier": "sensitive",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-granular-scopes"
+    ]
+   }
+  ],
+  "redirectRules": [
+   {
+    "rule": "Must use the exact redirect URI provided by the Composio dashboard in your Xero app configuration.",
+    "claimIds": [
+     "c-composio-config"
+    ]
+   }
+  ],
+  "blockers": [
+   {
+    "id": "b-rate-limit",
+    "symptom": "HTTP 429 (Too Many Requests)",
+    "cause": "Exceeded concurrent (5), minute (60), or daily (5000) limits per connection.",
+    "fix": "Implement exponential backoff using the Retry-After header and batch requests where possible.",
+    "fallback": "Optimize API call patterns or distribute load across multiple tenant connections.",
+    "claimIds": [
+     "c-rate-limits",
+     "c-rate-limit-headers"
+    ]
+   },
+   {
+    "id": "b-insufficient-scope",
+    "symptom": "HTTP 401 Forbidden with header WWW-Authenticate: insufficient_scope",
+    "cause": "Calling an endpoint requiring a granular scope that has not been requested or authorized yet.",
+    "fix": "Update your authorization link to include the necessary granular scope and prompt the user to re-authenticate.",
+    "fallback": "Request broad scopes or update permissions flow.",
+    "claimIds": [
+     "c-insufficient-scope-error"
+    ]
+   },
+   {
+    "id": "b-ai-training-violation",
+    "symptom": "Account suspension or API termination",
+    "cause": "Using API Data sourced from the Xero developer platform to train or fine-tune artificial intelligence models, LLMs, or machine learning tools.",
+    "fix": "Ensure all API data is used strictly for real-time agent execution and app features, never for model training.",
+    "fallback": "Remove any pipeline feeding Xero data into model training sets.",
+    "claimIds": [
+     "c-ai-training-prohibition"
+    ]
+   }
+  ],
+  "checklist": [
+   {
+    "id": "chk-register",
+    "text": "Register as a developer on the Xero Developer Portal and accept terms.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-create-app",
+    "text": "Create a new Xero app to obtain Client ID and Client Secret.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-composio-config",
+    "text": "Create a custom auth config in the Composio dashboard for Xero.",
+    "owner": "you",
+    "phaseId": "configure-auth"
+   },
+   {
+    "id": "chk-redirect",
+    "text": "Add the Composio redirect URI into your Xero developer app settings.",
+    "owner": "you",
+    "phaseId": "configure-auth"
+   },
+   {
+    "id": "chk-test",
+    "text": "Connect a test Xero organisation via the Composio link to verify scopes.",
+    "owner": "you",
+    "phaseId": "configure-auth"
+   }
+  ],
+  "uncertainties": [
+   "Exact review wait times for custom app partner applications are not explicitly documented in public snippets.",
+   "Exact scope tier lists for every single granular endpoint require checking the live Scopes documentation page."
+  ],
+  "generation": {
+   "draftModel": "gemini-3.5-flash-lite",
+   "verifierModel": "gemini-3.5-flash-lite",
+   "ms": 37080,
+   "sources": 5
+  },
+  "claims": [
+   {
+    "id": "c-composio-managed",
+    "text": "Composio-managed OAuth available? No",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/toolkits/xero",
+    "quote": "Composio-managed OAuth available? No",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-custom-auth-reasons",
+    "text": "You can create a custom auth config for branding, scopes, rate limits, polling intervals, or custom instances.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+    "quote": "You can still create a custom auth config for branding, scopes, rate limits, polling intervals, or custom instances.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-dev-portal",
+    "text": "Get access to custom connections, list as a Xero certified development partner, collaborate with your clients via Xero Developer platform.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/",
+    "quote": "Building your own app, agent or workflow, or for others? Get access to custom connections, list as a Xero certified development partner, collaborate with your clients.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-create-test-app",
+    "text": "We recommend creating a test app in the Developer Portal to verify code against a Demo Company.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/faq/granular-scopes",
+    "quote": "We recommend creating a \"test\" app in the Developer Portal. After March 2, 2026, any new test app you create will use granular scopes by default, allowing you to verify your code against a Demo Compan",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-granular-scopes",
+    "text": "Apps created on or after 2 March 2026 will use the new granular scopes.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/faq/granular-scopes",
+    "quote": "Apps created on or after 2 March 2026 will use the new granular scopes",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-insufficient-scope-error",
+    "text": "The API will return a 401 forbidden error with a response header WWW-Authenticate:insufficent_scope when calling an unauthorized granular scope.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/faq/granular-scopes",
+    "quote": "The API will return a 401 forbidden error with a response header WWW-Authenticate:insufficent_scope. We recommend updating your error handling to specifically catch 401s and prompt the user to \"Update",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-rate-limits",
+    "text": "Xero API rate limits are: Concurrent Limit: 5 calls, Minute Limit: 60 calls per minute, Daily Limit: 5000 calls per day per connection.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/faq/limits",
+    "quote": "- Concurrent Limit: 5 calls in progress at one time\n- Minute Limit: 60 calls per minute\n- Daily Limit: 5000 calls per day",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-rate-limit-headers",
+    "text": "If you exceed a rate limit you will receive a Retry-After http header that tells you how many seconds to wait.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/faq/limits",
+    "quote": "If you exceed a rate limit you will receive a Retry-After http header that tells you how many seconds to wait before making another request.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-ai-training-prohibition",
+    "text": "You must not use API Data sourced from the Xero developer platform to train or fine tune any artificial intelligence models including machine learning tools, large language models or predictive analytics tools.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/xero-developer-platform-terms-conditions",
+    "quote": "You must not use API Data sourced from the Xero developer platform to train or fine tune any artificial intelligence models including machine learning tools, large language models or predictive analyt",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-terms-privacy",
+    "text": "Your apps must include your own legally binding terms of use and privacy policy that are available to any user.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/xero-developer-platform-terms-conditions",
+    "quote": "Your apps must include your own legally binding terms of use and privacy policy (your terms) that are available to any user of your apps and our services.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-composio-config",
+    "text": "Register an app in the provider's developer portal and add the redirect URI from the dashboard, then copy Client ID and Client Secret into Composio.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+    "quote": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the **Client ID** and **Client Secret** back into Composio.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-terms-acceptance",
+    "text": "If you use our developer platform, we'll assume that you agree to our terms.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.xero.com/xero-developer-platform-terms-conditions",
+    "quote": "If you use our developer platform, we’ll assume that you agree to our terms.",
+    "checkedAt": "2026-11-03"
+   }
+  ],
+  "slug": "xero",
+  "app": {
+   "name": "Xero",
+   "website": "https://xero.com",
+   "developerDocsUrl": "https://developer.xero.com/",
+   "composioSlug": "XERO",
+   "composioManaged": false,
+   "authSchemes": [
+    "OAUTH2"
+   ]
+  },
+  "generatedBy": "agent",
+  "reviewStatus": "unreviewed",
+  "lastVerified": "2026-11-03",
+  "probes": [
+   {
+    "id": "p-oidc-discovery-0",
+    "kind": "oidc-discovery",
+    "url": "https://xero.com/.well-known/openid-configuration",
+    "status": 301,
+    "location": "https://www.xero.com:443/.well-known/openid-configuration",
+    "bodySnippet": "<html> <head><title>301 Moved Permanently</title></head> <body> <center><h1>301 Moved Permanently</h1></center> </body> </html> ",
+    "at": "2026-11-03T13:29:53.044Z"
+   },
+   {
+    "id": "p-oauth-metadata-1",
+    "kind": "oauth-metadata",
+    "url": "https://xero.com/.well-known/oauth-authorization-server",
+    "status": 301,
+    "location": "https://www.xero.com:443/.well-known/oauth-authorization-server",
+    "bodySnippet": "<html> <head><title>301 Moved Permanently</title></head> <body> <center><h1>301 Moved Permanently</h1></center> </body> </html> ",
+    "at": "2026-11-03T13:29:53.046Z"
+   }
+  ]
+ },
+ "report": {
+  "checked": 12,
+  "quoteMisses": [],
+  "unsupported": [],
+  "integrityFixes": 0,
+  "verifierModel": "gemini-3.5-flash-lite",
+  "draftModel": "gemini-3.5-flash-lite",
+  "sources": 5,
+  "ms": 37080
+ },
+ "runAt": "2026-11-03T13:30:09.303Z"
+}

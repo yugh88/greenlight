@@ -3,7 +3,7 @@
   "verdict": {
    "difficulty": 1,
    "label": "Self-serve",
-   "summary": "GitHub OAuth apps are entirely self-serve and can be created instantly in developer settings without a manual review queue.",
+   "summary": "You can register a GitHub OAuth app in minutes and connect it immediately without waiting for provider review.",
    "firstTokenMinutes": {
     "min": 5,
     "max": 15
@@ -14,17 +14,16 @@
    },
    "cost": "Free",
    "claimIds": [
-    "c-verdict-difficulty",
-    "c-verdict-timing"
+    "c-create-location",
+    "c-app-limit",
+    "c-token-expiry-default"
    ]
   },
   "composioFit": {
-   "summary": "Composio provides a managed OAuth app for GitHub, allowing you to skip custom app registration entirely unless you require custom scopes, custom branding, or isolated rate limits.",
+   "summary": "A Composio-managed app works in production, but its OAuth app is shared with other Composio customers, so you may run into shared provider rate limits as your usage grows.",
    "whyOwnApp": [
-    "You need your own app name on OAuth consent screens.",
-    "You need custom scopes.",
-    "You're hitting rate limits.",
-    "You're connecting to a custom instance."
+    "Dedicated provider rate limits",
+    "Your own scopes"
    ],
    "claimIds": [
     "c-composio-managed",
@@ -33,7 +32,7 @@
   },
   "phases": [
    {
-    "id": "create-app",
+    "id": "register",
     "name": "Register OAuth App",
     "owner": "you",
     "waiting": false,
@@ -42,18 +41,20 @@
      "max": 10
     },
     "steps": [
-     "Go to your GitHub settings under Developer settings -> OAuth apps.",
-     "Click Register a new application.",
-     "Fill out the application name, homepage URL, and authorization callback URL."
+     "Go to GitHub Settings > Developer settings > OAuth apps",
+     "Click New OAuth App",
+     "Fill in application name, homepage URL, description, and authorization callback URL",
+     "Click Register application"
     ],
-    "handoff": "Copy the generated Client ID and Client Secret into the Composio dashboard.",
+    "handoff": "Copy the client ID and generate a client secret from the app settings page.",
     "claimIds": [
-     "c-phase-create-sidebar",
-     "c-phase-create-fields"
+     "c-create-location",
+     "c-create-steps",
+     "c-max-callbacks"
     ]
    },
    {
-    "id": "configure-composio",
+    "id": "configure",
     "name": "Configure Composio Auth Config",
     "owner": "you",
     "waiting": false,
@@ -62,13 +63,14 @@
      "max": 5
     },
     "steps": [
-     "Open the Composio dashboard and navigate to auth configs.",
-     "Create a custom auth config for GitHub.",
-     "Paste your Client ID and Client Secret from GitHub."
+     "Navigate to Composio dashboard and click Create",
+     "Select the GITHUB toolkit",
+     "Choose OAuth2 auth scheme and provide your client ID and client secret"
     ],
-    "handoff": "Initiate the connection flow using your Composio session.",
+    "handoff": "Copy the auth config ID to use in your application.",
     "claimIds": [
-     "c-phase-composio-config"
+     "c-composio-create",
+     "c-composio-managed"
     ]
    }
   ],
@@ -77,25 +79,25 @@
     "id": "art-app-form",
     "kind": "app-form",
     "title": "GitHub OAuth App Registration Values",
-    "body": "Application name: My AI Agent (or your product name)\nHomepage URL: https://yourdomain.com\nApplication description: AI agent integration via Composio\nAuthorization callback URL: <Composio callback URL from your auth config>"
+    "body": "Application name: My AI Agent\nHomepage URL: https://example.com\nApplication description: AI agent integration via Composio\nAuthorization callback URL: <Composio callback URL from your auth config>"
    }
   ],
   "requirements": [
    {
     "kind": "privacy-policy",
-    "label": "Privacy Policy URL",
+    "label": "Privacy Policy",
     "required": "no",
-    "when": "Optional field requested during registration",
+    "when": "Standard OAuth apps do not strictly require verification or public review unless listing on the marketplace.",
     "claimIds": [
-     "c-req-privacy"
+     "c-no-review-required"
     ]
    }
   ],
   "scopes": [
    {
     "scope": "repo",
-    "purpose": "Grants full access to public and private repositories including read and write access to code, commit statuses, and webhooks.",
-    "tier": "basic",
+    "purpose": "Grants full access to public and private repositories including read and write access to code, commit statuses, repository invitations, collaborators, deployment statuses, and repository webhooks.",
+    "tier": "sensitive",
     "reviewTrigger": false,
     "claimIds": [
      "c-scope-repo"
@@ -116,7 +118,7 @@
     "tier": "basic",
     "reviewTrigger": false,
     "claimIds": [
-     "c-scope-offline"
+     "c-scope-offline-access"
     ]
    }
   ],
@@ -124,154 +126,163 @@
    {
     "rule": "You can enter up to 10 callback URLs.",
     "claimIds": [
-     "c-redirect-limit"
+     "c-max-callbacks"
+    ]
+   },
+   {
+    "rule": "When wildcard matching is enabled, the redirect URL's host (excluding subdomains) and port must exactly match the callback URL, and the redirect URL's path must reference a subdirectory of the callback URL.",
+    "claimIds": [
+     "c-wildcard-rule"
     ]
    }
   ],
   "blockers": [
    {
-    "id": "blocker-rate-limit",
-    "symptom": "requests to generate new access tokens will be temporarily blocked, and you may receive error responses.",
-    "cause": "Exceeding the limit of 2,000 access token requests per hour for OAuth apps.",
-    "fix": "Cache tokens and avoid repeated sign-in loops.",
-    "fallback": "Use Composio-managed app which handles shared quotas.",
+    "id": "blocker-client-creds",
+    "symptom": "{\"error\": \"incorrect_client_credentials\", \"error_description\": \"The client_id and/or client_secret passed are incorrect.\"}",
+    "cause": "The client_id or client_secret passed to the token endpoint are incorrect.",
+    "fix": "Double check the client_id and client_secret on your app settings page.",
+    "fallback": "Regenerate client secret in GitHub developer settings.",
     "claimIds": [
-     "c-blocker-rate-limit"
+     "c-err-incorrect-creds"
     ]
    },
    {
-    "id": "blocker-infinite-loop",
-    "symptom": "the next sign in within the same hour will require re-authorization of the application.",
-    "cause": "An app signs the user in ten times within one hour, often indicating an infinite authentication loop.",
-    "fix": "Debug application logic to stop redundant automatic sign-in attempts.",
-    "fallback": "Check token caching implementation.",
+    "id": "blocker-redirect-uri",
+    "symptom": "http://your-application.com/callback?error=redirect_uri_mismatch&error_description=The+redirect_uri+MUST+match+the+registered+callback+URL+for+this+application.",
+    "cause": "The provided redirect_uri does not match what was registered with the application.",
+    "fix": "Provide a redirect_uri that matches what you registered or leave it out to use the default.",
+    "fallback": "Update the callback URL in GitHub OAuth app settings.",
     "claimIds": [
-     "c-blocker-sign-in-limit"
+     "c-err-redirect-mismatch"
     ]
    },
    {
-    "id": "blocker-expired-code",
-    "symptom": "temporary code will expire after 10 minutes",
-    "cause": "Failing to exchange the authorization code for an access token within the 10-minute window.",
-    "fix": "Ensure token exchange POST request executes immediately after redirect.",
-    "fallback": "Restart the OAuth authorization flow.",
+    "id": "blocker-bad-code",
+    "symptom": "{\"error\": \"bad_verification_code\", \"error_description\": \"The code passed is incorrect or expired.\"}",
+    "cause": "The verification code passed is incorrect, expired, or does not match.",
+    "fix": "Start the OAuth authorization process again and get a new code.",
+    "fallback": "None",
     "claimIds": [
-     "c-blocker-code-expiry"
+     "c-err-bad-code"
     ]
    }
   ],
   "checklist": [
    {
     "id": "chk-1",
-    "text": "Navigate to Developer settings -> OAuth apps in your GitHub account.",
+    "text": "Navigate to GitHub settings and open Developer settings > OAuth apps.",
     "owner": "you",
-    "phaseId": "create-app"
+    "phaseId": "register"
    },
    {
     "id": "chk-2",
-    "text": "Click Register a new application.",
+    "text": "Click New OAuth App and enter your application name, homepage URL, description, and callback URL.",
     "owner": "you",
-    "phaseId": "create-app"
+    "phaseId": "register"
    },
    {
     "id": "chk-3",
-    "text": "Fill in the app name, homepage, and the callback URL from Composio.",
+    "text": "Register the application and copy your client ID and generate a client secret.",
     "owner": "you",
-    "phaseId": "create-app"
+    "phaseId": "register"
    },
    {
     "id": "chk-4",
-    "text": "Generate and save the Client Secret securely.",
+    "text": "Create an auth config in Composio for GITHUB using OAuth2 and your credentials.",
     "owner": "you",
-    "phaseId": "create-app"
-   },
-   {
-    "id": "chk-5",
-    "text": "Input the Client ID and Client Secret into the Composio custom auth config.",
-    "owner": "you",
-    "phaseId": "configure-composio"
+    "phaseId": "configure"
    }
   ],
   "uncertainties": [
-   "Whether GitHub enforces any hidden verification steps for high-volume public OAuth apps beyond standard rate limits."
+   "Exact production review timelines are not applicable because standard OAuth apps do not require review."
   ],
   "generation": {
    "draftModel": "gemini-3.5-flash-lite",
    "verifierModel": "gemini-3.5-flash-lite",
-   "ms": 42092,
-   "sources": 7
+   "ms": 165059,
+   "sources": 19
   },
   "claims": [
    {
-    "id": "c-verdict-difficulty",
-    "text": "GitHub OAuth apps can be created directly by any personal account or organization administrator without review queues.",
+    "id": "c-create-location",
+    "text": "You can create and register an OAuth app under your personal account or under any organization you have administrative access to.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
     "quote": "You can create and register an OAuth app under your personal account or under any organization you have administrative access to.",
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-verdict-timing",
-    "text": "OAuth apps are immediately active upon registration.",
-    "evidence": "uncertain",
-    "reason": "Standard behavior for GitHub OAuth app registration as documented in S1.",
-    "checkedAt": "2026-11-03"
-   },
-   {
-    "id": "c-composio-managed",
-    "text": "Composio-managed OAuth is available for GitHub.",
-    "evidence": "sourced",
-    "sourceUrl": "https://docs.composio.dev/toolkits/github",
-    "quote": "Composio-managed OAuth available? Yes",
-    "checkedAt": "2026-11-03"
-   },
-   {
-    "id": "c-composio-why-own",
-    "text": "Using your own OAuth app changes app ownership, branding, scopes, and provider quota.",
-    "evidence": "sourced",
-    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
-    "quote": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota",
-    "checkedAt": "2026-11-03"
-   },
-   {
-    "id": "c-phase-create-sidebar",
-    "text": "In the left sidebar, click OAuth apps, then Register a new application.",
+    "id": "c-app-limit",
+    "text": "A user or organization can own up to 100 OAuth apps.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
-    "quote": "In the left sidebar, click OAuth apps . If you haven't created an app before, this button will say, Register a new application .",
-    "checkedAt": "2026-11-03"
+    "quote": "A user or organization can own up to 100 OAuth apps.",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-phase-create-fields",
-    "text": "You can enter up to 10 callback URLs in the Authorization callback URL field.",
+    "id": "c-create-steps",
+    "text": "Navigate via Settings > Developer settings > OAuth apps > New OAuth App to register an application.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+    "quote": "In the upper-right corner of any page on GitHub, click your profile picture, then click Settings . ... In the left sidebar, click Developer settings . ... In the left sidebar, click OAuth apps . ... C",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-max-callbacks",
+    "text": "You can enter up to 10 callback URLs.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
     "quote": "You can enter up to 10 callback URLs. To add additional callback URLs, click Add callback URL .",
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-phase-composio-config",
-    "text": "Copy the Client ID and Client Secret back into Composio from the provider developer portal.",
-    "evidence": "sourced",
-    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
-    "quote": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the Client ID and Client Secret back into Composio.",
-    "checkedAt": "2026-11-03"
-   },
-   {
-    "id": "c-req-privacy",
-    "text": "Only use information in your OAuth app that you consider public.",
+    "id": "c-token-expiry-default",
+    "text": "Expire user access tokens is enabled by default.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
-    "quote": "Only use information in your OAuth app that you consider public. Avoid using sensitive data, such as internal URLs, when creating an OAuth app.",
-    "checkedAt": "2026-11-03"
+    "quote": "Expire user access tokens is enabled by default.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-access-token-expiry",
+    "text": "The access token expires after eight hours, and the refresh token expires after six months without use.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "The access token expires after eight hours, and the refresh token expires after six months without use.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-code-expiry",
+    "text": "The temporary code will expire after 10 minutes.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "The temporary code will expire after 10 minutes.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-device-code-expiry",
+    "text": "The user must enter a valid code within 15 minutes (or 900 seconds).",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "The user must enter a valid code within 15 minutes (or 900 seconds).",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-wildcard-rule",
+    "text": "When wildcard matching is enabled, the redirect URL's host (excluding subdomains) and port must exactly match the callback URL, and the redirect URL's path must reference a subdirectory of the callback URL.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "When wildcard matching is enabled, the redirect URL's host (excluding subdomains) and port must exactly match the callback URL, and the redirect URL's path must reference a subdirectory of the callbac",
+    "checkedAt": "2026-11-24"
    },
    {
     "id": "c-scope-repo",
-    "text": "The repo scope grants full access to public and private repositories including read and write access to code, commit statuses, and webhooks.",
+    "text": "The repo scope grants full access to public and private repositories including read and write access to code, commit statuses, repository invitations, collaborators, deployment statuses, and repository webhooks.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
     "quote": "repo Grants full access to public and private repositories including read and write access to code, commit statuses, repository invitations, collaborators, deployment statuses, and repository webhooks",
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-24"
    },
    {
     "id": "c-scope-user",
@@ -279,47 +290,275 @@
     "evidence": "sourced",
     "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
     "quote": "user Grants read/write access to profile info only.",
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-scope-offline",
-    "text": "The offline_access scope requests an expiring access token and a refresh token.",
+    "id": "c-scope-offline-access",
+    "text": "The offline_access scope requests an expiring access token and a refresh token, even if your OAuth app is not configured to use expiring tokens.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
     "quote": "offline_access Requests an expiring access token and a refresh token, even if your OAuth app is not configured to use expiring tokens.",
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-redirect-limit",
-    "text": "You can enter up to 10 callback URLs.",
+    "id": "c-rate-limit-authenticated",
+    "text": "All authenticated requests count towards your personal rate limit of 5,000 requests per hour.",
     "evidence": "sourced",
-    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
-    "quote": "You can enter up to 10 callback URLs.",
-    "checkedAt": "2026-11-03"
+    "sourceUrl": "https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api",
+    "quote": "All of these requests count towards your personal rate limit of 5,000 requests per hour.",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-blocker-rate-limit",
+    "id": "c-oauth-app-rate-limit-tokens",
     "text": "OAuth apps are subject to a rate limit of 2,000 access token requests per hour.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/rate-limits-for-oauth-apps",
-    "quote": "OAuth apps are subject to a rate limit of 2,000 access token requests per hour . If your application exceeds this limit, further requests to generate new access tokens will be temporarily blocked, and",
-    "checkedAt": "2026-11-03"
+    "quote": "OAuth apps are subject to a rate limit of 2,000 access token requests per hour .",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-blocker-sign-in-limit",
-    "text": "If an app signs the user in ten times within one hour, the next sign in within the same hour will require re-authorization.",
+    "id": "c-err-redirect-mismatch",
+    "text": "If you provide a redirect_uri that doesn't match what you've registered with your application, GitHub redirects with an error description.",
     "evidence": "sourced",
-    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/rate-limits-for-oauth-apps",
-    "quote": "If an app signs the user in ten times within one hour, the next sign in within the same hour will require re-authorization of the application.",
-    "checkedAt": "2026-11-03"
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-authorization-request-errors",
+    "quote": "If you provide a redirect_uri that doesn't match what you've registered with your application, GitHub will redirect to the registered callback URL with the following parameters summarizing the error:",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-blocker-code-expiry",
-    "text": "The temporary code will expire after 10 minutes.",
+    "id": "c-err-incorrect-creds",
+    "text": "If the client_id and or client_secret you pass are incorrect you will receive incorrect_client_credentials error.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-oauth-app-access-token-request-errors",
+    "quote": "If the client_id and or client_secret you pass are incorrect you will receive this error response.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-err-bad-code",
+    "text": "If the verification code you pass is incorrect, expired, or doesn't match, you will receive bad_verification_code error.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-oauth-app-access-token-request-errors",
+    "quote": "If the verification code you pass is incorrect, expired, or doesn't match what you received in the first request for authorization you will receive this error.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-composio-managed",
+    "text": "A Composio-managed app works in production. Its OAuth app is shared with other Composio customers, so you may run into shared provider rate limits as your usage grows.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+    "quote": "A Composio-managed app works in production. Its OAuth app is shared with other Composio customers, so you may run into shared provider rate limits as your usage grows.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-composio-why-own",
+    "text": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+    "quote": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota, not token custody.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-composio-create",
+    "text": "To create an auth config, click Create, select the toolkit, choose the auth scheme, and follow the dashboard instructions.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+    "quote": "1. Click Create | 2. Select the toolkit | 3. Choose the auth scheme (OAuth2, API Key, Bearer Token, etc.) | 4. Follow the dashboard instructions for the required credential fields",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-no-review-required",
+    "text": "Standard OAuth apps created via developer settings do not require an upfront provider review process to function.",
+    "evidence": "uncertain",
+    "reason": "GitHub developer docs describe creating OAuth apps directly in developer settings without mentioning any mandatory review phase before use.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-probe-oidc",
+    "text": "https://github.com/.well-known/openid-configuration returns HTTP 404.",
+    "evidence": "tested",
+    "artifact": "probe:p-oidc-discovery-0",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-device-flow-setting",
+    "text": "If your OAuth app will use the device flow to identify and authorize users, click Enable Device Flow.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+    "quote": "If your OAuth app will use the device flow to identify and authorize users, click Enable Device Flow .",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-device-flow-headless",
+    "text": "The device flow is used for headless apps, such as CLI tools.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
-    "quote": "The temporary code will expire after 10 minutes.",
-    "checkedAt": "2026-11-03"
+    "quote": "device flow : Used for headless apps, such as CLI tools.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-web-app-flow",
+    "text": "The web application flow is used to authorize users for standard OAuth apps that run in the browser, while the implicit grant type is not supported.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "web application flow : Used to authorize users for standard OAuth apps that run in the browser. (The implicit grant type is not supported.)",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-offline-access-enterprise",
+    "text": "If your app supports both GitHub Enterprise Server and GitHub.com, you should be prepared for the offline_access scope to have no effect because the GitHub Enterprise Server instance may not yet support expiring tokens.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "If your app supports both GitHub Enterprise Server and GitHub.com, you should be prepared for the offline_access scope to have no effect, because the GitHub Enterprise Server instance may not yet supp",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-auth-authorize-client-id",
+    "text": "The client_id query parameter is required for the user authorization endpoint and must be the client ID received from GitHub when registering.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "client_id string Required The client ID you received from GitHub when you registered .",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-auth-code-challenge-pkce",
+    "text": "The code_challenge parameter for securing the authentication flow with PKCE must be a 43 character SHA-256 hash of a random string generated by the client.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "Must be a 43 character SHA-256 hash of a random string generated by the client.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-auth-code-challenge-method",
+    "text": "The code_challenge_method parameter must be S256 as the plain code challenge method is not supported.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "Must be S256 - the plain code challenge method is not supported.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-device-code-length",
+    "text": "The device verification code is 40 characters long and used to verify the device.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "device_code string The device verification code is 40 characters and used to verify the device.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-user-code-format",
+    "text": "The user verification code is 8 characters with a hyphen in the middle and is displayed on the device so the user can enter it in a browser.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "user_code string The user verification code is displayed on the device so the user can enter the code in a browser. This code is 8 characters with a hyphen in the middle.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-device-flow-browser-url",
+    "text": "The verification URL where users need to enter the user code for the device flow is https://github.com/login/device.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "verification_uri string The verification URL where users need to enter the user_code : https://github.com/login/device .",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-device-flow-submission-rate-limit",
+    "text": "When a user submits the verification code on the browser, there is a rate limit of 50 submissions in an hour per application.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "When a user submits the verification code on the browser, there is a rate limit of 50 submissions in an hour per application.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-token-refresh-grant-type",
+    "text": "To refresh an access token, the POST request grant_type parameter value must be refresh_token.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "grant_type string Required The value must be refresh_token .",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-wildcard-matching-august-2026",
+    "text": "Apps that had a single callback URL enabled prior to August 3, 2026 have wildcard matching enabled for that callback URL.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "Apps that had a single callback URL enabled prior to August 3, 2026 have wildcard matching enabled for that callback URL.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-loopback-literal-recommendation",
+    "text": "The OAuth RFC recommends not to use localhost, but instead to use the loopback literal 127.0.0.1 or IPv6 ::1.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "Note that OAuth RFC recommends not to use localhost , but instead to use loopback literal 127.0.0.1 or IPv6 ::1 .",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-connections-applications-link",
+    "text": "You can link to https://github.com/settings/connections/applications/:client_id using your client ID so users can review and revoke application authorizations.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "quote": "https://github.com/settings/connections/applications/:client_id",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-enterprise-cloud-oauth-rate-limit",
+    "text": "Requests made on your behalf by an OAuth app that is owned or approved by a GitHub Enterprise Cloud organization have a higher rate limit of 15,000 requests per hour if you are a member of that organization.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api",
+    "quote": "requests made on your behalf by a OAuth app that is owned or approved by a GitHub Enterprise Cloud organization have a higher rate limit of 15,000 requests per hour if you are a member of the GitHub E",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-oauth-client-credentials-rate-limit",
+    "text": "When OAuth apps use their client ID and client secret to fetch public data, the rate limit is 5,000 requests per hour per OAuth app, or 15,000 requests per hour if the app is owned by a GitHub Enterprise Cloud organization.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api",
+    "quote": "For these requests, the rate limit is 5,000 requests per hour per OAuth app. If the app is owned by a GitHub Enterprise Cloud organization, the rate limit is 15,000 requests per hour.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-secondary-rate-limit-concurrent",
+    "text": "No more than 100 concurrent requests are allowed as a secondary rate limit, shared across the REST API and GraphQL API.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api",
+    "quote": "Make too many concurrent requests. No more than 100 concurrent requests are allowed. This limit is shared across the REST API and GraphQL API.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-secondary-rate-limit-token-requests",
+    "text": "No more than 2,000 OAuth access token requests per hour are allowed for GitHub Apps and OAuth apps as a secondary rate limit.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api",
+    "quote": "Make too many OAuth access token requests in a short period of time. No more than 2,000 OAuth access token requests per hour are allowed for GitHub Apps and OAuth apps.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-best-practice-server-env",
+    "text": "If your app runs on a server, you should verify that your server environment is secure and that it can handle the expected volume of traffic.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/best-practices-for-creating-an-oauth-app",
+    "quote": "If your app runs on a server, verify that your server environment is secure and that it can handle the volume of traffic that you expect for your app.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-error-unverified-user-email",
+    "text": "If the user trying to generate a user access token has not verified their primary email address with GitHub, you will receive the unverified_user_email error.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-oauth-app-access-token-request-errors",
+    "quote": "If the user for whom you are trying to generate a user access token has not verified their primary email address with GitHub, you will receive this error.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-well-known-oauth-authorization-server-probe",
+    "text": "https://github.com/.well-known/oauth-authorization-server returns HTTP 404 indicating no discovery document.",
+    "evidence": "tested",
+    "artifact": "probe:p-oauth-metadata-1",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-probe-authorize-redirect",
+    "text": "An Authorize URL with a fake client_id and localhost redirect results in an HTTP 302 redirect to https://github.com/login.",
+    "evidence": "tested",
+    "artifact": "probe:p-authorize-github.com",
+    "checkedAt": "2026-11-24"
    }
   ],
   "slug": "github",
@@ -335,7 +574,7 @@
   },
   "generatedBy": "agent",
   "reviewStatus": "unreviewed",
-  "lastVerified": "2026-11-03",
+  "lastVerified": "2026-11-24",
   "probes": [
    {
     "id": "p-oidc-discovery-0",
@@ -343,7 +582,7 @@
     "url": "https://github.com/.well-known/openid-configuration",
     "status": 404,
     "bodySnippet": "{\"error\":\"Not Found\"}",
-    "at": "2026-11-03T13:26:23.373Z"
+    "at": "2026-11-24T07:26:40.820Z"
    },
    {
     "id": "p-oauth-metadata-1",
@@ -351,7 +590,7 @@
     "url": "https://github.com/.well-known/oauth-authorization-server",
     "status": 404,
     "bodySnippet": "{\"error\":\"Not Found\"}",
-    "at": "2026-11-03T13:26:23.375Z"
+    "at": "2026-11-24T07:26:40.821Z"
    },
    {
     "id": "p-authorize-github.com",
@@ -360,19 +599,19 @@
     "status": 302,
     "location": "https://github.com/login?client_id=greenlight-probe-invalid-client&return_to=%2Flogin%2Foauth%2Fauthorize%3Fclient_id%3Dgreenlight-probe-invalid-client%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A3000%252Fgreenlight-probe-callback%26response_type%3Dcode%26scope%3Dopenid%26state%3Dgreenlight-probe",
     "bodySnippet": "",
-    "at": "2026-11-03T13:26:24.152Z"
+    "at": "2026-11-24T07:26:41.463Z"
    }
   ]
  },
  "report": {
-  "checked": 14,
+  "checked": 41,
   "quoteMisses": [],
   "unsupported": [],
-  "integrityFixes": 0,
+  "integrityFixes": 1,
   "verifierModel": "gemini-3.5-flash-lite",
   "draftModel": "gemini-3.5-flash-lite",
-  "sources": 7,
-  "ms": 42092
+  "sources": 19,
+  "ms": 165060
  },
- "runAt": "2026-11-03T13:26:56.277Z"
+ "runAt": "2026-11-24T07:29:13.470Z"
 }

@@ -1,39 +1,82 @@
 {
  "guide": {
   "verdict": {
-   "difficulty": 4,
-   "label": "Heavy review / verification",
-   "summary": "X (Twitter) is not in Composio's toolkit catalog, requiring a custom auth config and app setup with uncertain developer portal flows.",
+   "difficulty": 3,
+   "label": "Full review",
+   "summary": "Create a Web App or Automated App / Bot in the X Developer Console, configure OAuth 2.0 with exact-match redirect URIs, fund developer credits via pay-per-use pricing, and request fine-grained scopes.",
    "firstTokenMinutes": {
-    "min": 30,
-    "max": 120
+    "min": 10,
+    "max": 30
    },
    "productionDays": {
     "min": 1,
     "max": 14
    },
-   "cost": "Free to standard paid tiers depending on API access levels",
+   "cost": "Pay-per-use credit system with no monthly fees or subscriptions; read/write actions consume credits dynamically.",
    "claimIds": [
-    "c-x-not-in-catalog",
-    "c-custom-auth-config"
+    "c-app-type"
    ]
   },
   "composioFit": {
-   "summary": "Since X (Twitter) is not natively managed by Composio, you must configure a custom auth config in the dashboard.",
+   "summary": "X (Twitter) is NOT in Composio's toolkit catalog, requiring a custom toolkit or Composio's auth for custom tools.",
    "whyOwnApp": [
-    "X (Twitter) is not in Composio's toolkit catalog, meaning a custom auth config is mandatory.",
-    "Dedicated quota and rate limits for your application.",
-    "Custom branding and app name on the OAuth consent screen."
+    "X (Twitter) is not in Composio's default toolkit catalog, so you must use a custom app integration path.",
+    "Bringing your own app provides dedicated provider rate limits and specific scope configurations."
    ],
    "claimIds": [
-    "c-x-not-in-catalog",
-    "c-custom-auth-config"
+    "c-composio-catalog",
+    "c-composio-custom-app"
    ]
   },
   "phases": [
    {
-    "id": "create-auth-config",
-    "name": "Create Composio Auth Config",
+    "id": "create-app",
+    "name": "Create Developer App",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 15
+    },
+    "steps": [
+     "Go to console.x.com and sign in with your X account.",
+     "Accept the Developer Agreement.",
+     "Click New App or Create App and enter a name, description, and use case.",
+     "Generate and securely store your API Key, API Secret, Client ID, and Client Secret."
+    ],
+    "handoff": "Handing over your Client ID, Client Secret, and API credentials for configuration.",
+    "claimIds": [
+     "c-console-signin",
+     "c-create-app-steps",
+     "c-store-credentials"
+    ]
+   },
+   {
+    "id": "configure-auth",
+    "name": "Configure Authentication & Scopes",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 10,
+     "max": 20
+    },
+    "steps": [
+     "Enable OAuth 2.0 in your App's authentication settings in the Developer Console.",
+     "Select your app type (e.g., Web App or Automated App / Bot for confidential clients).",
+     "Add callback URLs to your app's allowlist with exact-match validation.",
+     "Configure requested OAuth 2.0 scopes such as tweet.read, tweet.write, users.read, and offline.access."
+    ],
+    "handoff": "Configuring callback URLs and scopes in the developer console.",
+    "claimIds": [
+     "c-oauth2-enable",
+     "c-confidential-clients",
+     "c-callback-rules",
+     "c-offline-access"
+    ]
+   },
+   {
+    "id": "fund-credits",
+    "name": "Fund Developer Credits",
     "owner": "you",
     "waiting": false,
     "minutes": {
@@ -41,209 +84,509 @@
      "max": 10
     },
     "steps": [
-     "Navigate to the Composio dashboard auth configs section.",
-     "Click Create Auth Config and select OAuth2.",
-     "Copy the provided redirect URI for your provider portal."
+     "Purchase upfront credits in the Developer Console to cover pay-per-usage API calls.",
+     "Save an eligible payment card to claim free credit incentives.",
+     "Set up spending limits and auto-recharge rules to prevent interruptions."
     ],
-    "handoff": "Copy the redirect URI from Composio to use in your provider app registration.",
+    "handoff": "API credits funded and ready for test requests.",
     "claimIds": [
-     "c-custom-auth-config"
-    ]
-   },
-   {
-    "id": "register-provider-app",
-    "name": "Register App in Developer Portal",
-    "owner": "you",
-    "waiting": false,
-    "minutes": {
-     "min": 20,
-     "max": 60
-    },
-    "steps": [
-     "Register a new application in the provider developer portal.",
-     "Add the Composio redirect URI.",
-     "Retrieve the Client ID and Client Secret."
-    ],
-    "handoff": "Paste Client ID and Client Secret back into the Composio dashboard.",
-    "claimIds": [
-     "c-custom-auth-config"
+     "c-pay-per-use-pricing",
+     "c-free-credits",
+     "c-spending-limits"
     ]
    }
   ],
   "artefacts": [
    {
-    "id": "art-app-form",
+    "id": "app-form",
     "kind": "app-form",
-    "title": "OAuth App Registration Values",
-    "body": "App Name: AI Agent Integration\nDescription: Autonomous agent connection via Composio\nHomepage URL: https://example.com\nCallback URL: <Composio callback URL from your auth config>"
+    "title": "X Developer Console App Registration Values",
+    "body": "App Name: AI Agent Connector\nDescription: AI agent integration connecting user accounts via Composio.\nCallback URL: <Composio callback URL from your auth config>"
    },
    {
-    "id": "art-reviewer-email",
-    "kind": "reviewer-email",
-    "title": "Reviewer Justification",
-    "body": "We are requesting OAuth access to enable authenticated users to interact with their own accounts via our AI agent platform securely."
+    "id": "scope-justification",
+    "kind": "scope-justification",
+    "title": "OAuth 2.0 Scope Justification",
+    "body": "Scopes requested: tweet.read, tweet.write, users.read, follows.read, follows.write, offline.access. Justification: Required for the AI agent to read user timelines, post updates on behalf of authorized users, view profile data, manage follows, and maintain persistent access via refresh tokens without repeated prompts."
    }
   ],
   "requirements": [
    {
     "kind": "privacy-policy",
-    "label": "Privacy Policy URL",
+    "label": "Privacy Policy",
     "required": "yes",
-    "when": "Required for all public OAuth application registrations.",
+    "when": "Required for all developer apps handling user data.",
     "claimIds": [
-     "c-x-not-in-catalog"
+     "c-privacy-policy-req"
     ]
    },
    {
-    "kind": "terms-of-service",
-    "label": "Terms of Service URL",
+    "kind": "paid-plan",
+    "label": "Developer Credits / Payment Card",
     "required": "yes",
-    "when": "Required for developer applications.",
+    "when": "Required for pay-per-use API execution.",
     "claimIds": [
-     "c-x-not-in-catalog"
+     "c-pay-per-use-pricing",
+     "c-free-credits"
+    ]
+   },
+   {
+    "kind": "domain-verification",
+    "label": "Exact Callback URL Allowlist",
+    "required": "yes",
+    "when": "Required for all OAuth 2.0 callback redirect URIs.",
+    "claimIds": [
+     "c-callback-rules"
     ]
    }
   ],
   "scopes": [
    {
     "scope": "tweet.read",
-    "purpose": "Read user tweets for agent context",
+    "purpose": "All the Tweets you can view, including Tweets from protected accounts.",
     "tier": "basic",
     "reviewTrigger": false,
     "claimIds": [
-     "c-x-not-in-catalog"
+     "c-scope-tweet-read"
     ]
    },
    {
     "scope": "tweet.write",
-    "purpose": "Publish tweets on behalf of the user",
+    "purpose": "Tweet and Retweet for you.",
     "tier": "sensitive",
-    "reviewTrigger": true,
+    "reviewTrigger": false,
     "claimIds": [
-     "c-x-not-in-catalog"
+     "c-scope-tweet-write"
+    ]
+   },
+   {
+    "scope": "users.read",
+    "purpose": "Any account you can view, including protected accounts.",
+    "tier": "basic",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-scope-users-read"
+    ]
+   },
+   {
+    "scope": "offline.access",
+    "purpose": "Stay connected to your account until you revoke access by issuing a refresh token.",
+    "tier": "sensitive",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-offline-access"
     ]
    }
   ],
   "redirectRules": [
    {
-    "rule": "Must use the exact redirect URI provided in the Composio dashboard auth config.",
+    "rule": "URLs must match exactly including trailing slashes and use https:// in production or http://127.0.0.1 for local development.",
     "claimIds": [
-     "c-custom-auth-config"
+     "c-callback-rules"
+    ]
+   },
+   {
+    "rule": "Maximum of 10 callback URLs per app.",
+    "claimIds": [
+     "c-callback-count"
+    ]
+   },
+   {
+    "rule": "Disallowed protocols include javascript, data, file, ftp, mailto, telnet, vbscript, vbs, mocha, keyword, livescript, gopher, acrobat, callto, daap, itpc, itms, firefoxurl, hcp, ldap, mmst, mmsu, msbd, rtsp, mso-offdap, snews, news, nntp, outlook, stssync, rlogin, tn3270, shell, and sip.",
+    "claimIds": [
+     "c-disallowed-protocols"
     ]
    }
   ],
   "blockers": [
    {
-    "id": "blocker-catalog-missing",
-    "symptom": "Toolkit not found in Composio managed catalog",
-    "cause": "X (Twitter) is not in Composio's toolkit catalog.",
-    "fix": "Create a custom auth config manually in the Composio dashboard.",
-    "fallback": "Use an alternative supported social platform or build a custom API wrapper toolkit.",
+    "id": "blocker-callback",
+    "symptom": "{\"errors\":[{\"code\":415,\"message\":\"Callback URL not approved for this client application.\"}]}",
+    "cause": "The callback URL passed in the request does not match the allowlist registered in the Developer Console exactly, including protocol or trailing slashes.",
+    "fix": "Ensure your callback URL matches the registered allowlist exactly and is HTTP-encoded when passing as a query parameter.",
+    "fallback": "Register the exact URL string in the Developer Console app settings.",
     "claimIds": [
-     "c-x-not-in-catalog",
-     "c-custom-auth-config"
+     "c-error-callback"
     ]
    },
    {
-    "id": "blocker-probe-fail",
-    "symptom": "Fetch failed for well-known openid configuration",
-    "cause": "Public probe endpoints returned no response or failed to resolve.",
-    "fix": "Verify provider endpoint URLs manually in the developer documentation.",
-    "fallback": "Configure endpoints manually using standard OAuth2 discovery parameters.",
+    "id": "blocker-ratelimit",
+    "symptom": "{\"errors\":[{\"code\":88,\"message\":\"Rate limit exceeded\"}]}",
+    "cause": "Exceeded the per-endpoint rate limit window.",
+    "fix": "Wait until the timestamp in the x-rate-limit-reset header or implement exponential backoff.",
+    "fallback": "Cache API responses locally to reduce repeated requests.",
     "claimIds": [
-     "c-probe-openid-fail",
-     "c-probe-oauth-fail"
+     "c-error-ratelimit"
+    ]
+   },
+   {
+    "id": "blocker-ip-allowlist",
+    "symptom": "{\"detail\":\"client IP not allowed: 198.51.100.1\",\"status\":403,\"title\":\"Forbidden\",\"type\":\"https://api.x.com/2/problems/not-authorized-for-resource\"}",
+    "cause": "The request reached the X API from an IP address not covered by your account's IP allowlist.",
+    "fix": "Sign in to the Developer Console as an Administrator, open Settings -> IP allowlist, and add your server's egress IPv4 or IPv6 CIDR block.",
+    "fallback": "Remove all IP allowlist rules to disable enforcement entirely.",
+    "claimIds": [
+     "c-ip-allowlist-error"
     ]
    }
   ],
   "checklist": [
    {
     "id": "chk-1",
-    "text": "Check Composio dashboard for managed X app (absent)",
+    "text": "Sign up for a developer account at console.x.com and accept the Developer Agreement.",
     "owner": "you",
-    "phaseId": "create-auth-config"
+    "phaseId": "create-app"
    },
    {
     "id": "chk-2",
-    "text": "Create custom auth config in Composio dashboard",
+    "text": "Create a new Developer App and select Web App or Automated App / Bot as a confidential client.",
     "owner": "you",
-    "phaseId": "create-auth-config"
+    "phaseId": "create-app"
    },
    {
     "id": "chk-3",
-    "text": "Register app in developer portal using Composio callback URL",
+    "text": "Copy and securely store your API Key, API Secret, Client ID, and Client Secret.",
     "owner": "you",
-    "phaseId": "register-provider-app"
+    "phaseId": "create-app"
    },
    {
     "id": "chk-4",
-    "text": "Store Client ID and Client Secret in Composio",
+    "text": "Enable OAuth 2.0 in the app authentication settings.",
     "owner": "you",
-    "phaseId": "register-provider-app"
+    "phaseId": "configure-auth"
+   },
+   {
+    "id": "chk-5",
+    "text": "Add exact-match callback URLs (using https:// in production or http://127.0.0.1 for local dev) to your app allowlist.",
+    "owner": "you",
+    "phaseId": "configure-auth"
+   },
+   {
+    "id": "chk-6",
+    "text": "Fund your developer account with prepaid credits in the Developer Console and save an eligible payment card.",
+    "owner": "you",
+    "phaseId": "fund-credits"
+   },
+   {
+    "id": "chk-7",
+    "text": "Implement OAuth 2.0 Authorization Code Flow with PKCE and request offline.access for persistent refresh tokens.",
+    "owner": "you",
+    "phaseId": "configure-auth"
    }
   ],
   "uncertainties": [
-   "Exact developer console UI fields for X (Twitter) could not be verified via automated probes.",
-   "Exact review times and token expiry durations for X API are unverified.",
-   "Specific paid tier gating limits for write scopes are unconfirmed."
+   "Exact enterprise review durations and automated app approval turnaround times are not fully documented in the public X developer platform text.",
+   "Catalog integration details for X inside Composio require manual custom toolkit setup."
   ],
   "probes": [
    {
-    "id": "p-oidc-discovery-0",
-    "kind": "oidc-discovery",
-    "url": "https://xtwitter.com/.well-known/openid-configuration",
-    "status": null,
-    "at": "2026-11-03T13:30:17.935Z"
+    "id": "p-oauth-metadata-11",
+    "kind": "oauth-metadata",
+    "url": "https://api.x.com/.well-known/oauth-authorization-server",
+    "status": 200,
+    "bodySnippet": "{\"authorization_endpoint\":\"https://x.com/i/oauth2/authorize\",\"code_challenge_methods_supported\":[\"S256\"],\"grant_types_supported\":[\"authorization_code\",\"refresh_token\"],\"issuer\":\"https://api.x.com\",\"response_types_supported\":[\"code\"],\"scopes_supported\":[\"tweet.read\",\"tweet.write\",\"users.read\",\"users.email\",\"follows.read\",\"space.read\",\"mute.read\",\"like.read\",\"list.read\",\"list.write\",\"block.read\",\"bl",
+    "at": "2026-11-24T07:41:15.076Z"
    },
    {
-    "id": "p-oauth-metadata-1",
-    "kind": "oauth-metadata",
-    "url": "https://xtwitter.com/.well-known/oauth-authorization-server",
-    "status": null,
-    "at": "2026-11-03T13:30:17.936Z"
+    "id": "p-authorize-x.com",
+    "kind": "authorize-dummy-client",
+    "url": "https://x.com/i/oauth2/authorize?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe&scope=openid",
+    "status": 200,
+    "bodySnippet": "<!DOCTYPE html><html lang=\"en\" dir=\"ltr\" data-app-env=\"prod\" data-app-version=\"85bccbebc7d381b85a0568ea1b4d9493ef135745\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0,viewport-fit=cover\"/><meta name=\"color-scheme\" content=\"light dark\"/><meta name=\"theme-color\" media=\"(prefers-color-scheme: light)\" content=\"#FFFFFF\"/><",
+    "at": "2026-11-24T07:41:15.688Z"
+   },
+   {
+    "id": "p-authorize-api.x.com",
+    "kind": "authorize-dummy-client",
+    "url": "https://api.x.com/2/problems/not-authorized-for-resource?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe&scope=openid",
+    "status": 302,
+    "location": "https://developer.twitter.com/en/support/twitter-api/error-troubleshooting#resource-unauthorized",
+    "bodySnippet": "",
+    "at": "2026-11-24T07:41:16.037Z"
    }
   ],
   "generation": {
    "draftModel": "gemini-3.5-flash-lite",
    "verifierModel": "gemini-3.5-flash-lite",
-   "ms": 25276,
-   "sources": 1
+   "ms": 67733,
+   "sources": 18
   },
   "claims": [
    {
-    "id": "c-x-not-in-catalog",
-    "text": "X (Twitter) is NOT in Composio's toolkit catalog. A developer would need a custom toolkit / Composio's auth for custom tools, or a different integration path.",
+    "id": "c-composio-catalog",
+    "text": "X (Twitter) is NOT in Composio's toolkit catalog.",
     "evidence": "tested",
     "artifact": "lookup:composio-directory (X (Twitter) not among 387 OAuth toolkits on docs.composio.dev/toolkits/managed-auth)",
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-custom-auth-config",
-    "text": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the Client ID and Client Secret back into Composio.",
+    "id": "c-composio-custom-app",
+    "text": "A developer would need a custom toolkit / Composio's auth for custom tools, or a different integration path.",
+    "evidence": "tested",
+    "artifact": "lookup:composio-directory (X (Twitter) not among 387 OAuth toolkits on docs.composio.dev/toolkits/managed-auth)",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-app-type",
+    "text": "Choose OAuth 2.0 for new projects. It offers fine-grained scopes and is required for X API v2 user-context endpoints.",
     "evidence": "sourced",
-    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
-    "quote": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the **Client ID** and **Client Secret** back into Composio.",
-    "checkedAt": "2026-11-03"
+    "sourceUrl": "https://docs.x.com/fundamentals/developer-apps",
+    "quote": "Choose OAuth 2.0 for new projects. It offers fine-grained scopes and is required for X API v2 user-context endpoints.",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-probe-openid-fail",
-    "text": "https://xtwitter.com/.well-known/openid-configuration returns no response (fetch failed)",
-    "evidence": "tested",
-    "artifact": "probe:p-oidc-discovery-0",
-    "checkedAt": "2026-11-03"
+    "id": "c-console-signin",
+    "text": "Go to console.x.com and sign in with your X account. Accept the Developer Agreement.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/developer-portal",
+    "quote": "Go to console.x.com and sign in with your X account. Accept the Developer Agreement.",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-probe-oauth-fail",
-    "text": "https://xtwitter.com/.well-known/oauth-authorization-server returns no response (fetch failed)",
+    "id": "c-create-app-steps",
+    "text": "Click New App and provide a name and description. This generates your API credentials.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/developer-portal",
+    "quote": "Click New App and provide a name and description. This generates your API credentials.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-store-credentials",
+    "text": "Copy and securely store your API Key, API Secret, and Access Tokens. These won’t be shown again.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/developer-portal",
+    "quote": "Copy and securely store your API Key, API Secret, and Access Tokens. These won’t be shown again.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-oauth2-enable",
+    "text": "To enable OAuth 2.0 in your App, you must enable it in your App’s authentication settings found in the App settings section of the Developer Console.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+    "quote": "To enable OAuth 2.0 in your App, you must enable it in your App’s authentication settings found in the App settings section of the Developer Console.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-confidential-clients",
+    "text": "Web App and Automated App or bots are confidential clients.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+    "quote": "Web App and Automated App or bots are confidential clients.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-offline-access",
+    "text": "If the scope offline.access is applied an OAuth 2.0 refresh token will be issued.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+    "quote": "If the scope offline.access is applied an OAuth 2.0 refresh token will be issued.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-callback-rules",
+    "text": "Callback URLs (redirect URIs) are required for OAuth flows. URLs must match exactly including trailing slashes, use https:// in production, and use http://127.0.0.1 for local development.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/developer-apps",
+    "quote": "Add callback URLs to your app’s allowlist in the Developer Console - URLs must match exactly (including trailing slashes) - Maximum of 10 callback URLs per app - Use https:// in production - For local",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-callback-count",
+    "text": "Maximum of 10 callback URLs per app.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/developer-apps",
+    "quote": "Maximum of 10 callback URLs per app",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-disallowed-protocols",
+    "text": "Disallowed protocols include javascript, data, file, ftp, mailto, telnet, and other non-standard schemes.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/developer-apps",
+    "quote": "These protocols cannot be used: javascript , data , file , ftp , mailto , telnet , and other non-standard schemes.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-pay-per-use-pricing",
+    "text": "The X API uses pay-per-usage pricing with no subscriptions.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing",
+    "quote": "The X API uses pay-per-usage pricing. No subscriptions—pay only for what you use.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-free-credits",
+    "text": "New to paying? Earn $20 in free X API credits when you save your first eligible payment card and complete your first credit purchase, and a match of your first auto-recharge up to $50.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing",
+    "quote": "New to paying? Earn $20 in free X API credits when you save your first eligible payment card and complete your first credit purchase, and a match of your first auto-recharge up to $50 .",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-spending-limits",
+    "text": "Set a specific dollar amount as your maximum spend per billing cycle.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing",
+    "quote": "Spending limit Set a specific dollar amount as your maximum spend per billing cycle",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-privacy-policy-req",
+    "text": "You must display your service’s privacy policy to people before they are permitted to download, install, or sign up to your service.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/developer-terms/policy",
+    "quote": "You must display your service’s privacy policy to people before they are permitted to download, install, or sign up to your service.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-scope-tweet-read",
+    "text": "tweet.read scope grants all the Tweets you can view, including Tweets from protected accounts.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+    "quote": "tweet.read All the Tweets you can view, including Tweets from protected accounts.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-scope-tweet-write",
+    "text": "tweet.write scope allows tweeting and retweeting for you.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+    "quote": "tweet.write Tweet and Retweet for you.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-scope-users-read",
+    "text": "users.read scope provides access to any account you can view, including protected accounts.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+    "quote": "users.read Any account you can view, including protected accounts.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-error-callback",
+    "text": "Callback URL not approved error code 415 occurs when callback URL is not exactly as registered.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/developer-apps",
+    "quote": "Callback URL not approved error Ensure your callback URL is exactly as registered in the Developer Console, including protocol and any trailing slashes.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-error-ratelimit",
+    "text": "Rate limit exceeded returns code 88 with a 429 Too Many Requests response.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/rate-limits",
+    "quote": "When you exceed a rate limit, you’ll receive a 429 Too Many Requests response: | { | \"errors\" : [{ | \"code\" : 88 , | \"message\" : \"Rate limit exceeded\" | }] | }",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-ip-allowlist-error",
+    "text": "Requests from unauthorized IP addresses return HTTP 403 Forbidden with client IP not allowed message.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/ip-allowlist",
+    "quote": "Requests from any other IP address are rejected with HTTP 403 Forbidden .",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-token-lifetime",
+    "text": "By default, the access token created through the Authorization Code Flow with PKCE stays valid for two hours unless the offline.access scope is used.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+    "quote": "By default, the access token you create through the Authorization Code Flow with PKCE will only stay valid for two hours unless you’ve used the offline.access scope.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-auth-code-lifetime",
+    "text": "An authorization code has a time limit of 30 seconds once the app owner receives an approved authorization code from the user.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+    "quote": "The auth_code has a time limit of 30 seconds once the App owner receives an approved auth_code from the user.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-state-length",
+    "text": "The state parameter used to protect against CSRF attacks can be a random string up to 500 characters long.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+    "quote": "state A random string you provide to verify against CSRF attacks . The length of this string can be up to 500 characters.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-ip-allowlist-limit",
+    "text": "An account can configure up to 100 active IP allowlist rules.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/ip-allowlist",
+    "quote": "Maximum rules Up to 100 active rules per account",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-post-read-cap",
+    "text": "Pay-per-usage plans are capped at 3 million Post reads per monthly billing cycle.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing",
+    "quote": "Pay-per-usage plans are capped at 3 million Post reads per monthly billing cycle .",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-post-id-distribution-limit",
+    "text": "Developers may not distribute more than a total of 1,500,000 Post IDs to any single entity within any 30 day period without written permission.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/developer-terms/policy",
+    "quote": "In total, you may not distribute more than 1,500,000 Post IDs to any entity (inclusive of multiple individuals associated with a single entity) within any 30 day period unless you have received writte",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-autorecharge-limit",
+    "text": "Automatic top-ups have a built-in limit of at most one top-up per 5-minute window.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/x-api/getting-started/pricing",
+    "quote": "One top-up per 5-minute window. Automatic charges can trigger at most once every 5 minutes",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-owned-reads-pricing",
+    "text": "Requests for your own posts, bookmarks, followers, likes, and more are priced at $0.001 per resource as Owned Reads.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/overview",
+    "quote": "Requests for your own posts, bookmarks, followers, likes, and more are priced at $0.001 per resource .",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-oauth2-tweet-lookup-limit",
+    "text": "Using OAuth 2.0 for Tweet lookup and user lookup increases the per-App limit from 300 to 900 requests per 15 minutes.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code",
+    "quote": "We are increasing the per-App limit from 300 to 900 requests per 15 minutes while using OAuth 2.0 for Tweet lookup and user lookup.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-app-limit-multiple",
+    "text": "Developers may create and use a maximum of 3 applications for development, staging, and production instances of the same service.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/developer-terms/policy",
+    "quote": "As a single exception to these rules, you may create and use a maximum of 3 applications for development, staging, and production instances of the same service.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-server-client-ip-error",
+    "text": "When a request is rejected due to the IP allowlist failing to find a usable client IP, it returns a 403 Forbidden with detail 'client IP not allowed'.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.x.com/fundamentals/ip-allowlist",
+    "quote": "If no usable client IP is available on the request, enforcement fails closed and returns \"detail\": \"client IP not allowed\" .",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-.well-known-probe",
+    "text": "A public probe to https://api.x.com/.well-known/oauth-authorization-server returns a 200 status and publishes the authorization endpoint https://x.com/i/oauth2/authorize with S256 PKCE method support.",
     "evidence": "tested",
-    "artifact": "probe:p-oauth-metadata-1",
-    "checkedAt": "2026-11-03"
+    "artifact": "probe:p-oauth-metadata-11",
+    "checkedAt": "2026-11-24"
    }
   ],
   "slug": "x-twitter",
   "app": {
    "name": "X (Twitter)",
-   "website": "https://xtwitter.com",
+   "website": "https://x.com",
+   "developerDocsUrl": "https://docs.x.com/overview",
    "composioSlug": null,
    "composioManaged": null,
    "authSchemes": [
@@ -252,17 +595,17 @@
   },
   "generatedBy": "agent",
   "reviewStatus": "unreviewed",
-  "lastVerified": "2026-11-03"
+  "lastVerified": "2026-11-24"
  },
  "report": {
-  "checked": 1,
+  "checked": 31,
   "quoteMisses": [],
   "unsupported": [],
-  "integrityFixes": 0,
+  "integrityFixes": 2,
   "verifierModel": "gemini-3.5-flash-lite",
   "draftModel": "gemini-3.5-flash-lite",
-  "sources": 1,
-  "ms": 25277
+  "sources": 18,
+  "ms": 67734
  },
- "runAt": "2026-11-03T13:30:36.334Z"
+ "runAt": "2026-11-24T07:42:07.346Z"
 }

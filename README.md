@@ -51,13 +51,13 @@ Full list: [DETAILS §10](docs/DETAILS.md#10-assumptions-the-evidence-corrected)
 - **Two clocks, not one estimate.** *Time to first token* (minutes, your own account) vs *time to production* (days to months), because the provider's review queue, not engineering, is where the time goes.
 - **Downgrade, never delete.** Every claim is tested, sourced (URL + verbatim quote + date, re-verified live) or uncertain (with a reason). Claims that fail verification become *uncertain* and stay visible.
 - **The model can't invent a citation.** It cites evidence by id; code attaches the real URL, screenshot or probe response, re-fetches every quote, and a second model checks the quote supports the claim.
-- **A gold library plus clearly labelled live generation.** The eval showed the live agent is precise but shallow (it rarely states anything wrong, but misses many facts), so the apps that matter most get curated, quote-verified gold guides, and live guides are labelled *unreviewed*.
+- **A gold library plus clearly labelled live generation.** The eval showed the live agent is precise but incomplete (it rarely states anything wrong, but misses facts), so the apps that matter most get curated, quote-verified gold guides, and live guides are labelled *unreviewed*.
 - **Free tiers only, and the public agent never logs in.** It reads public pages and probes public endpoints only. Steps that need sign-in were done by a human for GitHub and Slack, as end-to-end tests through Composio.
 
 ## Limitations
 
-- **Live guides are shallow.** Eval: 16% fact recall, 86% precision, 97% of citations valid. The agent misses facts on deep policy pages, especially in large portals (Google, Microsoft).
+- **Live guides miss some facts.** Eval (v3, 2026-11-24): 58% fact recall (up from 16%), 100% precision, 96% of citations valid, difficulty within one tier for 8/8 apps. Misses cluster on JS-only docs and deep support-center pages (Google); a generation takes 2–4 minutes.
 - **Free-tier model budget.** Gemini allows about 20 requests/day per Flash model, then falls back to `flash-lite`; the public endpoint is throttled to 20 generations/hour. Heavy use can exhaust the quota.
 - **Some evidence needs a human.** Only GitHub and Slack were walked through end-to-end; the other gold guides are sourced plus SDK-tested Composio facts. Gold guides show *human-reviewed* only after the author signs off.
 - **Review times are rarely published,** so timelines are wide ranges marked uncertain.
-- **Policies drift.** Every guide shows a last-verified date; `pnpm verify` re-checks all gold quotes (200/200 present on 2026-11-03).
+- **Policies drift.** Every guide shows a last-verified date; `pnpm verify` re-checks all gold quotes. On 2026-11-24 it caught 7 drifted quotes (Composio now manages Meta Ads; reworded Composio and Xero pages); after fixing, 199/199 present.

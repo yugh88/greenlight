@@ -110,7 +110,7 @@ New here? Click **Take the tour** (top right). A guided walkthrough spotlights e
 | 🔵 `sourced` | A public page says so | URL + verbatim quote (≤200 chars) + fetch date; re-checked by script |
 | 🟡 `uncertain` | Believed but not proven | the reason, and what would confirm it |
 
-Claims are **downgraded, never deleted**, so the reader sees what we couldn't prove. Menu/footer text is rejected as evidence (this caught a fake "privacy policy required" claim). `pnpm verify` re-fetches every gold quote: **200/200 present on 2026-11-03**.
+Claims are **downgraded, never deleted**, so the reader sees what we couldn't prove. Menu/footer text is rejected as evidence (this caught a fake "privacy policy required" claim). `pnpm verify` re-fetches every gold quote: **200/200 present on 2026-11-03**; on **2026-11-24** it caught 7 drifted quotes (see [§10](#10-assumptions-the-evidence-corrected)), fixed to **199/199**. Xero needs `GREENLIGHT_RENDER=1` (JS-rendered docs).
 
 ## 7. Proof: tested end-to-end through Composio
 
@@ -142,7 +142,7 @@ All 10 gold guides also carry a `tested` claim from **`composio.toolkits.get()`*
 | [Xero](https://greenlight-blue-ten.vercel.app/guides/xero) | 3 Full review | 1–14 days | BYO | 1 (Composio call) | 24 | 0 | n/a | pending |
 | [Gmail (Google)](https://greenlight-blue-ten.vercel.app/guides/gmail) | 4 Heavy review / verification | 2–13 weeks | managed | 2 (probe, Composio call) | 24 | 5 | n/a | pending |
 | [LinkedIn Ads (Marketing API)](https://greenlight-blue-ten.vercel.app/guides/linkedin-ads) | 4 Heavy review / verification | 7–30 days | BYO | 1 (Composio call) | 23 | 1 | n/a | pending |
-| [Meta Ads (Marketing API)](https://greenlight-blue-ten.vercel.app/guides/meta-ads) | 4 Heavy review / verification | 3–14 days | BYO | 1 (Composio call) | 16 | 2 | n/a | pending |
+| [Meta Ads (Marketing API)](https://greenlight-blue-ten.vercel.app/guides/meta-ads) | 4 Heavy review / verification | 3–14 days | managed | 1 (Composio call) | 16 | 2 | n/a | pending |
 | [Spotify](https://greenlight-blue-ten.vercel.app/guides/spotify) | 5 Partner-only or paid / gated | 4–26 weeks | BYO | 2 (probe, Composio call) | 22 | 3 | n/a | pending |
 
 Every sourced quote is re-checked against the live page (`pnpm verify`); curation edits live in `data/gold-patches/` and are applied by a script that rejects any quote it can't find.
@@ -154,23 +154,24 @@ Every sourced quote is re-checked against the live page (`pnpm verify`); curatio
 | Run | Fact recall | Fact precision | Citation validity | Difficulty exact / ±1 |
 |---|---|---|---|---|
 | v1 (homepage-first discovery) | 13% | 100% | 94% | 50% / 63% |
-| **v2 (llms.txt + verified doc hints)** | 16% | 86% | 97% | 25% / 63% |
+| v2 (llms.txt + verified doc hints) | 16% | 86% | 97% | 25% / 63% |
+| **v3 (source planner, 20 pages + second hop, ranked excerpts, gap-fill pass)** | 58% | 100% | 96% | 63% / 100% |
 
-38 facts across 8 apps (`eval/ground-truth.json`, every quote verified live), run 2026-11-03. The agent ran with **open discovery** (no curated sources), which is what a developer gets for an app outside the library. Per-app detail: [/method#eval](https://greenlight-blue-ten.vercel.app/method#eval) and `eval/results.json`.
+38 facts across 8 apps (`eval/ground-truth.json`, every quote verified live), run 2026-11-24. The agent ran with **open discovery** (no curated sources), which is what a developer gets for an app outside the library. Per-app detail: [/method#eval](https://greenlight-blue-ten.vercel.app/method#eval) and `eval/results.json`.
 
 | App | Gold | Agent | Facts stated | Contradicted | Citations valid |
 |---|---|---|---|---|---|
-| github | 1 | 1 | 2/5 | 0 | 14/14 |
-| slack | 2 | 2 | 1/5 | 1 | 16/17 |
-| gmail | 4 | 3 | 0/6 | 0 | 14/15 |
-| spotify | 5 | 3 | 2/6 | 0 | 15/15 |
-| microsoft-entra-id | 3 | 2 | 1/5 | 0 | 9/10 |
-| xero | 3 | 2 | 0/5 | 0 | 12/12 |
-| x | 2 | 4 | 0/3 | 0 | 1/1 |
-| meta-ads | 4 | 2 | 0/3 | 0 | 4/4 |
+| github | 1 | 1 | 4/5 | 0 | 41/41 |
+| slack | 2 | 2 | 1/5 | 0 | 28/33 |
+| gmail | 4 | 4 | 2/6 | 0 | 19/20 |
+| spotify | 5 | 5 | 5/6 | 0 | 26/26 |
+| microsoft-entra-id | 3 | 4 | 4/5 | 0 | 35/35 |
+| xero | 3 | 3 | 3/5 | 0 | 34/35 |
+| x | 2 | 3 | 1/3 | 0 | 31/31 |
+| meta-ads | 4 | 3 | 2/3 | 0 | 29/33 |
 <!-- /EVAL_TABLE -->
 
-**How to read the eval:** what the live agent *states* is reliable (high precision and citation validity) but *shallow* (low recall). It reads about 7 pages and misses facts on deep policy pages, and it underrates gated providers when it never reaches the gating page. That's why the library ships curated gold guides and labels live guides *unreviewed*. The next investment is clear: read more pages and use a stronger model.
+**How to read the eval:** v2 was precise but *shallow*: it read about 7 pages and kept ~7k characters of each, so facts on deep policy pages never reached the model and it underrated gated providers. v3 fixed discovery (a planner proposes official docs URLs per decisive topic, each fetch-verified), reading (up to 20 pages plus a second hop, a shared 200k-char budget with ranked paragraphs, table rows kept) and extraction (one claim per number/limit/date, plus a gap-fill pass): recall 16% → 58% with no contradicted facts, and difficulty within one tier for all 8 apps. Remaining misses: JS-only docs (Xero on Vercel), deep support-center pages (Google), and facts behind sign-in. Live guides stay labelled *unreviewed*; a generation now takes 2–4 minutes instead of under one.
 
 ## 10. Assumptions the evidence corrected
 
@@ -182,6 +183,7 @@ Every sourced quote is re-checked against the live page (`pnpm verify`); curatio
 | X | Tier 5, paid/gated | Now **pay-per-use credits**, no subscription or review: the blocker is cost (tier 2, Paid filter) |
 | LinkedIn Ads | Partner-only | The Advertising API is open to **any approved developer** via an application; only Audience Insights / Media Planning are restricted |
 | Xero | Certification cap | The free Starter tier is **5 connections**; Core is $35 AUD/mo for 50; each organisation can connect at most 5 *uncertified* apps |
+| Meta Ads (re-check 2026-11-24) | Bring your own OAuth app (Composio toolkit page said *No* on 11-03) | Composio now lists a **managed OAuth app** for Meta Ads; guide corrected. The same drift check found Composio had reworded its managed-vs-custom page (5 quotes refreshed) and Xero its pricing intro (facts unchanged) |
 
 ## 11. Tech stack
 

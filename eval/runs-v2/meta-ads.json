@@ -1,0 +1,265 @@
+{
+ "guide": {
+  "verdict": {
+   "difficulty": 2,
+   "label": "Light review",
+   "summary": "MetaAds requires registering a custom OAuth app as Composio does not manage an app for this toolkit.",
+   "firstTokenMinutes": {
+    "min": 10,
+    "max": 30
+   },
+   "productionDays": {
+    "min": 1,
+    "max": 7
+   },
+   "cost": "Free registration",
+   "claimIds": [
+    "c-metaads-custom-auth"
+   ]
+  },
+  "composioFit": {
+   "summary": "Composio does not provide a managed OAuth app for MetaAds, so you must create your own custom auth config and register an OAuth app.",
+   "whyOwnApp": [
+    "Composio-managed OAuth is not available for METAADS.",
+    "You need your own Client ID and Client Secret in Composio."
+   ],
+   "claimIds": [
+    "c-metaads-custom-auth"
+   ]
+  },
+  "phases": [
+   {
+    "id": "register-app",
+    "name": "Register OAuth App",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 15
+    },
+    "steps": [
+     "Go to the MetaAds website registration page.",
+     "Complete the form with your information to create your CryptoAds account."
+    ],
+    "handoff": "Copy the Client ID and Client Secret into the Composio dashboard.",
+    "claimIds": [
+     "c-register-form"
+    ]
+   },
+   {
+    "id": "configure-auth",
+    "name": "Configure Auth in Composio",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 10
+    },
+    "steps": [
+     "Open the Composio dashboard and navigate to auth configs.",
+     "Click Create Auth Config and select OAuth2 for METAADS.",
+     "Add the redirect URI from Composio to the MetaAds app configuration.",
+     "Paste the Client ID and Client Secret back into Composio."
+    ],
+    "handoff": "Ready to test authentication with your own account.",
+    "claimIds": [
+     "c-composio-config"
+    ]
+   }
+  ],
+  "artefacts": [
+   {
+    "id": "app-form-values",
+    "kind": "app-form",
+    "title": "MetaAds App Registration Form Values",
+    "body": "Full Name: [Your Name]\nContact Details: [Your Email / Phone]\nHomepage URL: https://metaads.io\nRedirect URI: <Composio callback URL from your auth config>"
+   }
+  ],
+  "requirements": [
+   {
+    "kind": "privacy-policy",
+    "label": "Privacy Policy",
+    "required": "yes",
+    "when": "Required for platform registration and compliance with data practices.",
+    "claimIds": [
+     "c-privacy-policy"
+    ]
+   }
+  ],
+  "scopes": [
+   {
+    "scope": "default",
+    "purpose": "General platform access and ad-tech integration services.",
+    "tier": "basic",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-privacy-policy"
+    ]
+   }
+  ],
+  "redirectRules": [
+   {
+    "rule": "Must use the exact redirect URI provided in the Composio dashboard.",
+    "claimIds": [
+     "c-composio-config"
+    ]
+   }
+  ],
+  "blockers": [
+   {
+    "id": "b-discovery-missing",
+    "symptom": "HTTP 404 on /.well-known/openid-configuration",
+    "cause": "MetaAds does not expose a standard OpenID Connect discovery document at the root domain.",
+    "fix": "Manually configure OAuth endpoints in your application or Composio settings if custom endpoints are required.",
+    "fallback": "Use standard OAuth2 authorization and token URL endpoints provided by your MetaAds account manager.",
+    "claimIds": [
+     "p-oidc-404"
+    ]
+   },
+   {
+    "id": "b-oauth-server-missing",
+    "symptom": "HTTP 404 on /.well-known/oauth-authorization-server",
+    "cause": "MetaAds lacks a standard OAuth metadata discovery endpoint.",
+    "fix": "Configure the authorization and token endpoints manually using documentation or support guidance.",
+    "fallback": "Reach out to MetaAds support for correct authorization URL paths.",
+    "claimIds": [
+     "p-oauth-404"
+    ]
+   }
+  ],
+  "checklist": [
+   {
+    "id": "chk-1",
+    "text": "Create a MetaAds account via the registration form.",
+    "owner": "you",
+    "phaseId": "register-app"
+   },
+   {
+    "id": "chk-2",
+    "text": "Navigate to the Composio dashboard and initiate a new METAADS auth config.",
+    "owner": "you",
+    "phaseId": "configure-auth"
+   },
+   {
+    "id": "chk-3",
+    "text": "Copy the redirect URI from Composio and configure it in MetaAds.",
+    "owner": "you",
+    "phaseId": "configure-auth"
+   },
+   {
+    "id": "chk-4",
+    "text": "Paste Client ID and Client Secret into Composio.",
+    "owner": "you",
+    "phaseId": "configure-auth"
+   },
+   {
+    "id": "chk-5",
+    "text": "Test connection with your personal account.",
+    "owner": "you",
+    "phaseId": "configure-auth"
+   }
+  ],
+  "uncertainties": [
+   "Exact token lifetimes and refresh token behavior are not documented.",
+   "Specific OAuth scope strings beyond standard OAuth2 login are not publicly detailed.",
+   "Detailed review requirements and production user caps are not explicitly stated."
+  ],
+  "probes": [
+   {
+    "id": "p-oidc-discovery-0",
+    "kind": "oidc-discovery",
+    "url": "https://metaads.io/.well-known/openid-configuration",
+    "status": 404,
+    "bodySnippet": "<title>Página no encontrada &#8211; MetaAds &#8211; Programmatic DSP</title> <meta name='robots' content='max-image-preview:large' /> <link rel='dns-prefetch' href='//fonts.googleapis.com' /> <link rel=\"alternate\" type=\"application/rss+xml\" title=\"MetaAds - Programmatic DSP &raquo; Feed\" href=\"https://metaads.io/feed/\" /> <link rel=\"alternate\" type=\"application/rss+xml\" title=\"MetaAds - Programmat",
+    "at": "2026-11-03T13:30:51.075Z"
+   },
+   {
+    "id": "p-oauth-metadata-1",
+    "kind": "oauth-metadata",
+    "url": "https://metaads.io/.well-known/oauth-authorization-server",
+    "status": 404,
+    "bodySnippet": "<title>Página no encontrada &#8211; MetaAds &#8211; Programmatic DSP</title> <meta name='robots' content='max-image-preview:large' /> <link rel='dns-prefetch' href='//fonts.googleapis.com' /> <link rel=\"alternate\" type=\"application/rss+xml\" title=\"MetaAds - Programmatic DSP &raquo; Feed\" href=\"https://metaads.io/feed/\" /> <link rel=\"alternate\" type=\"application/rss+xml\" title=\"MetaAds - Programmat",
+    "at": "2026-11-03T13:30:51.076Z"
+   }
+  ],
+  "generation": {
+   "draftModel": "gemini-3.5-flash-lite",
+   "verifierModel": "gemini-3.5-flash-lite",
+   "ms": 40996,
+   "sources": 3
+  },
+  "claims": [
+   {
+    "id": "c-metaads-custom-auth",
+    "text": "Composio-managed OAuth is not available for METAADS, requiring a custom OAuth app.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/toolkits/metaads",
+    "quote": "Composio-managed OAuth available? No",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-register-form",
+    "text": "Complete the form with your information to create your CryptoAds account.",
+    "evidence": "sourced",
+    "sourceUrl": "https://metaads.io/register/",
+    "quote": "Complete the form with your information to create your CryptoAds account.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-privacy-policy",
+    "text": "The registration process requires providing personal information, including full name and contact details.",
+    "evidence": "sourced",
+    "sourceUrl": "https://metaads.io/privacy-policy/",
+    "quote": "The registration process presupposes providing personal information, including full name, contact details.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-composio-config",
+    "text": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the Client ID and Client Secret back into Composio.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+    "quote": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the Client ID and Client Secret back into Composio.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "p-oidc-404",
+    "text": "https://metaads.io/.well-known/openid-configuration returns HTTP 404.",
+    "evidence": "tested",
+    "artifact": "probe:p-oidc-discovery-0",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "p-oauth-404",
+    "text": "https://metaads.io/.well-known/oauth-authorization-server returns HTTP 404.",
+    "evidence": "tested",
+    "artifact": "probe:p-oauth-metadata-1",
+    "checkedAt": "2026-11-03"
+   }
+  ],
+  "slug": "meta-ads",
+  "app": {
+   "name": "Meta Ads",
+   "website": "https://metaads.io",
+   "composioSlug": "METAADS",
+   "composioManaged": false,
+   "authSchemes": [
+    "OAUTH2",
+    "API_KEY"
+   ]
+  },
+  "generatedBy": "agent",
+  "reviewStatus": "unreviewed",
+  "lastVerified": "2026-11-03"
+ },
+ "report": {
+  "checked": 4,
+  "quoteMisses": [],
+  "unsupported": [],
+  "integrityFixes": 0,
+  "verifierModel": "gemini-3.5-flash-lite",
+  "draftModel": "gemini-3.5-flash-lite",
+  "sources": 3,
+  "ms": 40997
+ },
+ "runAt": "2026-11-03T13:31:21.121Z"
+}

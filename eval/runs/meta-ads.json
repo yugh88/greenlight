@@ -1,54 +1,41 @@
 {
  "guide": {
   "verdict": {
-   "difficulty": 2,
-   "label": "Light review",
-   "summary": "MetaAds requires registering a custom OAuth app as Composio does not manage an app for this toolkit.",
+   "difficulty": 3,
+   "label": "Full review",
+   "summary": "Creating a Meta Ads OAuth app requires registering as a developer, connecting a business portfolio, and completing App Review and Business Verification before production users can connect.",
    "firstTokenMinutes": {
-    "min": 10,
-    "max": 30
+    "min": 5,
+    "max": 15
    },
    "productionDays": {
-    "min": 1,
-    "max": 7
+    "min": 7,
+    "max": 30
    },
-   "cost": "Free registration",
+   "cost": "Free to create and test; requires a business portfolio and optional Business Verification.",
    "claimIds": [
-    "c-metaads-custom-auth"
+    "c-reg-dev",
+    "c-create-app",
+    "c-biz-portfolio",
+    "c-app-review"
    ]
   },
   "composioFit": {
-   "summary": "Composio does not provide a managed OAuth app for MetaAds, so you must create your own custom auth config and register an OAuth app.",
+   "summary": "Composio provides a managed OAuth app for METAADS so you can start testing immediately without app registration, or you can bring your own app for dedicated provider rate limits and custom scopes.",
    "whyOwnApp": [
-    "Composio-managed OAuth is not available for METAADS.",
-    "You need your own Client ID and Client Secret in Composio."
+    "Dedicated provider rate limits instead of sharing with other Composio customers",
+    "Your own scopes beyond what Composio's managed app requests",
+    "Custom branding and app ownership"
    ],
    "claimIds": [
-    "c-metaads-custom-auth"
+    "c-composio-managed",
+    "c-own-app-reasons"
    ]
   },
   "phases": [
    {
-    "id": "register-app",
-    "name": "Register OAuth App",
-    "owner": "you",
-    "waiting": false,
-    "minutes": {
-     "min": 5,
-     "max": 15
-    },
-    "steps": [
-     "Go to the MetaAds website registration page.",
-     "Complete the form with your information to create your CryptoAds account."
-    ],
-    "handoff": "Copy the Client ID and Client Secret into the Composio dashboard.",
-    "claimIds": [
-     "c-register-form"
-    ]
-   },
-   {
-    "id": "configure-auth",
-    "name": "Configure Auth in Composio",
+    "id": "phase-create",
+    "name": "Register and Create App",
     "owner": "you",
     "waiting": false,
     "minutes": {
@@ -56,192 +43,528 @@
      "max": 10
     },
     "steps": [
-     "Open the Composio dashboard and navigate to auth configs.",
-     "Click Create Auth Config and select OAuth2 for METAADS.",
-     "Add the redirect URI from Composio to the MetaAds app configuration.",
-     "Paste the Client ID and Client Secret back into Composio."
+     "Register as a Meta developer and log into your developer account.",
+     "Navigate to https://developers.facebook.com/apps/creation/ to begin app creation.",
+     "Enter your app's name and contact email address, then select use cases and a business portfolio."
     ],
-    "handoff": "Ready to test authentication with your own account.",
+    "handoff": "App ID and App Secret obtained.",
     "claimIds": [
-     "c-composio-config"
+     "c-reg-dev",
+     "c-create-steps"
+    ]
+   },
+   {
+    "id": "phase-test",
+    "name": "Development and Testing",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 10,
+     "max": 30
+    },
+    "steps": [
+     "Configure use cases and permissions in development mode.",
+     "Test authentication and API calls using roles on the app."
+    ],
+    "handoff": "App tested with developer accounts.",
+    "claimIds": [
+     "c-dev-mode",
+     "c-app-roles"
+    ]
+   },
+   {
+    "id": "phase-review",
+    "name": "App Review and Business Verification",
+    "owner": "provider",
+    "waiting": true,
+    "minutes": {
+     "min": 10080,
+     "max": 43200
+    },
+    "steps": [
+     "Switch app to Live mode.",
+     "Submit required permissions and features for App Review.",
+     "Complete Business Verification if required."
+    ],
+    "handoff": "App approved for public use.",
+    "claimIds": [
+     "c-app-review-req",
+     "c-biz-verification",
+     "c-switch-live"
     ]
    }
   ],
   "artefacts": [
    {
-    "id": "app-form-values",
+    "id": "art-app-form",
     "kind": "app-form",
-    "title": "MetaAds App Registration Form Values",
-    "body": "Full Name: [Your Name]\nContact Details: [Your Email / Phone]\nHomepage URL: https://metaads.io\nRedirect URI: <Composio callback URL from your auth config>"
+    "title": "Meta App Creation Form",
+    "body": "App Name: AI Agent Integration\nContact Email: developer@example.com\nRedirect URI: <Composio callback URL from your auth config>"
+   },
+   {
+    "id": "art-scope-justification",
+    "kind": "scope-justification",
+    "title": "Scope Justification Statement",
+    "body": "Our AI agent requests advertising and business management permissions solely to retrieve ad campaign metrics, manage ad performance, and execute ad creation workflows requested by the authorized business user."
    }
   ],
   "requirements": [
    {
+    "kind": "business-verification",
+    "label": "Business Verification",
+    "required": "conditional",
+    "when": "Required if your app requests advanced access for permissions or allows other businesses to access their own data.",
+    "claimIds": [
+     "c-biz-verification"
+    ]
+   },
+   {
     "kind": "privacy-policy",
-    "label": "Privacy Policy",
+    "label": "Privacy Policy URL",
     "required": "yes",
-    "when": "Required for platform registration and compliance with data practices.",
+    "when": "Always required in the App Dashboard settings.",
     "claimIds": [
      "c-privacy-policy"
+    ]
+   },
+   {
+    "kind": "demo-video",
+    "label": "App Review Demo Video",
+    "required": "conditional",
+    "when": "Required during App Review to show how your app uses the requested permissions.",
+    "claimIds": [
+     "c-app-review-req"
     ]
    }
   ],
   "scopes": [
    {
-    "scope": "default",
-    "purpose": "General platform access and ad-tech integration services.",
+    "scope": "business_management",
+    "purpose": "Manages business assets and portfolio access.",
+    "tier": "sensitive",
+    "reviewTrigger": true,
+    "claimIds": [
+     "c-use-case-mapping"
+    ]
+   },
+   {
+    "scope": "pages_show_list",
+    "purpose": "Shows list of Facebook pages associated with the business.",
     "tier": "basic",
     "reviewTrigger": false,
     "claimIds": [
-     "c-privacy-policy"
+     "c-use-case-mapping"
+    ]
+   },
+   {
+    "scope": "public_profile",
+    "purpose": "Accesses basic user profile information.",
+    "tier": "basic",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-use-case-mapping"
     ]
    }
   ],
   "redirectRules": [
    {
-    "rule": "Must use the exact redirect URI provided in the Composio dashboard.",
+    "rule": "Graph API and redirect endpoints require HTTPS.",
     "claimIds": [
-     "c-composio-config"
+     "c-https-required"
     ]
    }
   ],
   "blockers": [
    {
-    "id": "b-discovery-missing",
-    "symptom": "HTTP 404 on /.well-known/openid-configuration",
-    "cause": "MetaAds does not expose a standard OpenID Connect discovery document at the root domain.",
-    "fix": "Manually configure OAuth endpoints in your application or Composio settings if custom endpoints are required.",
-    "fallback": "Use standard OAuth2 authorization and token URL endpoints provided by your MetaAds account manager.",
+    "id": "blocker-rate-limit",
+    "symptom": "User request limit reached. 613, Error subcode: 1487742, Message: There have been too many calls from this ad-account.",
+    "cause": "Exceeded the ad account rate limit score threshold.",
+    "fix": "Implement exponential backoff and throttle API calls.",
+    "fallback": "Upgrade to Full Access tier of Marketing API Access Tier.",
     "claimIds": [
-     "p-oidc-404"
+     "c-rate-limit-err"
     ]
    },
    {
-    "id": "b-oauth-server-missing",
-    "symptom": "HTTP 404 on /.well-known/oauth-authorization-server",
-    "cause": "MetaAds lacks a standard OAuth metadata discovery endpoint.",
-    "fix": "Configure the authorization and token endpoints manually using documentation or support guidance.",
-    "fallback": "Reach out to MetaAds support for correct authorization URL paths.",
+    "id": "blocker-app-limit",
+    "symptom": "Unable to create an application or accept a new pending role.",
+    "cause": "Reached the limit of having a developer or administrator role on a maximum of 15 apps not connected to a Meta Verified Business Account.",
+    "fix": "Connect a verified business portfolio to unused apps or remove yourself as an admin/developer from old apps.",
+    "fallback": "Archive or delete unused apps.",
     "claimIds": [
-     "p-oauth-404"
+     "c-app-limit"
+    ]
+   },
+   {
+    "id": "blocker-insights-throttle",
+    "symptom": "error_code = 4, CodeException (error subcode: 1504022), error_title: Too many API requests",
+    "cause": "Sent too many complex or high-frequency queries to the Ads Insights API endpoint.",
+    "fix": "Spread queries by pacing them with wait times and check the x-fb-ads-insights-throttle header.",
+    "fallback": "Use asynchronous ad report run jobs for large data volumes.",
+    "claimIds": [
+     "c-insights-throttle"
     ]
    }
   ],
   "checklist": [
    {
     "id": "chk-1",
-    "text": "Create a MetaAds account via the registration form.",
+    "text": "Register as a Meta developer and log in.",
     "owner": "you",
-    "phaseId": "register-app"
+    "phaseId": "phase-create"
    },
    {
     "id": "chk-2",
-    "text": "Navigate to the Composio dashboard and initiate a new METAADS auth config.",
+    "text": "Navigate to the app creation page and enter app details.",
     "owner": "you",
-    "phaseId": "configure-auth"
+    "phaseId": "phase-create"
    },
    {
     "id": "chk-3",
-    "text": "Copy the redirect URI from Composio and configure it in MetaAds.",
+    "text": "Select required use cases and a business portfolio.",
     "owner": "you",
-    "phaseId": "configure-auth"
+    "phaseId": "phase-create"
    },
    {
     "id": "chk-4",
-    "text": "Paste Client ID and Client Secret into Composio.",
+    "text": "Configure redirect URIs and scopes in the App Dashboard.",
     "owner": "you",
-    "phaseId": "configure-auth"
+    "phaseId": "phase-test"
    },
    {
     "id": "chk-5",
-    "text": "Test connection with your personal account.",
+    "text": "Test login and API integration with development accounts.",
     "owner": "you",
-    "phaseId": "configure-auth"
+    "phaseId": "phase-test"
+   },
+   {
+    "id": "chk-6",
+    "text": "Complete Business Verification if required.",
+    "owner": "you",
+    "phaseId": "phase-review"
+   },
+   {
+    "id": "chk-7",
+    "text": "Submit permissions for App Review and switch app to Live mode.",
+    "owner": "you",
+    "phaseId": "phase-review"
    }
   ],
   "uncertainties": [
-   "Exact token lifetimes and refresh token behavior are not documented.",
-   "Specific OAuth scope strings beyond standard OAuth2 login are not publicly detailed.",
-   "Detailed review requirements and production user caps are not explicitly stated."
-  ],
-  "probes": [
-   {
-    "id": "p-oidc-discovery-0",
-    "kind": "oidc-discovery",
-    "url": "https://metaads.io/.well-known/openid-configuration",
-    "status": 404,
-    "bodySnippet": "<title>Página no encontrada &#8211; MetaAds &#8211; Programmatic DSP</title> <meta name='robots' content='max-image-preview:large' /> <link rel='dns-prefetch' href='//fonts.googleapis.com' /> <link rel=\"alternate\" type=\"application/rss+xml\" title=\"MetaAds - Programmatic DSP &raquo; Feed\" href=\"https://metaads.io/feed/\" /> <link rel=\"alternate\" type=\"application/rss+xml\" title=\"MetaAds - Programmat",
-    "at": "2026-11-03T13:30:51.075Z"
-   },
-   {
-    "id": "p-oauth-metadata-1",
-    "kind": "oauth-metadata",
-    "url": "https://metaads.io/.well-known/oauth-authorization-server",
-    "status": 404,
-    "bodySnippet": "<title>Página no encontrada &#8211; MetaAds &#8211; Programmatic DSP</title> <meta name='robots' content='max-image-preview:large' /> <link rel='dns-prefetch' href='//fonts.googleapis.com' /> <link rel=\"alternate\" type=\"application/rss+xml\" title=\"MetaAds - Programmatic DSP &raquo; Feed\" href=\"https://metaads.io/feed/\" /> <link rel=\"alternate\" type=\"application/rss+xml\" title=\"MetaAds - Programmat",
-    "at": "2026-11-03T13:30:51.076Z"
-   }
+   "Exact approval duration for App Review is not specified in the documentation.",
+   "Specific pricing tiers for Marketing API Full Access are not detailed beyond call volume thresholds."
   ],
   "generation": {
    "draftModel": "gemini-3.5-flash-lite",
-   "verifierModel": "gemini-3.5-flash-lite",
-   "ms": 40996,
-   "sources": 3
+   "verifierModel": "gemini-3.1-flash-lite",
+   "ms": 66494,
+   "sources": 19
   },
   "claims": [
    {
-    "id": "c-metaads-custom-auth",
-    "text": "Composio-managed OAuth is not available for METAADS, requiring a custom OAuth app.",
-    "evidence": "sourced",
-    "sourceUrl": "https://docs.composio.dev/toolkits/metaads",
-    "quote": "Composio-managed OAuth available? No",
-    "checkedAt": "2026-11-03"
+    "id": "c-reg-dev",
+    "text": "To create an app with Meta, you must first register as a developer and be logged into your developer account.",
+    "evidence": "uncertain",
+    "sourceUrl": "https://developers.facebook.com/documentation/development/create-an-app",
+    "quote": "To create an app with Meta, you must first register as a developer and be logged into your developer account.",
+    "checkedAt": "2026-11-24",
+    "reason": "Quote not found on the cited page when re-checked (match 0.7)."
    },
    {
-    "id": "c-register-form",
-    "text": "Complete the form with your information to create your CryptoAds account.",
+    "id": "c-create-app",
+    "text": "Creating an app with Meta ensures your app is properly identified, configured, and authorized to interact with Meta's platform and services.",
+    "evidence": "uncertain",
+    "sourceUrl": "https://developers.facebook.com/documentation/development/create-an-app",
+    "quote": "This process ensures your app is properly identified, configured, and authorized to interact with Meta's platform and services.",
+    "checkedAt": "2026-11-24",
+    "reason": "Quote not found on the cited page when re-checked (match 0.833)."
+   },
+   {
+    "id": "c-biz-portfolio",
+    "text": "If your app will access data that you don't own or manage, you must connect your app to a business portfolio.",
     "evidence": "sourced",
-    "sourceUrl": "https://metaads.io/register/",
-    "quote": "Complete the form with your information to create your CryptoAds account.",
-    "checkedAt": "2026-11-03"
+    "sourceUrl": "https://developers.facebook.com/documentation/development/create-an-app",
+    "quote": "If your app will access data that you don't own or manage, you must connect your app to a business portfolio.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-app-review",
+    "text": "App Review is required if your app will be used by people without a role on your app or a role on the business that is connected to your app.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/development/create-an-app",
+    "quote": "It is required if your app will be used by people without a role on your app or a role on the business that is connected to your app.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-create-steps",
+    "text": "Navigate to https://developers.facebook.com/apps/creation/ to begin app creation, enter app name and contact email, and select use cases.",
+    "evidence": "uncertain",
+    "sourceUrl": "https://developers.facebook.com/documentation/development/create-an-app",
+    "quote": "Navigate to https://developers.facebook.com/apps/creation/ to begin the app creation process. Enter your app's name and contact email address.",
+    "checkedAt": "2026-11-24",
+    "reason": "Quote not found on the cited page when re-checked (match 0.727)."
+   },
+   {
+    "id": "c-app-limit",
+    "text": "You are permitted to have a developer or administrator role on a maximum of 15 apps that are not already connected to a Meta Verified Business Account.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/development/create-an-app",
+    "quote": "You are permitted to have a developer or administrator role on a maximum of 15 apps that are not already connected to a Meta Verified Business Account.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-app-roles",
+    "text": "If your app will only be used by people who have a role on the app itself you do not need to complete any of these processes because your app is already available to these users.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/development/release",
+    "quote": "If your app will only be used by people who have a role on the app itself you do not need to complete any of these processes because your app is already available to these users.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-app-review-req",
+    "text": "App Review requires you to identify each of the permissions and features your app needs, describe why your app needs them, and show how your app uses the data.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/development/release",
+    "quote": "App Review requires you to identify each of the permissions and features your app needs, describe why your app needs them, and show us how your app uses the data returned or accepted by our APIs.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-biz-verification",
+    "text": "Apps that request advanced access for permissions and apps that allow other Businesses to access their own data must be connected to a Business that has completed Business Verification.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/development/release",
+    "quote": "Apps that request advanced access for permissions and apps that allow other Businesses to access their own data must be connected to a Business that has completed Business Verification.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-switch-live",
+    "text": "You must switch your app to Live mode before it can request App Review approved permissions from app users who do not have a role on it.",
+    "evidence": "uncertain",
+    "sourceUrl": "https://developers.facebook.com/documentation/development/release",
+    "quote": "You must switch your app to Live mode before it can request App Review approved permissions from app users who do not have a role on it",
+    "checkedAt": "2026-11-24",
+    "reason": "Quote not found on the cited page when re-checked (match 0.778)."
+   },
+   {
+    "id": "c-https-required",
+    "text": "All data transfers conform to HTTP/1.1, and all endpoints require HTTPS.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/docs/graph-api/overview",
+    "quote": "All data transfers conform to HTTP/1.1, and all endpoints require HTTPS.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-dev-mode",
+    "text": "Apps in development mode can only receive test notifications initiated through the app dashboard or notifications initiated by people who have a role on the app.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/docs/graph-api/webhooks/",
+    "quote": "Apps in development mode can only receive test notifications initiated through the app dashboard or notifications initiated by people who have a role on the app.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-rate-limit-err",
+    "text": "Related error code for ad account rate limit: 613, Error subcode: 1487742, Message: There have been too many calls from this ad-account.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/overview/rate-limiting",
+    "quote": "Related error code: 613, Error subcode: 1487742, Message: There have been too many calls from this ad-account. Please wait a bit and try again.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-insights-throttle",
+    "text": "Related error code for insights rate limit: error_code = 4, CodeException (error subcode: 1504022), error_title: Too many API requests.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/insights/best-practices",
+    "quote": "error_code = 4, CodeException (error subcode: 1504022), error_title: Too many API requests",
+    "checkedAt": "2026-11-24"
    },
    {
     "id": "c-privacy-policy",
-    "text": "The registration process requires providing personal information, including full name and contact details.",
+    "text": "You will provide, maintain, and comply with a privacy policy that is available through an active, publicly available, easily accessible URL disclosed in the privacy policy field of your App Dashboard.",
     "evidence": "sourced",
-    "sourceUrl": "https://metaads.io/privacy-policy/",
-    "quote": "The registration process presupposes providing personal information, including full name, contact details.",
-    "checkedAt": "2026-11-03"
+    "sourceUrl": "https://developers.facebook.com/terms",
+    "quote": "You will provide, maintain, and comply with a privacy policy that is available through an active, publicly available, easily accessible (including by our crawlers), and non-geoblocked URL. This URL mu",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-composio-config",
-    "text": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the Client ID and Client Secret back into Composio.",
+    "id": "c-composio-managed",
+    "text": "Toolkit slug: METAADS. Composio-managed OAuth app: YES. Auth schemes: OAUTH2, API_KEY.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/toolkits/metaads",
+    "quote": "Composio-managed OAuth available? Yes",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-own-app-reasons",
+    "text": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota, not token custody.",
     "evidence": "sourced",
     "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
-    "quote": "For OAuth toolkits, register an app in the provider's developer portal and add the redirect URI from the dashboard. Then copy the Client ID and Client Secret back into Composio.",
-    "checkedAt": "2026-11-03"
+    "quote": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota, not token custody.",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "p-oidc-404",
-    "text": "https://metaads.io/.well-known/openid-configuration returns HTTP 404.",
+    "id": "c-use-case-mapping",
+    "text": "If you select the Manage everything on your Page use case, the business_management, pages_show_list, and public_profile are added as required permissions.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/development/create-an-app",
+    "quote": "if you select the Manage everything on your Page use case, the business_management, pages_show_list, and public_profile are added. These permissions that are required for this use case to work properl",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-marketing-api-qualification-threshold",
+    "text": "The revised qualification threshold for Full Access to the Marketing API has been reduced from 1,500 to 500 Marketing API calls in the past 15 days.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/overview/rate-limiting",
+    "quote": "The revised qualification threshold for Full Access has been reduced from 1,500 to **500 Marketing API calls** in the past 15 days.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-marketing-api-development-tier-score",
+    "text": "If an app is in the Marketing API development tier, its maximum rate limit score is 60 with a decay rate of 300 seconds and a 300-second block duration.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/overview/rate-limiting",
+    "quote": "If your app is in the Marketing API development tier: | * Your maximum score is 60. | * The decay rate is 300 seconds. | * You will be blocked for 300 seconds if you reach the maximum score.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-marketing-api-full-access-tier-score",
+    "text": "If an app has Full access to the Marketing API, its maximum rate limit score is 9,000 with a decay rate of 300 seconds and a 60-second block duration.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/overview/rate-limiting",
+    "quote": "If your app has Full access to the Marketing API: | * Your maximum score is 9000. | * The decay rate is 300 seconds. | * You will be blocked for 60 seconds if you reach the maximum score.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-marketing-api-qps-limit",
+    "text": "Meta enforces a real-time QPS rate limit of 100 requests per second per app and ad account combination on Marketing API mutation endpoints.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/overview/rate-limiting",
+    "quote": "Limit: 100 requests per second (QPS) per app and ad account combination.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-concurrent-requests-limit",
+    "text": "Requests that edit the same object at the same time have a default limit of one edit per object every 30 seconds to prevent database-level lock contention.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/overview/rate-limiting",
+    "quote": "Default limit: one edit per object every 30 seconds.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-spending-limit-changes-cap",
+    "text": "Changing an ad account spending limit such as spend_cap or spend_cap_action fields is limited to 10 times per day.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/overview/rate-limiting",
+    "quote": "We limit you to changing your account spending limits 10 times per day to ensure the Ads delivery performance.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-ad-set-budget-changes-cap",
+    "text": "An ad set daily budget or lifetime_budget is only allowed to change 4 times per hour, after which budget changes are blocked for an hour.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/overview/rate-limiting",
+    "quote": "For each ad set, the budget is only allowed to change 4 times per hour, if it exceeds the limit, the budget change for that ad set is blocked for an hour.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-block-list-url-limit",
+    "text": "One block list can contain no more than 10,000 unique URLs.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/brand-safety-and-suitability/block-list",
+    "quote": "One block list can contain no more than 10,000 unique URLs; if the upload file has more than 10,000 rows, multiple block lists will need to be created.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-business-block-list-limit",
+    "text": "One business can own up to 200 block lists.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/brand-safety-and-suitability/block-list",
+    "quote": "One business can own up to 200 block lists. If this is exceeded, you cannot create more block lists.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-hotel-pricing-date-range",
+    "text": "For hotel dynamic pricing feed uploads, check-in dates can be specified up to 180 days from the date the feed is uploaded.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/hotel-ads/dynamic-pricing",
+    "quote": "You can specify up to 180 days from the date the feed is uploaded.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-hotel-pricing-max-nights",
+    "text": "The maximum number of nights staying in a hotel for a dynamic pricing feed entry is 14.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/hotel-ads/dynamic-pricing",
+    "quote": "Max value: 14",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-reach-metric-breakdown-date-rule",
+    "text": "Beginning June 10, 2025, reach will no longer be returned for standard queries that apply breakdowns and use start dates more than 13 months old.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/insights/best-practices",
+    "quote": "Beginning June 10, 2025, to improve overall API performance, `reach` will no longer be returned for standard queries that apply `breakdowns` and use `start_date`s more than 13 months old.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-reach-throttle-async-job-limit",
+    "text": "To apply breakdowns and retrieve older-than-13-month reach values, you can use asynchronous jobs to make up to 10 requests per Ad Account per day.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/insights/best-practices",
+    "quote": "To apply `breakdowns` and still retrieve &gt;13-month-old `reach` values, you can use asynchronous jobs to make up to 10 requests per Ad Account per day.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-ad-report-run-id-expiry",
+    "text": "Report run IDs generated for asynchronous insights jobs expire after 30 days and should not be stored long-term.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/insights/best-practices",
+    "quote": "Do not store the `report_run_id` for long term use, it expires after 30 days.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-attribution-setting-default-change",
+    "text": "Beginning June 10, 2025, use_unified_attribution_setting and action_report_time parameters will be disregarded and API responses will mimic Ads Manager settings.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/insights/best-practices",
+    "quote": "Beginning June 10, 2025, to reduce discrepancies with Meta Ads Manager, the `use_unified_attribution_setting` and `action_report_time` parameters will be disregarded and API responses will mimic Ads M",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-openid-configuration-endpoint-facebook",
+    "text": "The openid-configuration discovery endpoint at https://facebook.com/.well-known/openid-configuration returns a 200 response and publishes the authorization endpoint.",
     "evidence": "tested",
     "artifact": "probe:p-oidc-discovery-0",
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "p-oauth-404",
-    "text": "https://metaads.io/.well-known/oauth-authorization-server returns HTTP 404.",
+    "id": "x-openid-configuration-endpoint-www",
+    "text": "The openid-configuration discovery endpoint at https://www.facebook.com/.well-known/openid-configuration returns a 200 response and publishes the authorization endpoint.",
     "evidence": "tested",
-    "artifact": "probe:p-oauth-metadata-1",
-    "checkedAt": "2026-11-03"
+    "artifact": "probe:p-oidc-discovery-2",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-openid-configuration-endpoint-api",
+    "text": "The openid-configuration discovery endpoint at https://api.facebook.com/.well-known/openid-configuration returns a 200 response and publishes the authorization endpoint.",
+    "evidence": "tested",
+    "artifact": "probe:p-oidc-discovery-10",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-auth-redirect-301",
+    "text": "Making an Authorize URL request with a fake client_id and localhost redirect results in an HTTP 301 redirect response to the dialog/oauth endpoint.",
+    "evidence": "tested",
+    "artifact": "probe:p-authorize-facebook.com",
+    "checkedAt": "2026-11-24"
    }
   ],
   "slug": "meta-ads",
   "app": {
    "name": "Meta Ads",
-   "website": "https://metaads.io",
+   "website": "https://facebook.com",
+   "developerDocsUrl": "https://developers.facebook.com/documentation/development/create-an-app",
    "composioSlug": "METAADS",
-   "composioManaged": false,
+   "composioManaged": true,
    "authSchemes": [
     "OAUTH2",
     "API_KEY"
@@ -249,17 +572,57 @@
   },
   "generatedBy": "agent",
   "reviewStatus": "unreviewed",
-  "lastVerified": "2026-11-03"
+  "lastVerified": "2026-11-24",
+  "probes": [
+   {
+    "id": "p-oidc-discovery-0",
+    "kind": "oidc-discovery",
+    "url": "https://facebook.com/.well-known/openid-configuration",
+    "status": 200,
+    "bodySnippet": "{\"issuer\":\"https://www.facebook.com\",\"authorization_endpoint\":\"https://facebook.com/dialog/oauth/\",\"jwks_uri\":\"https://www.facebook.com/.well-known/oauth/openid/jwks/\",\"response_types_supported\":[\"id_token\",\"token id_token\"],\"subject_types_supported\":[\"pairwise\"],\"id_token_signing_alg_values_supported\":[\"RS256\"],\"claims_supported\":[\"iss\",\"aud\",\"sub\",\"iat\",\"exp\",\"jti\",\"nonce\",\"at_hash\",\"name\",\"give",
+    "at": "2026-11-24T07:42:29.070Z"
+   },
+   {
+    "id": "p-oidc-discovery-2",
+    "kind": "oidc-discovery",
+    "url": "https://www.facebook.com/.well-known/openid-configuration",
+    "status": 200,
+    "bodySnippet": "{\"issuer\":\"https://www.facebook.com\",\"authorization_endpoint\":\"https://facebook.com/dialog/oauth/\",\"jwks_uri\":\"https://www.facebook.com/.well-known/oauth/openid/jwks/\",\"response_types_supported\":[\"id_token\",\"token id_token\"],\"subject_types_supported\":[\"pairwise\"],\"id_token_signing_alg_values_supported\":[\"RS256\"],\"claims_supported\":[\"iss\",\"aud\",\"sub\",\"iat\",\"exp\",\"jti\",\"nonce\",\"at_hash\",\"name\",\"give",
+    "at": "2026-11-24T07:42:29.072Z"
+   },
+   {
+    "id": "p-oidc-discovery-10",
+    "kind": "oidc-discovery",
+    "url": "https://api.facebook.com/.well-known/openid-configuration",
+    "status": 200,
+    "bodySnippet": "{\"issuer\":\"https://www.facebook.com\",\"authorization_endpoint\":\"https://facebook.com/dialog/oauth/\",\"jwks_uri\":\"https://www.facebook.com/.well-known/oauth/openid/jwks/\",\"response_types_supported\":[\"id_token\",\"token id_token\"],\"subject_types_supported\":[\"pairwise\"],\"id_token_signing_alg_values_supported\":[\"RS256\"],\"claims_supported\":[\"iss\",\"aud\",\"sub\",\"iat\",\"exp\",\"jti\",\"nonce\",\"at_hash\",\"name\",\"give",
+    "at": "2026-11-24T07:42:29.077Z"
+   },
+   {
+    "id": "p-authorize-facebook.com",
+    "kind": "authorize-dummy-client",
+    "url": "https://facebook.com/dialog/oauth/?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe&scope=openid",
+    "status": 301,
+    "location": "https://www.facebook.com/dialog/oauth/?encrypted_query_string=AeFY7B4pk4J-nr8oIjpx2yvOd0ph_C_gQ2crH0ahg_fHCyN8AaAUL1bRHe9tY1h0nnONItiWI85-SmsfEYi731XTEn7VjGEKhdOLlu-MSvJgfQq4zsNmja0QwObMm9IwA29_j_DLk9X_4YzJtNq2o7-5oIoDPbjFz--HtEOB0xZvZXvkWPBcgzhKaDE1jAMgrwERncLDtHQo4Ls-Cu4VVe65-BCH8Aj1cACWf9JnauUEVAjl_OFE9ppB9b-NPsN9VC6BeCTNnIGdi_lPKVcxCew",
+    "bodySnippet": "",
+    "at": "2026-11-24T07:42:29.664Z"
+   }
+  ]
  },
  "report": {
-  "checked": 4,
-  "quoteMisses": [],
+  "checked": 33,
+  "quoteMisses": [
+   "c-reg-dev",
+   "c-create-app",
+   "c-create-steps",
+   "c-switch-live"
+  ],
   "unsupported": [],
   "integrityFixes": 0,
-  "verifierModel": "gemini-3.5-flash-lite",
+  "verifierModel": "gemini-3.1-flash-lite",
   "draftModel": "gemini-3.5-flash-lite",
-  "sources": 3,
-  "ms": 40997
+  "sources": 19,
+  "ms": 66494
  },
- "runAt": "2026-11-03T13:31:21.121Z"
+ "runAt": "2026-11-24T07:43:18.871Z"
 }

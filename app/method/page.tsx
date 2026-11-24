@@ -40,6 +40,7 @@ const RUBRIC: Record<number, string> = {
 export default async function MethodPage() {
   const ev = await loadEval();
   const v1 = await loadEval("eval/results-v1.json");
+  const v2 = await loadEval("eval/results-v2.json");
   const d = directory as { counts: { managed: number; bringYourOwn: number }; checkedAt: string; source: string };
   return (
     <article className="prose-invert max-w-3xl pt-10">
@@ -122,10 +123,10 @@ export default async function MethodPage() {
       {ev ? (
         <div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Stat k="Fact recall" v={pct(ev.factRecall)} sub={v1 ? `v1 ${pct(v1.factRecall)}` : undefined} />
-            <Stat k="Fact precision" v={pct(ev.factPrecision)} sub={v1 ? `v1 ${pct(v1.factPrecision)}` : undefined} />
-            <Stat k="Citation validity" v={pct(ev.citationValidity)} sub={v1 ? `v1 ${pct(v1.citationValidity)}` : undefined} />
-            <Stat k="Difficulty ±1" v={pct(ev.difficultyWithin1)} sub={`exact ${pct(ev.difficultyExact)}${v1 ? ` · v1 ${pct(v1.difficultyWithin1)}` : ""}`} />
+            <Stat k="Fact recall" v={pct(ev.factRecall)} sub={v2 ? `v2 ${pct(v2.factRecall)}` : v1 ? `v1 ${pct(v1.factRecall)}` : undefined} />
+            <Stat k="Fact precision" v={pct(ev.factPrecision)} sub={v2 ? `v2 ${pct(v2.factPrecision)}` : v1 ? `v1 ${pct(v1.factPrecision)}` : undefined} />
+            <Stat k="Citation validity" v={pct(ev.citationValidity)} sub={v2 ? `v2 ${pct(v2.citationValidity)}` : v1 ? `v1 ${pct(v1.citationValidity)}` : undefined} />
+            <Stat k="Difficulty ±1" v={pct(ev.difficultyWithin1)} sub={`exact ${pct(ev.difficultyExact)}${v2 ? ` · v2 ${pct(v2.difficultyWithin1)}` : v1 ? ` · v1 ${pct(v1.difficultyWithin1)}` : ""}`} />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
             {ev.facts} hand-checked facts across {ev.apps} apps; live agent run {ev.runAt}. Recall = facts the agent stated; precision = stated facts not contradicted;
@@ -154,6 +155,14 @@ export default async function MethodPage() {
             <p className="mt-3 text-xs text-muted-foreground">
               <strong>v1 → v2:</strong> v1 discovery started from the app&apos;s homepage and often landed on a generic portal root (e.g. &ldquo;Gmail&rdquo; → accounts.google.com → developers.google.com), so recall was {pct(v1.factRecall)}.
               v2 adds the docs site&apos;s <code>llms.txt</code> index, product-path probing and model-suggested docs URLs that must fetch and mention OAuth before use.
+            </p>
+          ) : null}
+          {v2 ? (
+            <p className="mt-3 text-xs text-muted-foreground">
+              <strong>v2 → v3:</strong> v2 was precise but shallow (recall {pct(v2.factRecall)}): it read 7 pages and kept ~7k characters of each, so deep facts
+              (quota modes, verification timelines, tier tables) never reached the model. v3 plans up to 12 official docs URLs per decisive topic (each fetch-verified),
+              reads up to 20 pages plus one deterministic hop deeper, ranks paragraphs by decisive signals within a shared 200k-character budget, and adds a gap-fill pass
+              that extracts facts the first draft missed. Quotes are still re-fetched and checked by a second model.
             </p>
           ) : null}
           {ev.notes?.length ? <ul className="mt-3 list-disc pl-5 text-xs text-muted-foreground">{ev.notes.map((n, i) => <li key={i}>{n}</li>)}</ul> : null}

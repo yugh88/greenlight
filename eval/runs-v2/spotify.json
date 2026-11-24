@@ -1,0 +1,474 @@
+{
+ "guide": {
+  "verdict": {
+   "difficulty": 3,
+   "label": "Full review",
+   "summary": "You must create a Spotify developer app, configure your redirect URI, and request quota extension for production users.",
+   "firstTokenMinutes": {
+    "min": 5,
+    "max": 15
+   },
+   "productionDays": {
+    "min": 1,
+    "max": 7
+   },
+   "cost": "Free",
+   "claimIds": [
+    "c-diff"
+   ]
+  },
+  "composioFit": {
+   "summary": "Spotify is not a Composio-managed app, so you must bring your own OAuth app configuration.",
+   "whyOwnApp": [
+    "Composio does not manage a default OAuth app for Spotify.",
+    "You need custom control over your client credentials and scopes."
+   ],
+   "claimIds": [
+    "c-composio-no"
+   ]
+  },
+  "phases": [
+   {
+    "id": "create-app",
+    "name": "Create Spotify App",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 5,
+     "max": 10
+    },
+    "steps": [
+     "Go to your Spotify Developer Dashboard.",
+     "Click on the Create an App button.",
+     "Fill in app details and accept Developer Terms of Service."
+    ],
+    "handoff": "Copy your Client ID and Client Secret into the Composio dashboard.",
+    "claimIds": [
+     "c-create-app"
+    ]
+   },
+   {
+    "id": "configure-redirect",
+    "name": "Configure Redirect URI",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 2,
+     "max": 5
+    },
+    "steps": [
+     "Copy the redirect URI provided by the Composio dashboard.",
+     "Add it to your Spotify app's Redirect URIs allowlist."
+    ],
+    "handoff": "Save changes in the Spotify Developer Dashboard.",
+    "claimIds": [
+     "c-redirect-match",
+     "c-redirect-rules"
+    ]
+   },
+   {
+    "id": "dev-testing",
+    "name": "Development Testing",
+    "owner": "you",
+    "waiting": false,
+    "minutes": {
+     "min": 10,
+     "max": 30
+    },
+    "steps": [
+     "Use development mode to test with up to 5 authenticated users.",
+     "Add users via the Users Management tab if needed."
+    ],
+    "handoff": "Proceed to quota extension when ready for production users.",
+    "claimIds": [
+     "c-dev-mode",
+     "c-dev-users"
+    ]
+   },
+   {
+    "id": "review-wait",
+    "name": "Quota Extension Review",
+    "owner": "provider",
+    "waiting": true,
+    "minutes": {
+     "min": 1440,
+     "max": 10080
+    },
+    "steps": [
+     "Submit the Quota extension Request tab.",
+     "Wait for Spotify's app review team to evaluate compliance."
+    ],
+    "handoff": "App is moved into extended quota mode once approved.",
+    "claimIds": [
+     "c-review-process",
+     "c-extended-mode"
+    ]
+   }
+  ],
+  "artefacts": [
+   {
+    "id": "art-app-form",
+    "kind": "app-form",
+    "title": "Spotify App Registration Values",
+    "body": "App Name: AI Agent Integration\nApp Description: Connects your Spotify account to an AI assistant.\nWebsite: https://example.com\nRedirect URI: <Composio callback URL from your auth config>"
+   },
+   {
+    "id": "art-scope-justification",
+    "kind": "scope-justification",
+    "title": "Scope Justification",
+    "body": "We request user-read-private, user-read-email, and playlist-read-private to let users view their profile and manage playlists via our AI agent."
+   }
+  ],
+  "requirements": [
+   {
+    "kind": "privacy-policy",
+    "label": "Privacy Policy",
+    "required": "yes",
+    "when": "Always required for developer apps handling user data",
+    "claimIds": [
+     "c-privacy-policy"
+    ]
+   },
+   {
+    "kind": "partner-application",
+    "label": "Extended Quota / Partner Application",
+    "required": "conditional",
+    "when": "Required when moving out of development mode for more users",
+    "claimIds": [
+     "c-extended-mode",
+     "c-review-process"
+    ]
+   }
+  ],
+  "scopes": [
+   {
+    "scope": "user-read-private",
+    "purpose": "Access your subscription details.",
+    "tier": "basic",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-scope-private"
+    ]
+   },
+   {
+    "scope": "user-read-email",
+    "purpose": "Get your real email address.",
+    "tier": "basic",
+    "reviewTrigger": false,
+    "claimIds": [
+     "c-scope-email"
+    ]
+   },
+   {
+    "scope": "playlist-read-private",
+    "purpose": "Access your private playlists.",
+    "tier": "sensitive",
+    "reviewTrigger": true,
+    "claimIds": [
+     "c-scope-playlist"
+    ]
+   }
+  ],
+  "redirectRules": [
+   {
+    "rule": "The value of redirect_uri here must exactly match one of the values you entered when you registered your application, including upper or lowercase, terminating slashes, and such.",
+    "claimIds": [
+     "c-redirect-match"
+    ]
+   },
+   {
+    "rule": "Use HTTPS for your redirect URI, unless you are using a loopback address, when HTTP is permitted.",
+    "claimIds": [
+     "c-redirect-rules"
+    ]
+   },
+   {
+    "rule": "localhost is not allowed as redirect URI.",
+    "claimIds": [
+     "c-redirect-localhost"
+    ]
+   }
+  ],
+  "blockers": [
+   {
+    "id": "blocker-client-id",
+    "symptom": "client_id: Invalid",
+    "cause": "The client ID provided in the authorization request does not exist or is malformed.",
+    "fix": "Check your Client ID in the Spotify dashboard and ensure it is copied correctly.",
+    "fallback": "Regenerate client credentials if necessary.",
+    "claimIds": [
+     "c-blocker-client"
+    ]
+   },
+   {
+    "id": "blocker-quota",
+    "symptom": "\"reason\": \"QUOTA_EXCEEDED\"",
+    "cause": "Your app is in development mode and has exceeded request limits or user caps.",
+    "fix": "Request a quota extension via the Spotify Developer Dashboard.",
+    "fallback": "Limit testing volume to stay within development thresholds.",
+    "claimIds": [
+     "c-quota-exceeded"
+    ]
+   },
+   {
+    "id": "blocker-redirect",
+    "symptom": "Redirect URI mismatch error during authorization",
+    "cause": "The redirect URI sent in the request does not exactly match the allowlisted redirect URI.",
+    "fix": "Ensure exact matching including protocols, slashes, and casing.",
+    "fallback": "Update the allowlisted redirect URIs in the dashboard.",
+    "claimIds": [
+     "c-redirect-match"
+    ]
+   }
+  ],
+  "checklist": [
+   {
+    "id": "chk-1",
+    "text": "Log in to the Spotify Developer Dashboard and click Create an App.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-2",
+    "text": "Agree to the Developer Terms of Service and create the app.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-3",
+    "text": "Copy the Client ID and Client Secret.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-4",
+    "text": "Get the redirect URI from your Composio auth config.",
+    "owner": "you",
+    "phaseId": "configure-redirect"
+   },
+   {
+    "id": "chk-5",
+    "text": "Add the redirect URI to your Spotify app settings.",
+    "owner": "you",
+    "phaseId": "configure-redirect"
+   },
+   {
+    "id": "chk-6",
+    "text": "Paste Client ID and Client Secret into the Composio dashboard.",
+    "owner": "you",
+    "phaseId": "create-app"
+   },
+   {
+    "id": "chk-7",
+    "text": "Test OAuth flow with your own account in development mode.",
+    "owner": "you",
+    "phaseId": "dev-testing"
+   },
+   {
+    "id": "chk-8",
+    "text": "Submit a quota extension request when ready for public users.",
+    "owner": "you",
+    "phaseId": "review-wait"
+   }
+  ],
+  "uncertainties": [
+   "Exact review turnaround time in business days is not explicitly documented by Spotify.",
+   "Specific rate limit numbers for development vs extended mode are not detailed in the source snippets."
+  ],
+  "probes": [
+   {
+    "id": "p-oidc-discovery-12",
+    "kind": "oidc-discovery",
+    "url": "https://accounts.spotify.com/.well-known/openid-configuration",
+    "status": 200,
+    "bodySnippet": "{\"issuer\":\"https://accounts.spotify.com\",\"authorization_endpoint\":\"https://accounts.spotify.com/oauth2/v2/auth\",\"token_endpoint\":\"https://accounts.spotify.com/api/token\",\"userinfo_endpoint\":\"https://accounts.spotify.com/oidc/userinfo/v1\",\"revocation_endpoint\":\"https://accounts.spotify.com/oauth2/revoke/v1\",\"scopes_supported\":[\"email\",\"openid\",\"profile\"],\"jwks_uri\":\"https://accounts.spotify.com/oid",
+    "at": "2026-11-03T13:28:39.492Z"
+   },
+   {
+    "id": "p-oauth-metadata-13",
+    "kind": "oauth-metadata",
+    "url": "https://accounts.spotify.com/.well-known/oauth-authorization-server",
+    "status": 200,
+    "bodySnippet": "{\"authorization_endpoint\":\"https://accounts.spotify.com/authorize\",\"code_challenge_methods_supported\":[\"S256\"],\"device_authorization_endpoint\":\"https://accounts.spotify.com/oauth2/device/authorize\",\"dpop_signing_alg_values_supported\":[\"ES256\"],\"grant_types_supported\":[\"urn:ietf:params:oauth:grant-type:jwt-bearer\",\"authorization_code\",\"client_credentials\",\"refresh_token\"],\"issuer\":\"https://accounts",
+    "at": "2026-11-03T13:28:39.492Z"
+   },
+   {
+    "id": "p-authorize-accounts.spotify.com",
+    "kind": "authorize-dummy-client",
+    "url": "https://accounts.spotify.com/oauth2/v2/auth?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe&scope=openid",
+    "status": 400,
+    "bodySnippet": "client_id: Invalid",
+    "at": "2026-11-03T13:28:40.195Z"
+   },
+   {
+    "id": "p-authorize-accounts.spotify.com",
+    "kind": "authorize-dummy-client",
+    "url": "https://accounts.spotify.com/authorize?client_id=greenlight-probe-invalid-client&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fgreenlight-probe-callback&response_type=code&state=greenlight-probe&scope=openid",
+    "status": 303,
+    "location": "https://accounts.spotify.com/en/login?continue=https%3A%2F%2Faccounts.spotify.com%2Fauthorize%3Fscope%3Dopenid%26response_type%3Dcode%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A3000%252Fgreenlight-probe-callback%26state%3Dgreenlight-probe%26client_id%3Dgreenlight-probe-invalid-client&client_id=greenlight-probe-invalid-client",
+    "bodySnippet": "",
+    "at": "2026-11-03T13:28:40.392Z"
+   }
+  ],
+  "generation": {
+   "draftModel": "gemini-3.5-flash-lite",
+   "verifierModel": "gemini-3.5-flash-lite",
+   "ms": 24909,
+   "sources": 8
+  },
+  "claims": [
+   {
+    "id": "c-diff",
+    "text": "Spotify apps require registration and configuration in the developer dashboard, with development mode limiting usage to 5 users until extended quota review.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+    "quote": "Up to 5 authenticated Spotify users can use an app that is in development mode",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-composio-no",
+    "text": "Composio-managed OAuth is not available for Spotify, requiring a custom auth config.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/toolkits/spotify",
+    "quote": "Composio-managed OAuth available? No",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-create-app",
+    "text": "You can create up to 25 apps per developer account via the Spotify dashboard.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/apps",
+    "quote": "You can create up to 25 apps per developer account. To create an app, go to your Dashboard and click on the Create an App button",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-redirect-match",
+    "text": "The value of redirect_uri must exactly match one of the values entered when registering your application.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/tutorials/code-flow",
+    "quote": "The value of redirect_uri here must exactly match one of the values you entered when you registered your application",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-redirect-rules",
+    "text": "Use HTTPS for your redirect URI, unless using a loopback address where HTTP is permitted.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/redirect_uri",
+    "quote": "Use HTTPS for your redirect URI, unless you are using a loopback address, when HTTP is permitted.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-redirect-localhost",
+    "text": "Localhost is not allowed as a redirect URI.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/redirect_uri",
+    "quote": "localhost is not allowed as redirect URI.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-dev-mode",
+    "text": "Newly created apps begin in development mode.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+    "quote": "Newly-created apps begin in development mode .",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-dev-users",
+    "text": "Up to 5 authenticated Spotify users can use an app in development mode.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+    "quote": "Up to 5 authenticated Spotify users can use an app that is in development mode",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-review-process",
+    "text": "Spotify's review team reviews information, tests out the app, and checks policy compliance.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+    "quote": "The app review team will review the information that you have provided, test out",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-extended-mode",
+    "text": "Extended quota mode allows an unlimited number of users to install the app.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+    "quote": "Apps in this category can be installed by an unlimited number of users and the allowlist in development mode no longer applies.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-privacy-policy",
+    "text": "You must provide a privacy policy which clearly describes how you intend to access, use, process and disclose user data.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/policy",
+    "quote": "You must provide a privacy policy which clearly describes how you intend to access, use, process and disclose user data.",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-scope-private",
+    "text": "The user-read-private scope accesses subscription details.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/scopes",
+    "quote": "Endpoints that require the user-read-private scope",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-scope-email",
+    "text": "The user-read-email scope gets your real email address.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/scopes",
+    "quote": "Endpoints that require the user-read-email scope",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-scope-playlist",
+    "text": "The playlist-read-private scope accesses private playlists.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/scopes",
+    "quote": "Endpoints that require the playlist-read-private scope",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-blocker-client",
+    "text": "Invalid client ID results in client_id: Invalid error.",
+    "evidence": "tested",
+    "artifact": "probe:p-authorize-accounts.spotify.com",
+    "checkedAt": "2026-11-03"
+   },
+   {
+    "id": "c-quota-exceeded",
+    "text": "Exceeding quota returns a QUOTA_EXCEEDED reason in the Web API.",
+    "evidence": "sourced",
+    "sourceUrl": "https://developer.spotify.com/documentation/web-api/concepts/quota-modes",
+    "quote": "\"reason\": \"QUOTA_EXCEEDED\"",
+    "checkedAt": "2026-11-03"
+   }
+  ],
+  "slug": "spotify",
+  "app": {
+   "name": "Spotify",
+   "website": "https://open.spotify.com",
+   "developerDocsUrl": "https://developer.spotify.com/documentation/web-api/concepts/authorization",
+   "composioSlug": "SPOTIFY",
+   "composioManaged": false,
+   "authSchemes": [
+    "OAUTH2"
+   ]
+  },
+  "generatedBy": "agent",
+  "reviewStatus": "unreviewed",
+  "lastVerified": "2026-11-03"
+ },
+ "report": {
+  "checked": 15,
+  "quoteMisses": [],
+  "unsupported": [],
+  "integrityFixes": 0,
+  "verifierModel": "gemini-3.5-flash-lite",
+  "draftModel": "gemini-3.5-flash-lite",
+  "sources": 8,
+  "ms": 24909
+ },
+ "runAt": "2026-11-03T13:28:54.201Z"
+}

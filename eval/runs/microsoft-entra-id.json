@@ -1,31 +1,35 @@
 {
  "guide": {
   "verdict": {
-   "difficulty": 2,
-   "label": "Light review",
-   "summary": "You must register your own Microsoft Entra ID app because Composio does not provide a managed app for Microsoft Entra ID.",
+   "difficulty": 4,
+   "label": "Heavy review / verification",
+   "summary": "Microsoft Entra ID requires bringing your own OAuth app, configuring explicit multi-tenant settings and redirect URIs, and completing Microsoft AI Cloud Partner Program verification for production trust.",
    "firstTokenMinutes": {
-    "min": 10,
+    "min": 15,
     "max": 30
    },
    "productionDays": {
-    "min": 0,
-    "max": 1
+    "min": 3,
+    "max": 5
    },
    "cost": "Free",
    "claimIds": [
-    "c-comp-no-managed",
-    "c-app-reg-steps"
+    "c-diff",
+    "c-time-token",
+    "c-time-prod",
+    "c-cost"
    ]
   },
   "composioFit": {
-   "summary": "Composio requires a custom auth configuration for Microsoft Entra ID because no managed app is available in the catalog.",
+   "summary": "A Composio-managed OAuth app is not available for Microsoft Entra ID (MICROSOFT_ENTRA_ID), so you must bring your own OAuth app.",
    "whyOwnApp": [
-    "Composio-managed OAuth is not available for Microsoft Entra ID.",
-    "You must provide your own Client ID and Client Secret from your Microsoft Entra app registration."
+    "Composio-managed OAuth available? No",
+    "Dedicated provider rate limits",
+    "Your own scopes and branding"
    ],
    "claimIds": [
-    "c-comp-no-managed"
+    "c-composio-no",
+    "c-own-app-reasons"
    ]
   },
   "phases": [
@@ -35,66 +39,97 @@
     "owner": "you",
     "waiting": false,
     "minutes": {
-     "min": 5,
+     "min": 10,
      "max": 15
     },
     "steps": [
-     "Sign in to the Microsoft Entra admin center.",
-     "Navigate to App registrations and select New registration.",
-     "Enter a meaningful Name and select the appropriate supported account types."
+     "Sign in to the Microsoft Entra admin center as at least an Application Developer.",
+     "Browse to Entra ID > App registrations and select New registration.",
+     "Enter a meaningful Name for your app.",
+     "Select supported account types (recommended: Multiple Entra ID tenants for SaaS)."
     ],
-    "handoff": "Copy the Application (client) ID from the Overview page.",
+    "handoff": "Application (client) ID obtained.",
     "claimIds": [
-     "c-app-reg-steps",
-     "c-client-id"
+     "c-reg-role",
+     "c-reg-path",
+     "c-reg-name",
+     "c-reg-types"
     ]
    },
    {
-    "id": "configure-redirect",
-    "name": "Configure Redirect URIs",
+    "id": "configure",
+    "name": "Configure Redirect URIs and Scopes",
     "owner": "you",
     "waiting": false,
     "minutes": {
-     "min": 5,
-     "max": 10
+     "min": 10,
+     "max": 20
     },
     "steps": [
-     "Get the redirect URI from your Composio dashboard auth config.",
-     "Navigate to the Authentication page in your app registration.",
-     "Add the redirect URI for web applications."
+     "Add redirect URIs matching your production requirements.",
+     "Set a publisher domain in Branding & properties.",
+     "Request necessary delegated or application permissions."
     ],
-    "handoff": "Paste Client ID and Client Secret into the Composio dashboard.",
+    "handoff": "Redirect URIs and permissions saved.",
     "claimIds": [
-     "c-redirect-config",
-     "c-composio-dashboard"
+     "c-redir-rules",
+     "c-pub-domain",
+     "c-scopes-req"
+    ]
+   },
+   {
+    "id": "verify",
+    "name": "Publisher Verification",
+    "owner": "you",
+    "waiting": true,
+    "minutes": {
+     "min": 4320,
+     "max": 7200
+    },
+    "steps": [
+     "Ensure your organization has a verified Microsoft AI Cloud Partner Program (CPP) Partner Global Account (PGA).",
+     "Navigate to Branding & properties in App registrations.",
+     "Select Add Partner ID to verify publisher and enter your Partner One ID."
+    ],
+    "handoff": "Blue verified badge displayed.",
+    "claimIds": [
+     "c-pub-verify-req",
+     "c-pub-verify-steps",
+     "c-verify-time"
     ]
    }
   ],
   "artefacts": [
    {
-    "id": "art-app-form",
+    "id": "app-form",
     "kind": "app-form",
     "title": "Microsoft Entra App Registration Values",
-    "body": "App Name: AI Agent Entra Integration\nSupported account types: Accounts in any organizational directory and personal Microsoft accounts (or Single tenant depending on use case)\nRedirect URI: <Composio callback URL from your auth config>"
+    "body": "Name: identity-client-app\nSupported account types: Multiple Entra ID tenants\nRedirect URI: <Composio callback URL from your auth config>"
+   },
+   {
+    "id": "publisher-domain-json",
+    "kind": "other",
+    "title": "Microsoft Identity Association JSON",
+    "body": "{\n  \"associatedApplications\": [\n    {\n      \"applicationId\": \"<your-app-id>\"\n    }\n  ]\n}"
    }
   ],
   "requirements": [
    {
-    "kind": "privacy-policy",
-    "label": "Privacy Statement",
+    "kind": "business-verification",
+    "label": "Microsoft AI Cloud Partner Program Account",
     "required": "yes",
-    "when": "Required by terms of use for all applications accessing Microsoft Identity APIs.",
+    "when": "Required for publisher verification",
     "claimIds": [
-     "c-terms-privacy"
+     "c-req-cpp"
     ]
    },
    {
-    "kind": "business-verification",
-    "label": "Microsoft AI Cloud Partner Program Account",
+    "kind": "other",
+    "label": "Publisher Domain Configuration",
     "required": "conditional",
-    "when": "Only required if you want to complete publisher verification to remove consent screen warnings.",
+    "when": "Required if aiming for publisher verification and removing unverified warnings",
     "claimIds": [
-     "c-publisher-verification"
+     "c-req-domain"
     ]
    }
   ],
@@ -105,47 +140,66 @@
     "tier": "basic",
     "reviewTrigger": false,
     "claimIds": [
-     "c-default-perm"
+     "c-scope-user-read"
+    ]
+   },
+   {
+    "scope": "Directory.ReadWrite.All",
+    "purpose": "Writing data to an organization's directory",
+    "tier": "restricted",
+    "reviewTrigger": true,
+    "claimIds": [
+     "c-scope-admin-restricted"
     ]
    }
   ],
   "redirectRules": [
    {
-    "rule": "For Web and Single-page applications, you specify a redirect URI manually.",
+    "rule": "Redirect URIs must begin with the scheme https, with exceptions for some localhost redirect URIs.",
+    "claimIds": []
+   },
+   {
+    "rule": "Redirect URIs are case-sensitive and must match the case of the URL path of your running application.",
     "claimIds": [
-     "c-redirect-config"
+     "c-redirect-case"
+    ]
+   },
+   {
+    "rule": "The maximum number of redirect URIs is 256 for Microsoft work or school accounts in any organization's Microsoft Entra tenant.",
+    "claimIds": [
+     "c-redirect-max"
     ]
    }
   ],
   "blockers": [
    {
-    "id": "b-unsupported-browser",
-    "symptom": "This browser is no longer supported. Upgrade to Microsoft Edge...",
-    "cause": "Accessing Microsoft Learn documentation or certain legacy portals via an unsupported automated or embedded browser.",
-    "fix": "Use a modern supported browser such as Microsoft Edge or Google Chrome.",
-    "fallback": "None",
+    "id": "b-aadsts50011",
+    "symptom": "AADSTS50011: The reply URL specified in the request does not match the reply URLs configured for the application.",
+    "cause": "The redirect URI specified in the login request does not match any registered redirect URIs.",
+    "fix": "Add the exact redirect URI to your app registration.",
+    "fallback": "Check for trailing slashes and case sensitivity.",
     "claimIds": [
-     "c-blocker-browser"
+     "c-err-50011"
     ]
    },
    {
-    "id": "b-tenant-migration",
-    "symptom": "Attempting to move an application object between different tenants.",
-    "cause": "Once created, you can't move the application object between different tenants.",
-    "fix": "Register a new application in the destination tenant.",
-    "fallback": "Recreate app configuration in the new tenant.",
+    "id": "b-aadsts70011",
+    "symptom": "AADSTS70011: The provided value for the input parameter 'scope' is not valid.",
+    "cause": "An invalid scope format or ungranted scope was requested.",
+    "fix": "Ensure the scope string uses the correct resource identifier URI prefix.",
+    "fallback": "Verify application permissions in the Entra admin center.",
     "claimIds": [
-     "c-blocker-tenant"
+     "c-err-70011"
     ]
    },
    {
-    "id": "b-unverified-publisher",
-    "symptom": "Warning appears on the consent screen informing the user that the app was created by an unverified publisher.",
-    "cause": "Using an unverified multi-tenant app requesting permissions beyond basic sign-in.",
-    "fix": "Complete publisher verification using a Microsoft AI Cloud Partner Program account.",
-    "fallback": "Use single-tenant app registration if multitenancy is not strictly required.",
+    "id": "b-cors",
+    "symptom": "Access to XMLHttpRequest from origin has been blocked by CORS policy.",
+    "cause": "Attempting to use the authorization code flow without setting up CORS for your redirect URI or missing SPA platform configuration.",
+    "fix": "Configure CORS and ensure redirect URI is marked as a spa redirect URI if applicable.",
+    "fallback": "Use standard web platform redirect configuration.",
     "claimIds": [
-     "c-publisher-verification"
+     "c-err-cors"
     ]
    }
   ],
@@ -158,149 +212,339 @@
    },
    {
     "id": "chk-2",
-    "text": "Register a new application and record the Application (client) ID.",
+    "text": "Register a new application with appropriate account types.",
     "owner": "you",
     "phaseId": "register"
    },
    {
     "id": "chk-3",
-    "text": "Create an auth config in the Composio dashboard to retrieve the redirect URI.",
+    "text": "Record the Application (client) ID.",
     "owner": "you",
-    "phaseId": "configure-redirect"
+    "phaseId": "register"
    },
    {
     "id": "chk-4",
-    "text": "Add the Composio redirect URI to the Authentication settings of your app registration.",
+    "text": "Configure redirect URIs matching HTTPS and loopback rules.",
     "owner": "you",
-    "phaseId": "configure-redirect"
+    "phaseId": "configure"
    },
    {
     "id": "chk-5",
-    "text": "Generate a client secret in the Certificates & secrets section.",
+    "text": "Set up a publisher domain and verify via microsoft-identity-association.json if needed.",
     "owner": "you",
-    "phaseId": "configure-redirect"
+    "phaseId": "configure"
    },
    {
     "id": "chk-6",
-    "text": "Paste Client ID and Client Secret into the Composio dashboard auth config.",
+    "text": "Associate a verified Microsoft AI Cloud Partner Program Partner Global Account for publisher verification.",
     "owner": "you",
-    "phaseId": "configure-redirect"
+    "phaseId": "verify"
    }
   ],
   "uncertainties": [
-   "Exact token lifetime default values and rate limiting thresholds were not detailed in the provided text excerpts."
+   "Exact custom review duration by Microsoft beyond the standard 3 to 5 business days for Partner Center verification."
   ],
-  "probes": [
-   {
-    "id": "p-oidc-discovery-0",
-    "kind": "oidc-discovery",
-    "url": "https://microsoftentraid.com/.well-known/openid-configuration",
-    "status": null,
-    "at": "2026-11-03T13:29:07.622Z"
-   },
-   {
-    "id": "p-oauth-metadata-1",
-    "kind": "oauth-metadata",
-    "url": "https://microsoftentraid.com/.well-known/oauth-authorization-server",
-    "status": null,
-    "at": "2026-11-03T13:29:07.623Z"
-   }
-  ],
-  "generation": {
-   "draftModel": "gemini-3.5-flash-lite",
-   "verifierModel": "gemini-3.5-flash-lite",
-   "ms": 27642,
-   "sources": 8
-  },
   "claims": [
    {
-    "id": "c-comp-no-managed",
-    "text": "Composio-managed OAuth is not available for Microsoft Entra ID (bring your own OAuth app).",
+    "id": "c-diff",
+    "text": "Microsoft Entra ID custom app integration requires Partner Global Account verification and scope configuration, placing it at difficulty level 4.",
     "evidence": "uncertain",
-    "sourceUrl": "https://docs.composio.dev/toolkits/microsoft_entra_id",
-    "quote": "Composio-managed OAuth available? No",
-    "checkedAt": "2026-11-03",
-    "reason": "Verifier: quote does not support claim (The quote only states Composio-managed OAuth available? No, without mentioning Microsoft Entra ID or bring your own OAuth app.)"
+    "reason": "Derived from the combination of app registration, publisher domain configuration, and CPP verification requirements.",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-app-reg-steps",
-    "text": "Sign in to the Microsoft Entra admin center as at least an Application Developer to register an application.",
+    "id": "c-time-token",
+    "text": "First test token can be obtained within 15 to 30 minutes after registration.",
+    "evidence": "uncertain",
+    "reason": "App registration and basic auth code flow configuration can be completed quickly.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-time-prod",
+    "text": "Production readiness including partner verification takes 3 to 5 business days.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/partner-center/enroll/understand-the-verification-process",
+    "quote": "In most cases, the process takes three to five business days to complete.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-cost",
+    "text": "Microsoft doesn't charge developers for publisher verification or app registration.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview",
+    "quote": "Microsoft doesn't charge developers for publisher verification. No license is required to become a verified publisher.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-composio-no",
+    "text": "Composio-managed OAuth available? No",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/toolkits/microsoft_entra_id",
+    "quote": "Composio-managed OAuth available? No",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-own-app-reasons",
+    "text": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota.",
+    "evidence": "sourced",
+    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
+    "quote": "Choosing your own OAuth app changes app ownership, branding, scopes, and provider quota, not token custody",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-reg-role",
+    "text": "Sign in to the Microsoft Entra admin center as at least an Application Developer.",
     "evidence": "sourced",
     "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
     "quote": "Sign in to the Microsoft Entra admin center as at least an Application Developer .",
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-client-id",
-    "text": "The Application (client) ID uniquely identifies your application and is used in your code.",
+    "id": "c-reg-path",
+    "text": "Browse to Entra ID > App registrations and select New registration.",
     "evidence": "sourced",
     "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
-    "quote": "Record the Application (client) ID , which uniquely identifies your application and is used in your application's code",
-    "checkedAt": "2026-11-03"
+    "quote": "Browse to Entra ID > App registrations and select New registration .",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-redirect-config",
-    "text": "For Web and Single-page applications, you specify a redirect URI manually on the Authentication page.",
+    "id": "c-reg-name",
+    "text": "Enter a meaningful Name for your app; for example, identity-client-app.",
     "evidence": "sourced",
-    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/how-to-add-redirect-uri",
-    "quote": "For Web and Single-page applications , you specify a redirect URI manually.",
-    "checkedAt": "2026-11-03"
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
+    "quote": "Enter a meaningful Name for your app; for example, identity-client-app .",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-composio-dashboard",
-    "text": "For OAuth toolkits, the dashboard shows the redirect URI to add in the provider's developer portal.",
+    "id": "c-reg-types",
+    "text": "Supported account types include Single tenant only, Multiple Entra ID tenants, Any Entra ID Tenant + Personal Microsoft accounts, and Personal Microsoft accounts only.",
     "evidence": "sourced",
-    "sourceUrl": "https://docs.composio.dev/docs/authentication/custom-app-vs-managed-app.md",
-    "quote": "For OAuth toolkits, the dashboard shows the redirect URI to add in the provider's developer portal.",
-    "checkedAt": "2026-11-03"
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
+    "quote": "Supported account types | Description | Single tenant only - <your tenant> | For single-tenant apps for use only by users (or guests) in your tenant.",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-terms-privacy",
-    "text": "You must present users with a Privacy Statement that discloses how you collect and use user data.",
+    "id": "c-redir-rules",
+    "text": "Redirect URIs must begin with the scheme https, with exceptions for some localhost redirect URIs.",
     "evidence": "sourced",
-    "sourceUrl": "https://learn.microsoft.com/en-us/legal/microsoft-identity-platform/terms-of-use",
-    "quote": "present Users with a Privacy Statement that discloses how You collect and use User data.",
-    "checkedAt": "2026-11-03"
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/reply-url",
+    "quote": "Redirect URIs must begin with the scheme https , with exceptions for some localhost redirect URIs.",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-publisher-verification",
-    "text": "Publisher verification uses a Microsoft AI Cloud Partner Program account associated with the app registration.",
-    "evidence": "uncertain",
-    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview",
-    "quote": "Verifying an app includes using a Microsoft AI Cloud Partner Program (CPP)... account that's been verified and associating the verified PartnerID with an app registration.",
-    "checkedAt": "2026-11-03",
-    "reason": "Quote not found on the cited page when re-checked (match 0.76)."
+    "id": "c-pub-domain",
+    "text": "The publisher domain informs users where their information is being sent and acts as a prerequisite for publisher verification.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/howto-configure-publisher-domain",
+    "quote": "An app’s publisher domain informs users where their information is being sent. The publisher domain also acts as an input or prerequisite for publisher verification .",
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-default-perm",
+    "id": "c-scopes-req",
     "text": "Once you register your application, it gets assigned the User.Read permission.",
     "evidence": "sourced",
     "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
     "quote": "Once you register your application, it gets assigned the User.Read permission.",
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-24"
    },
    {
-    "id": "c-blocker-browser",
-    "text": "Some documentation pages show errors when visited in unsupported browsers.",
-    "evidence": "uncertain",
-    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
-    "quote": "This browser is no longer supported. Upgrade to Microsoft Edge to take advantage of the latest features",
-    "checkedAt": "2026-11-03",
-    "reason": "Verifier: quote does not support claim (The quote mentions an unsupported browser and upgrading to Edge, but does not state that documentation pages show errors.)"
-   },
-   {
-    "id": "c-blocker-tenant",
-    "text": "Once created, you can't move the application object between different tenants.",
+    "id": "c-pub-verify-req",
+    "text": "The developer must have a Partner One ID for a valid Microsoft AI Cloud Partner Program account that has completed the verification process.",
     "evidence": "sourced",
-    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
-    "quote": "Once created, you can't move the application object between different tenants.",
-    "checkedAt": "2026-11-03"
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview",
+    "quote": "The developer must have a Partner One ID for a valid Microsoft AI Cloud Partner Program account that has completed the verification process.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-pub-verify-steps",
+    "text": "To mark an app as verified, choose an app, select Branding & properties, select Add Partner ID to verify publisher, enter Partner One ID, and select Verify and save.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/mark-app-as-publisher-verified",
+    "quote": "Choose an app and select Branding & properties . | - Select Add Partner ID to verify publisher and review the listed requirements. | - Enter your Partner One ID and select Verify and save .",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-verify-time",
+    "text": "Verification in Partner Center takes three to five business days to complete in most cases.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/partner-center/enroll/understand-the-verification-process",
+    "quote": "In most cases, the process takes three to five business days to complete.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-req-cpp",
+    "text": "A Partner One ID associated with a verified Microsoft AI Cloud Partner Program account is required for publishing and publisher verification.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview",
+    "quote": "The developer must have a Partner One ID for a valid Microsoft AI Cloud Partner Program account that has completed the verification process.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-req-domain",
+    "text": "Publisher domain configuration requires hosting a microsoft-identity-association.json file at the well-known endpoint.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/howto-configure-publisher-domain",
+    "quote": "Host the file at https://<your-domain>.com/.well-known/microsoft-identity-association.json .",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-scope-user-read",
+    "text": "User.Read scope provides permission to sign in and read user profile data.",
+    "evidence": "uncertain",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/scopes-oidc",
+    "quote": "If an app signs in by using OpenID Connect , it must request the openid scope. The openid scope appears on the work account consent page as the Sign you in permission.",
+    "checkedAt": "2026-11-24",
+    "reason": "Verifier: quote does not support claim (The quote discusses the openid scope, whereas the claim is about the User.Read scope.)"
+   },
+   {
+    "id": "c-scope-admin-restricted",
+    "text": "Writing data to an organization's directory using Directory.ReadWrite.All is admin-restricted.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow",
+    "quote": "Some permissions are admin-restricted, for example, writing data to an organization's directory by using Directory.ReadWrite.All .",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-redirect-case",
+    "text": "Redirect URIs are case-sensitive and must match the case of the URL path of your running application.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/reply-url",
+    "quote": "Redirect URIs are case-sensitive and must match the case of the URL path of your running application.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-redirect-max",
+    "text": "The maximum number of redirect URIs is 256 for Microsoft work or school accounts in any organization's Microsoft Entra tenant.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/reply-url",
+    "quote": "Accounts being signed in | Maximum number of redirect URIs | Description | Microsoft work or school accounts in any organization's Microsoft Entra tenant | 256",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-err-50011",
+    "text": "AADSTS50011 indicates the reply URL specified in the request does not match the reply URLs configured for the application.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/reply-url",
+    "quote": "AADSTS50011: The reply URL specified in the request does not match the reply URLs configured for the application",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-err-70011",
+    "text": "AADSTS70011 indicates the provided value for the input parameter scope is not valid.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow",
+    "quote": "AADSTS70011: The provided value for the input parameter 'scope' is not valid.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "c-err-cors",
+    "text": "CORS errors occur when attempting to use the authorization code flow without setting up CORS for your redirect URI.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow",
+    "quote": "If you attempt to use the authorization code flow without setting up CORS for your redirect URI, you'll see this error in the console",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-token-lifetime-access",
+    "text": "The access token obtained via the authorization code flow is valid for around one hour.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/scopes-oidc",
+    "quote": "The access token is valid for around one hour.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-token-lifetime-refresh",
+    "text": "The refresh token has a longer expiry than the access token and is typically valid for 90 days.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/scopes-oidc",
+    "quote": "The refresh token has a longer expiry than the access token and is typically valid for 90 days.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-spa-refresh-lifetime",
+    "text": "For refresh tokens sent to a redirect URI registered as spa, the refresh token expires after 24 hours.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow",
+    "quote": "For refresh tokens sent to a redirect URI registered as spa , the refresh token expires after 24 hours.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-auth-code-expiration",
+    "text": "Authorization codes are short lived and typically expire after about 1 minute.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow",
+    "quote": "Authorization codes are short lived. Typically, they expire after about 1 minute.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-redirect-uri-char-limit",
+    "text": "You can use a maximum of 256 characters for each redirect URI you add to an app registration.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/reply-url",
+    "quote": "You can use a maximum of 256 characters for each redirect URI you add to an app registration.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-publisher-verified-date",
+    "text": "Beginning November 2020, if risk-based step-up consent is enabled, users can't consent to most newly registered multitenant apps that aren't publisher verified.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview",
+    "quote": "Beginning November 2020, if risk-based step-up consent is enabled, users can't consent to most newly registered multitenant apps that aren't publisher verified.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-partner-location-id",
+    "text": "The CPP account you use for publisher verification can't be your partner location Partner One ID, as location Partner One IDs aren't supported.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview",
+    "quote": "The CPP account you use for publisher verification can't be your partner location Partner One ID. Currently, location Partner One IDs aren't supported for the publisher verification process.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-publisher-domain-extension",
+    "text": "The app's publisher domain can't be *.onmicrosoft.com to be publisher verified.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview",
+    "quote": "( NOTE __: the app's publisher domain can't be *.onmicrosoft.com to be publisher verified)",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-saml-cert-default-validity",
+    "text": "When you enable federation on a SAML application, Microsoft Entra ID creates a certificate that is by default valid for three years.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/plan-sso-deployment",
+    "quote": "When you enable federation on SAML application, Microsoft Entra ID creates a certificate that is by default valid for three years.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-tenant-restricted-error",
+    "text": "NotAllowedTenant error indicates sign-in failed because of a restricted proxy access on the tenant.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/reference-error-codes",
+    "quote": "NotAllowedTenant - Sign-in failed because of a restricted proxy access on the tenant.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-app-logo-dimensions",
+    "text": "Required application logos must be in PNG format, with a square logo of 215 by 215 pixels and a rectangular logo of 150 by 122 pixels.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/publish-app-gallery",
+    "quote": "Upload the required application logos in PNG format. | Provide: | - A square application logo that is 215 by 215 pixels. | - A rectangular application logo that is 150 by 122 pixels.",
+    "checkedAt": "2026-11-24"
+   },
+   {
+    "id": "x-gallery-review-timeline",
+    "text": "A gallery submission review takes place within 5 business days, preview can become available within 10 business days, and public availability within 7 business days.",
+    "evidence": "sourced",
+    "sourceUrl": "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/publish-app-gallery",
+    "quote": "- A submission enters Under Review and is reviewed within 5 business days . | - After approval, the integration can become available in Preview within 10 business days . | - Once all publishing requir",
+    "checkedAt": "2026-11-24"
    }
   ],
   "slug": "microsoft-entra-id",
   "app": {
    "name": "Microsoft Entra ID",
-   "website": "https://microsoftentraid.com",
+   "website": "https://microsoft.com",
    "developerDocsUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app",
    "composioSlug": "MICROSOFT_ENTRA_ID",
    "composioManaged": false,
@@ -311,22 +555,45 @@
   },
   "generatedBy": "agent",
   "reviewStatus": "unreviewed",
-  "lastVerified": "2026-11-03"
+  "lastVerified": "2026-11-24",
+  "probes": [
+   {
+    "id": "p-oidc-discovery-0",
+    "kind": "oidc-discovery",
+    "url": "https://microsoft.com/.well-known/openid-configuration",
+    "status": 301,
+    "location": "https://www.microsoft.com/.well-known/openid-configuration",
+    "bodySnippet": "",
+    "at": "2026-11-24T07:46:14.082Z"
+   },
+   {
+    "id": "p-oauth-metadata-1",
+    "kind": "oauth-metadata",
+    "url": "https://microsoft.com/.well-known/oauth-authorization-server",
+    "status": 301,
+    "location": "https://www.microsoft.com/.well-known/oauth-authorization-server",
+    "bodySnippet": "",
+    "at": "2026-11-24T07:46:14.083Z"
+   }
+  ],
+  "generation": {
+   "draftModel": "gemini-3.5-flash-lite",
+   "verifierModel": "gemini-3.5-flash-lite",
+   "ms": 58968,
+   "sources": 21
+  }
  },
  "report": {
-  "checked": 10,
-  "quoteMisses": [
-   "c-publisher-verification"
-  ],
+  "checked": 35,
+  "quoteMisses": [],
   "unsupported": [
-   "c-comp-no-managed",
-   "c-blocker-browser"
+   "c-scope-user-read"
   ],
-  "integrityFixes": 0,
+  "integrityFixes": 1,
   "verifierModel": "gemini-3.5-flash-lite",
   "draftModel": "gemini-3.5-flash-lite",
-  "sources": 8,
-  "ms": 27642
+  "sources": 21,
+  "ms": 58968
  },
- "runAt": "2026-11-03T13:29:23.317Z"
+ "runAt": "2026-11-24T07:46:51.910Z"
 }

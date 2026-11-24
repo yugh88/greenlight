@@ -69,3 +69,8 @@ pnpm db:status                                         # which DB backend is ser
 ## 2026-11-24: database failover
 
 Neon hit its free-tier quota (HTTP 402), which disabled the live agent. Added `lib/db` failover: DATABASE_URL → DATABASE_URL_FALLBACK → embedded PGlite, each auto-migrated on first use; `/api/health`; `pnpm db:migrate`. Verified locally with a broken primary: home, guides and a live job all served from the embedded DB.
+
+## 2026-11-24: live-agent recall + drift check
+
+- Eval v3 (same 38 facts, same free models): fact recall 16% → 58%, precision 86% → 100%, citations 96%, difficulty ±1 8/8 (exact 5/8). Prior results kept in `eval/results-v2.json`, `eval/runs-v2/`.
+- `pnpm verify` drift check: 7 quotes drifted since 11-03 (Composio now manages Meta Ads; Composio and Xero rewording). Fixed: 199/199. Xero needs `GREENLIGHT_RENDER=1` and `npx playwright install chromium-headless-shell`.

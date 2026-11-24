@@ -1,0 +1,297 @@
+{
+ "runAt": "2026-11-03",
+ "apps": 8,
+ "facts": 38,
+ "factRecall": 0.15789473684210525,
+ "factPrecision": 0.8571428571428571,
+ "citationValidity": 0.9659090909090909,
+ "difficultyExact": 0.25,
+ "difficultyWithin1": 0.625,
+ "perApp": [
+  {
+   "slug": "github",
+   "gold": 1,
+   "agent": 1,
+   "covered": 2,
+   "contradicted": 0,
+   "total": 5,
+   "citations": "14/14",
+   "judgments": [
+    {
+     "id": "gh-1",
+     "verdict": "stated",
+     "why": "The guide states that GitHub OAuth apps are entirely self-serve and can be created instantly without a manual review queue."
+    },
+    {
+     "id": "gh-2",
+     "verdict": "stated",
+     "why": "The guide explicitly states that you can enter up to 10 callback URLs."
+    },
+    {
+     "id": "gh-3",
+     "verdict": "absent",
+     "why": "The guide does not mention redirect_uri_mismatch errors for unmatched callback URLs."
+    },
+    {
+     "id": "gh-4",
+     "verdict": "absent",
+     "why": "The guide does not mention the REST API rate limit of 5,000 per hour per user."
+    },
+    {
+     "id": "gh-5",
+     "verdict": "absent",
+     "why": "The guide does not mention GitHub's recommendation of GitHub Apps over OAuth apps."
+    }
+   ]
+  },
+  {
+   "slug": "slack",
+   "gold": 2,
+   "agent": 2,
+   "covered": 1,
+   "contradicted": 1,
+   "total": 5,
+   "citations": "16/17",
+   "judgments": [
+    {
+     "id": "sl-1",
+     "verdict": "absent",
+     "why": "The guide does not mention activating Public Distribution to install the app outside your own workspace."
+    },
+    {
+     "id": "sl-2",
+     "verdict": "stated",
+     "why": "The guide explicitly states that the redirect_uri must use HTTPS."
+    },
+    {
+     "id": "sl-3",
+     "verdict": "absent",
+     "why": "The guide contains no information regarding rate limits for conversations.history based on distribution type and date."
+    },
+    {
+     "id": "sl-4",
+     "verdict": "contradicted",
+     "why": "The guide states that production takes 1-7 days, which contradicts a review taking up to 10 weeks."
+    },
+    {
+     "id": "sl-5",
+     "verdict": "absent",
+     "why": "The guide does not state any requirement about the app being installed on at least 10 active workspaces for Marketplace submission."
+    }
+   ]
+  },
+  {
+   "slug": "gmail",
+   "gold": 4,
+   "agent": 3,
+   "covered": 0,
+   "contradicted": 0,
+   "total": 6,
+   "citations": "14/15",
+   "judgments": [
+    {
+     "id": "gm-1",
+     "verdict": "absent",
+     "why": "The guide does not mention the 100 test user limit for Apps in Testing status."
+    },
+    {
+     "id": "gm-2",
+     "verdict": "absent",
+     "why": "The guide does not mention that test-user authorizations or refresh tokens expire after seven days in Testing mode."
+    },
+    {
+     "id": "gm-3",
+     "verdict": "absent",
+     "why": "The guide does not state that apps accessing restricted-scope data require an annual third-party security assessment."
+    },
+    {
+     "id": "gm-4",
+     "verdict": "absent",
+     "why": "The guide does not specify that restricted scope verification can take several weeks (it only mentions 1-14 days generally)."
+    },
+    {
+     "id": "gm-5",
+     "verdict": "absent",
+     "why": "The guide does not mention brand verification or that it takes 2-3 business days."
+    },
+    {
+     "id": "gm-6",
+     "verdict": "absent",
+     "why": "The guide lists the scopes as sensitive, but does not state whether full mailbox access or gmail.readonly are restricted scopes."
+    }
+   ]
+  },
+  {
+   "slug": "spotify",
+   "gold": 5,
+   "agent": 3,
+   "covered": 2,
+   "contradicted": 0,
+   "total": 6,
+   "citations": "15/15",
+   "judgments": [
+    {
+     "id": "sp-1",
+     "verdict": "stated",
+     "why": "The guide states that newly created apps begin in development mode and up to 5 authenticated Spotify users can use an app in development mode."
+    },
+    {
+     "id": "sp-2",
+     "verdict": "absent",
+     "why": "The guide does not mention that every user must be added to the app's allowlist in development mode."
+    },
+    {
+     "id": "sp-3",
+     "verdict": "absent",
+     "why": "The guide does not mention whether the app owner needs Spotify Premium."
+    },
+    {
+     "id": "sp-4",
+     "verdict": "absent",
+     "why": "The guide does not mention restrictions on extended quota regarding organizations versus individuals or dates."
+    },
+    {
+     "id": "sp-5",
+     "verdict": "absent",
+     "why": "The guide does not mention any monthly active user requirement for extended quota."
+    },
+    {
+     "id": "sp-6",
+     "verdict": "stated",
+     "why": "The guide explicitly states that localhost is not allowed as redirect URI and that you should use HTTPS unless using a loopback address."
+    }
+   ]
+  },
+  {
+   "slug": "microsoft-entra-id",
+   "gold": 3,
+   "agent": 2,
+   "covered": 1,
+   "contradicted": 0,
+   "total": 5,
+   "citations": "9/10",
+   "judgments": [
+    {
+     "id": "en-1",
+     "verdict": "absent",
+     "why": "The guide does not mention risk-based step-up consent or user consent restrictions for newly registered multitenant apps."
+    },
+    {
+     "id": "en-2",
+     "verdict": "stated",
+     "why": "The guide states that publisher verification uses a Microsoft AI Cloud Partner Program account associated with the app registration."
+    },
+    {
+     "id": "en-3",
+     "verdict": "absent",
+     "why": "The guide does not state that redirect URIs must use https or discuss localhost exceptions."
+    },
+    {
+     "id": "en-4",
+     "verdict": "absent",
+     "why": "The guide does not mention whether redirect URIs are case-sensitive."
+    },
+    {
+     "id": "en-5",
+     "verdict": "absent",
+     "why": "The guide does not mention tenant admins restricting user consent to apps from verified publishers."
+    }
+   ]
+  },
+  {
+   "slug": "xero",
+   "gold": 3,
+   "agent": 2,
+   "covered": 0,
+   "contradicted": 0,
+   "total": 5,
+   "citations": "12/12",
+   "judgments": [
+    {
+     "id": "xe-1",
+     "verdict": "absent",
+     "why": "The guide does not mention Starter tier default connections or tiers by name."
+    },
+    {
+     "id": "xe-2",
+     "verdict": "absent",
+     "why": "The guide does not mention the Core tier or connection limits for it."
+    },
+    {
+     "id": "xe-3",
+     "verdict": "absent",
+     "why": "The guide does not discuss listing on the Xero App Store or tier requirements for listing."
+    },
+    {
+     "id": "xe-4",
+     "verdict": "absent",
+     "why": "The guide states cost is Free, but does not mention the Core tier pricing."
+    },
+    {
+     "id": "xe-5",
+     "verdict": "absent",
+     "why": "The guide does not mention tier requirements for app certification."
+    }
+   ]
+  },
+  {
+   "slug": "x",
+   "gold": 2,
+   "agent": 4,
+   "covered": 0,
+   "contradicted": 0,
+   "total": 3,
+   "citations": "1/1",
+   "judgments": [
+    {
+     "id": "x-1",
+     "verdict": "absent",
+     "why": "The guide mentions free to standard paid tiers, but does not state that the X API uses pay-per-usage pricing with no subscriptions."
+    },
+    {
+     "id": "x-2",
+     "verdict": "absent",
+     "why": "The guide does not mention buying credits upfront in the Developer Console."
+    },
+    {
+     "id": "x-3",
+     "verdict": "absent",
+     "why": "The guide does not state that different endpoints have different costs."
+    }
+   ]
+  },
+  {
+   "slug": "meta-ads",
+   "gold": 4,
+   "agent": 2,
+   "covered": 0,
+   "contradicted": 0,
+   "total": 3,
+   "citations": "4/4",
+   "judgments": [
+    {
+     "id": "me-1",
+     "verdict": "absent",
+     "why": "The guide does not mention Business Verification or advanced access requirements."
+    },
+    {
+     "id": "me-2",
+     "verdict": "absent",
+     "why": "The guide does not mention Marketing API call thresholds or Full Access requirements."
+    },
+    {
+     "id": "me-3",
+     "verdict": "absent",
+     "why": "The guide does not mention the renaming of Standard Access to Limited Access or Advanced Access to Full Access."
+    }
+   ]
+  }
+ ],
+ "notes": [
+  "Both runs used gemini-3.5-flash-lite for every step: the free tier caps Flash models at 20 requests/day/model and that cap was hit during gold drafting. Earlier Flash runs produced richer drafts (e.g. Strava: 16 claims).",
+  "Reading: what the live agent states is reliable (precision and citation validity high) but shallow (low recall). It reads ~7 pages and misses facts on deep policy pages. That is why the library ships curated gold guides and labels live guides unreviewed.",
+  "v1→v2: llms.txt index, product-path probing and fetch-verified docs hints lifted recall and citations but not difficulty agreement; the agent underrates gated providers (Spotify, Meta) when it never reaches the gating page.",
+  "Judge = verifier model; spot-checked by hand (e.g. GitHub gh-2 stated / gh-4 absent confirmed against the raw guide). Per-fact judgments are in eval/results.json.",
+  "Ground-truth facts: 38, each with a verbatim quote re-verified live (scripts/check-ground-truth.mts). Human confirmation pending (confirmedBy)."
+ ]
+}
