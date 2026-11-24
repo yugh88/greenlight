@@ -163,7 +163,7 @@ RULES
 - Be concise. No marketing language.
 ${opts.depth ? DEPTH : ""}`;
 
-  const { object, modelId } = await structured("agent", Draft, prompt, 150_000, opts.deadline);
+  const { object, modelId } = await structured("agent", Draft, prompt, 110_000, opts.deadline);
 
   // Gap-fill: a second, narrower pass that only extracts facts the draft missed. Drafting a whole guide
   // and extracting facts compete for the model's attention; asking only for "what else does the evidence
